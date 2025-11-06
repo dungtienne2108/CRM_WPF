@@ -1,0 +1,312 @@
+﻿<UserControl x:Class="CRM.UI.Views.ContractManagement.ContractManagementView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:local="clr-namespace:CRM.UI.Views.ContractManagement"
+             xmlns:viewModels="clr-namespace:CRM.UI.ViewModels.ContractManagement"
+             xmlns:converters="clr-namespace:CRM.UI.Converters"
+             mc:Ignorable="d" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             Background="{DynamicResource MaterialDesignPaper}">
+    <UserControl.Resources>
+        <converters:CurrencyFormatConverter x:Key="CurrencyFormatConverter"/>
+        
+        <!-- Style cho DataGrid Header -->
+        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+            <Setter Property="Background" Value="{DynamicResource MaterialDesignToolBarBackground}"/>
+            <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
+        <!-- Style cho DataGrid Row -->
+        <Style TargetType="DataGridRow" BasedOn="{StaticResource MaterialDesignDataGridRow}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource MaterialDesignSelection}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Style cho ComboBox trong dropdown button -->
+        <Style x:Key="StatusComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignComboBox}">
+            <Setter Property="Width" Value="140"/>
+            <Setter Property="Height" Value="32"/>
+        </Style>
+
+        <x:Array x:Key="StatusOptionsArray" Type="sys:String" 
+         xmlns:sys="clr-namespace:System;assembly=mscorlib">
+            <sys:String>Chưa liên lạc</sys:String>
+            <sys:String>Chuyển đổi</sys:String>
+            <sys:String>Không chuyển đổi</sys:String>
+        </x:Array>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!--Header-->
+        <Grid Grid.Row="0" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Tiêu đề -->
+            <TextBlock Grid.Column="0" 
+                       Text="Danh sách hợp đồng"
+                       Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                       VerticalAlignment="Center"
+                       Margin="0,0,32,0"/>
+
+            <TextBox Grid.Column="1"
+                     x:Name="SearchTextBox"
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                     materialDesign:HintAssist.Hint="Tìm kiếm..."
+                     materialDesign:TextFieldAssist.HasLeadingIcon="True"
+                     materialDesign:TextFieldAssist.LeadingIcon="Search"
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     MaxWidth="400"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     Margin="16,0"
+                     >
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Enter" Command="{Binding SearchCommand}" />
+                </TextBox.InputBindings>
+            </TextBox>
+            <!-- Button Tạo mới -->
+
+            <Button Grid.Column="2"
+         Margin="0,0,5,0"
+         Command="{Binding ExportCommand}"
+         Content="Xuất dữ liệu"
+         Style="{StaticResource MaterialDesignOutlinedButton}"
+         materialDesign:ButtonAssist.CornerRadius="4"
+         Height="40"
+         Padding="24,0"
+         VerticalAlignment="Center"/>
+
+            <Button Grid.Column="3"
+                    x:Name="CreateNewButton"
+                    Command="{Binding CreateNewCommand}"
+                    Content="Tạo mới"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    materialDesign:ButtonAssist.CornerRadius="4"
+                    Height="40"
+                    Padding="24,0"
+                    VerticalAlignment="Center"/>
+        </Grid>
+
+        <!--DataGrid-->
+        <Border Grid.Row="1"
+                Margin="8" Padding="0"
+                CornerRadius="0"                
+                materialDesign:ElevationAssist.Elevation="Dp4">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <DataGrid x:Name="CustomerDataGrid"
+                          Grid.Column="0"
+                      ItemsSource="{Binding ContractItems}"
+                      Style="{StaticResource MaterialDesignDataGrid}"
+                      BorderBrush="Gray"
+                      BorderThickness="1"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      HeadersVisibility="Column"
+                      GridLinesVisibility="All"
+                          RowHeight="48"
+                      HorizontalGridLinesBrush="{DynamicResource MaterialDesignDivider}"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Auto"
+                      SelectedItem="{Binding SelectedContractItem}"
+                          FontSize="14">
+                    <DataGrid.Columns>
+                        <!-- STT -->
+                        <DataGridTextColumn Header="STT" 
+                                        Binding="{Binding Index}"
+                                        Width="60"
+                                        IsReadOnly="True"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+
+                        <!-- CheckBox -->
+                        <DataGridCheckBoxColumn Header="" 
+                                            Binding="{Binding IsSelected}"
+                                            Width="50"
+                                            ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"/>
+
+                        <!-- Mã -->
+                        <DataGridTextColumn Header="Mã" 
+                                        Binding="{Binding Code}"
+                                        Width="100"
+                                        IsReadOnly="True"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+
+                        <DataGridTextColumn Header="Số hợp đồng" 
+                                        Binding="{Binding Number}"
+                                        Width="150"
+                                        IsReadOnly="True"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+
+                        <DataGridTextColumn Header="Tên hợp đồng" 
+                                        Binding="{Binding Name}"
+                                        Width="150"
+                                        IsReadOnly="True"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+
+                        <!-- Số điện thoại -->
+                        <DataGridTextColumn Header="Khách hàng" 
+                                        Binding="{Binding CustomerName}"
+                                        Width="120"
+                                        IsReadOnly="True"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+
+                        <DataGridTextColumn Header="Giá trị hợp đồng sau thuế (VNĐ)" 
+                                        Binding="{Binding AmountAfterTax, Converter={StaticResource CurrencyFormatConverter}}"
+                                        Width="180"
+                                        IsReadOnly="True"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+
+                        <!-- Nhân sự phụ trách -->
+                        <DataGridTextColumn Header="Trạng thái" 
+                                        Binding="{Binding Status}"
+                                        Width="140"
+                                        IsReadOnly="True"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+
+                        <!-- Địa chỉ -->
+                        <DataGridTextColumn Header="Ngày hiệu lực" 
+                                        Binding="{Binding StartDate}"
+                                        Width="200"
+                                        IsReadOnly="True"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+
+                        <!-- Mức độ tiềm năng -->
+                        <DataGridTextColumn Header="Ngày hết hiệu lực" 
+                                        Binding="{Binding EndDate}"
+                                        Width="140"
+                                        IsReadOnly="True"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+
+                        <!-- Trạng thái -->
+                        <DataGridTextColumn Header="Kỳ hạn" 
+                                        Binding="{Binding Duration}"
+                                        Width="120"
+                                        IsReadOnly="True"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+
+                    </DataGrid.Columns>
+
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseDoubleClick">
+                            <i:InvokeCommandAction Command="{Binding OpenDetailCommand}"
+                               CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </DataGrid>
+            </Grid>
+
+        </Border>
+
+        <!--Pagi -->
+        <Grid Grid.Row="2" Margin="0,16,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Thông tin tổng số -->
+            <TextBlock Grid.Column="0"
+                       x:Name="TotalRecordsText"
+                       Text="{Binding TotalRecordsText}"
+                       Style="{StaticResource MaterialDesignBody2TextBlock}"
+                       VerticalAlignment="Center"/>
+
+            <!-- nút -->
+            <StackPanel Grid.Column="1" 
+                        Orientation="Horizontal" 
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <Button x:Name="FirstPageButton"
+                        Command="{Binding FirstPageCommand}"
+                        Content="&lt;&lt;"
+                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                        Width="40" Height="32"
+                        Margin="2"/>
+
+                <Button x:Name="PreviousPageButton"
+                        Command="{Binding PreviousPageCommand}"
+                        Content="&lt;"
+                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                        Width="40" Height="32"
+                        Margin="2"/>
+
+                <TextBox x:Name="PageNumberTextBox"
+                         Text="{Binding CurrentPage, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         Width="60" Height="36"
+                         FontSize="16"
+                         FontWeight="Medium"
+                         Padding="0,4,0,4"
+                         Margin="8,0"
+                         HorizontalContentAlignment="Center"
+                         VerticalContentAlignment="Center"
+                         KeyDown="PageNumberTextBox_KeyDown"
+                         IsReadOnly="True"
+                         />
+
+                <Button x:Name="NextPageButton"
+                        Command="{Binding NextPageCommand}"
+                        Content=">"
+                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                        Width="40" Height="32"
+                        Margin="2"/>
+
+                <Button x:Name="LastPageButton"
+                        Command="{Binding LastPageCommand}"
+                        Content="&gt;&gt;"
+                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                        Width="40" Height="32"
+                        Margin="2"/>
+            </StackPanel>
+
+            <!-- Records per page -->
+            <StackPanel Grid.Column="2" 
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center">
+                <TextBlock Text="Hiển thị"
+                           Style="{StaticResource MaterialDesignBody2TextBlock}"
+                           VerticalAlignment="Center"
+                           Margin="0,0,8,0"/>
+
+                <ComboBox x:Name="RecordsPerPageComboBox"
+                          ItemsSource="{x:Static viewModels:ContractManagementViewModel.RecordsPerPageOptions}"
+                          SelectedValue="{Binding RecordsPerPage}"
+                          Style="{StaticResource MaterialDesignComboBox}"
+                          Width="80"
+                          Height="32"
+                          SelectedIndex="0">
+                </ComboBox>
+
+                <TextBlock Text="bản ghi/trang"
+                           Style="{StaticResource MaterialDesignBody2TextBlock}"
+                           VerticalAlignment="Center"
+                           Margin="8,0,0,0"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

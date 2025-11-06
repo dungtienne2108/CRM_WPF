@@ -1,0 +1,356 @@
+﻿<UserControl x:Class="CRM.UI.Views.OpportunityManagement.OpportunityManagement"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:local="clr-namespace:CRM.UI.Views.OpportunityManagement"
+             xmlns:converters="clr-namespace:CRM.UI.Converters"
+             xmlns:viewModels="clr-namespace:CRM.UI.ViewModels.OpportunityManagement"
+             mc:Ignorable="d" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             Background="{DynamicResource MaterialDesignPaper}">
+    <UserControl.Resources>
+        <converters:StringToIntConverter x:Key="StringToIntConverter" />
+        <converters:CurrencyFormatConverter x:Key="CurrencyFormatConverter" />
+
+        <!-- Style cho DataGrid Header -->
+        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+            <Setter Property="Background" Value="{DynamicResource MaterialDesignToolBarBackground}"/>
+            <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
+        <!-- Style cho DataGrid Row -->
+        <Style TargetType="DataGridRow" BasedOn="{StaticResource MaterialDesignDataGridRow}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource MaterialDesignSelection}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!--Header-->
+        <Grid Grid.Row="0" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Tiêu đề -->
+            <TextBlock Grid.Column="0" 
+                       Text="Danh sách cơ hội bán hàng"
+                       Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                       VerticalAlignment="Center"
+                       Margin="0,0,32,0"/>
+
+            <!-- Search box và Filter button -->
+            <StackPanel Grid.Column="1" 
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <TextBox x:Name="SearchTextBox"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         materialDesign:HintAssist.Hint="Tìm kiếm..."
+                         materialDesign:TextFieldAssist.HasLeadingIcon="True"
+                         materialDesign:TextFieldAssist.LeadingIcon="Search"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         Width="350"
+                         VerticalAlignment="Center"
+                         Margin="0,0,8,0">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding SearchCommand}" />
+                    </TextBox.InputBindings>
+                </TextBox>
+
+                <!-- Button Filter theo giai đoạn -->
+                <Button x:Name="FilterButton"
+                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                        Height="40"
+                        Padding="12,0"
+                        VerticalAlignment="Center"
+                        ToolTip="Lọc theo giai đoạn"
+                        Click="FilterButton_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="FilterOutline" 
+                                                 Width="20" Height="20"
+                                                 VerticalAlignment="Center"
+                                                 Margin="0,0,4,0"/>
+                        <TextBlock Text="Lọc" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <Button.ContextMenu>
+                        <ContextMenu Style="{StaticResource MaterialDesignContextMenu}">
+                            <MenuItem Header="Tất cả" 
+                  Command="{Binding FilterByStageCommand}"
+                  CommandParameter="0"/>
+                            <MenuItem Header="Khảo sát nhu cầu" 
+                  Command="{Binding FilterByStageCommand}"
+                  CommandParameter="1"/>
+                            <MenuItem Header="Đàm phán" 
+                  Command="{Binding FilterByStageCommand}"
+                  CommandParameter="2"/>
+                            <MenuItem Header="Chốt hợp đồng" 
+                  Command="{Binding FilterByStageCommand}"
+                  CommandParameter="3"/>
+                            <MenuItem Header="Thành công" 
+                  Command="{Binding FilterByStageCommand}"
+                  CommandParameter="4"/>
+                            <MenuItem Header="Thất bại" 
+                  Command="{Binding FilterByStageCommand}"
+                  CommandParameter="5"/>
+                        </ContextMenu>
+                    </Button.ContextMenu>
+                </Button>
+            </StackPanel>
+
+            <Button Grid.Column="2"
+         Margin="5,0,5,0"
+         Command="{Binding ExportCommand}"
+         Content="Xuất dữ liệu"
+         Style="{StaticResource MaterialDesignOutlinedButton}"
+         materialDesign:ButtonAssist.CornerRadius="4"
+         Height="40"
+         Padding="24,0"
+         VerticalAlignment="Center"/>
+
+            <!-- Button Tạo mới -->
+            <Button Grid.Column="3"
+                    x:Name="CreateNewButton"
+                    Command="{Binding CreateNewCommand}"
+                    Content="Tạo mới"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    materialDesign:ButtonAssist.CornerRadius="4"
+                    Height="40"
+                    Padding="24,0"
+                    VerticalAlignment="Center"/>
+        </Grid>
+
+        <Border Grid.Row="1"
+                Margin="8" Padding="16"
+                CornerRadius="2"
+                materialDesign:ElevationAssist.Elevation="Dp4">
+            <DataGrid x:Name="OpportunityDataGrid"
+                      ItemsSource="{Binding Opportunities}"
+                      Style="{StaticResource MaterialDesignDataGrid}"
+                      BorderBrush="Gray"
+                      BorderThickness="1"
+                      GridLinesVisibility="All"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      HeadersVisibility="Column"
+                      HorizontalGridLinesBrush="{DynamicResource MaterialDesignDivider}"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Auto"
+                      FontSize="14"
+                      SelectedItem="{Binding SelectedOpportunity}">
+         
+                <DataGrid.Columns>
+                    <!-- STT -->
+                    <DataGridTextColumn Header="STT" 
+                                        Binding="{Binding Index}"
+                                        Width="60"
+                                        IsReadOnly="True"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+
+                    <!-- CheckBox -->
+                    <DataGridCheckBoxColumn Header="" 
+                                            Binding="{Binding IsSelected}"
+                                            Width="50"
+                                            ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"/>
+
+                    <!-- Mã -->
+                    <DataGridTextColumn Header="Mã" 
+                                        Binding="{Binding OpportunityCode}"
+                                        Width="100"
+                                        IsReadOnly="True"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+
+                    <!-- Cơ hội bán hàng -->
+                    <DataGridTextColumn Header="Cơ hội bán hàng" 
+                                        Binding="{Binding OpportunityName}"
+                                        Width="200"
+                                        IsReadOnly="True"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+
+                    <!-- Giai đoạn -->
+                    <DataGridTextColumn Header="Giai đoạn" 
+                                        Binding="{Binding OpportunityStatus.Name}"
+                                        Width="130"
+                                        IsReadOnly="True"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+
+                    <!-- Khách hàng -->
+                    <DataGridTextColumn Header="Khách hàng" 
+                                        Binding="{Binding Customer.Name}"
+                                        Width="160"
+                                        IsReadOnly="True"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+
+                    <!-- Lãi dự kiến -->
+                    <DataGridTextColumn Header="Lãi dự kiến (VNĐ)" 
+                                        Binding="{Binding ExpectedPrice, Converter={StaticResource CurrencyFormatConverter}}"
+                                        Width="130"
+                                        IsReadOnly="True">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                <Setter Property="HorizontalAlignment" Value="Right"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- Lãi thực tế -->
+                    <DataGridTextColumn Header="Lãi thực tế (VNĐ)" 
+                                        Binding="{Binding RealPrice, Converter={StaticResource CurrencyFormatConverter}}"
+                                        Width="130"
+                                        IsReadOnly="True">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                <Setter Property="HorizontalAlignment" Value="Right"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- Dịch vụ 
+                    <DataGridTextColumn Header="Dịch vụ" 
+                                        Binding="{Binding ProductName}"
+                                        Width="150"
+                                        IsReadOnly="True"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>-->
+
+                  <!--  <DataGridTemplateColumn Header="Dịch vụ" Width="150">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox ItemsSource="{Binding Products}"
+                      DisplayMemberPath="ProductName"
+                      SelectedIndex="0"
+                      IsHitTestVisible="False"
+                      Focusable="False"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn> -->
+
+                    <!-- Ngày bắt đầu -->
+                    <DataGridTextColumn Header="Ngày bắt đầu" 
+                                        Binding="{Binding CreateDate, StringFormat=dd/MM/yyyy}"
+                                        Width="120"
+                                        IsReadOnly="True"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+
+                    <!-- Ngày đóng -->
+                    <DataGridTextColumn Header="Ngày đóng" 
+                                        Binding="{Binding EndDate, StringFormat=dd/MM/yyyy}"
+                                        Width="*"
+                                        IsReadOnly="True"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+
+                </DataGrid.Columns>
+
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <i:InvokeCommandAction Command="{Binding OpenDetailCommand}"
+                                               CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </DataGrid>
+        </Border>
+
+        <!--Pagination -->
+        <Grid Grid.Row="2" Margin="0,16,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Thông tin tổng số -->
+            <TextBlock Grid.Column="0"
+                       x:Name="TotalRecordsText"
+                       Text="{Binding TotalRecordsText}"
+                       Style="{StaticResource MaterialDesignBody2TextBlock}"
+                       VerticalAlignment="Center"/>
+
+            <!-- Nút phân trang -->
+            <StackPanel Grid.Column="1" 
+                        Orientation="Horizontal" 
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <Button x:Name="FirstPageButton"
+                        Command="{Binding FirstPageCommand}"
+                        Content="&lt;&lt;"
+                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                        Width="40" Height="32"
+                        Margin="2"/>
+
+                <Button x:Name="PreviousPageButton"
+                        Command="{Binding PreviousPageCommand}"
+                        Content="&lt;"
+                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                        Width="40" Height="32"
+                        Margin="2"/>
+
+                <TextBox x:Name="PageNumberTextBox"
+                         Text="{Binding CurrentPage, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         Width="60" Height="36"
+                         FontSize="16"
+                         FontWeight="Medium"
+                         Padding="0,4,0,4"
+                         Margin="8,0"
+                         HorizontalContentAlignment="Center"
+                         VerticalContentAlignment="Center"
+                         KeyDown="PageNumberTextBox_KeyDown"
+                         IsReadOnly="True"/>
+
+                <Button x:Name="NextPageButton"
+                        Command="{Binding NextPageCommand}"
+                        Content=">"
+                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                        Width="40" Height="32"
+                        Margin="2"/>
+
+                <Button x:Name="LastPageButton"
+                        Command="{Binding LastPageCommand}"
+                        Content="&gt;&gt;"
+                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                        Width="40" Height="32"
+                        Margin="2"/>
+            </StackPanel>
+
+            <!-- Records per page -->
+            <StackPanel Grid.Column="2" 
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center">
+                <TextBlock Text="Hiển thị"
+                           Style="{StaticResource MaterialDesignBody2TextBlock}"
+                           VerticalAlignment="Center"
+                           Margin="0,0,8,0"/>
+
+                <ComboBox x:Name="RecordsPerPageComboBox"
+                          ItemsSource="{x:Static viewModels:OpportunityManagementViewModel.RecordsPerPageOptions}"
+                          SelectedValue="{Binding RecordsPerPage}"
+                          Style="{StaticResource MaterialDesignComboBox}"
+                          Width="80"
+                          Height="32"
+                          SelectedIndex="0"/>
+
+                <TextBlock Text="bản ghi/trang"
+                           Style="{StaticResource MaterialDesignBody2TextBlock}"
+                           VerticalAlignment="Center"
+                           Margin="8,0,0,0"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

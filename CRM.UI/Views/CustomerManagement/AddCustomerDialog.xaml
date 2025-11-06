@@ -1,0 +1,242 @@
+﻿<Window x:Class="CRM.UI.Views.CustomerManagement.AddCustomerDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CRM.UI.Views.LeadManagement"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:converters="clr-namespace:CRM.UI.Converters"
+        mc:Ignorable="d"
+        Title="Thêm khách hàng"
+        Height="600" Width="600"
+         WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+        <converters:StringToIntConverter x:Key="StringToIntConverter"/>
+
+        <Style x:Key="MaterialCard" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" Opacity="0.2" BlurRadius="20" ShadowDepth="5"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SectionHeader" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="#2196F3"/>
+            <Setter Property="Margin" Value="0,16,0,8"/>
+        </Style>
+
+        <Style x:Key="MaterialTextBox" TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+            <Setter Property="materialDesign:HintAssist.IsFloating" Value="True"/>
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="Margin" Value="0,8"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+        <Style x:Key="MaterialComboBox" TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
+            <Setter Property="materialDesign:HintAssist.IsFloating" Value="True"/>
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="Margin" Value="0,8"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+        <Style x:Key="MaterialDatePicker" TargetType="DatePicker" BasedOn="{StaticResource MaterialDesignOutlinedDatePicker}">
+            <Setter Property="materialDesign:HintAssist.IsFloating" Value="True"/>
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="Margin" Value="0,8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="SelectedDateFormat" Value="Short"/>
+            <Setter Property="Language" Value="vi-VN"/>
+            <Setter Property="CalendarStyle" Value="{StaticResource MaterialCalendarNoHeaderStyle}"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Grid Grid.Row="0" Background="#2196F3" Height="60">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="47*"/>
+                    <ColumnDefinition Width="553*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Thêm khách hàng" 
+                               Grid.Column="0"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Left"
+                               Margin="24,0,0,0"
+                               FontSize="20"
+                               FontWeight="Medium"
+                               Foreground="White" Grid.ColumnSpan="2"/>
+            </Grid>
+
+            <!-- Content -->
+            <ScrollViewer Grid.Row="1" 
+                            VerticalScrollBarVisibility="Hidden"
+                            Margin="24,16">
+                <StackPanel>
+
+                    <!-- Thông tin khách hàng -->
+                    <TextBlock Text="THÔNG TIN KHÁCH HÀNG" Style="{StaticResource SectionHeader}"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBox Grid.Row="0" Grid.Column="0"
+                                     Style="{StaticResource MaterialTextBox}"
+                                     materialDesign:HintAssist.Hint="Tên khách hàng"
+                                     Padding="8,4,8,4"
+                                     Margin="0,8,8,8"
+                                     VerticalContentAlignment="Center"
+                                     Text="{Binding CustomerName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     />
+
+                        <ComboBox Grid.Column="1" Grid.Row="0"
+                               Style="{StaticResource MaterialComboBox}"
+                               materialDesign:HintAssist.Hint="Nhân sự phụ trách"
+                               Margin="8,8,0,8"
+                                  Padding="8,4,8,4"
+                                  IsEditable="True"
+                                    TextSearch.TextPath="Name"
+                                  DisplayMemberPath="Name"
+                                  ItemsSource="{Binding EmployeeSuggestions}"
+                                  SelectedItem="{Binding SelectedEmployee, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  StaysOpenOnEdit="True"
+                                  IsTextSearchEnabled="False"
+                                  IsDropDownOpen="{Binding IsEmployeeDropDownOpen, Mode=TwoWay}">
+                            <ComboBox.Text>
+                                <Binding Path="EmployeeSearchKeyword"
+                                 Mode="TwoWay"
+                                 UpdateSourceTrigger="PropertyChanged"/>
+                            </ComboBox.Text>
+
+                        </ComboBox>
+
+                        <ComboBox Grid.Column="0" Grid.Row="1"
+                               Style="{StaticResource MaterialComboBox}"
+                               materialDesign:HintAssist.Hint="Giới tính"
+                               Margin="0,8,8,8"
+                                  Padding="8,4,8,4"
+                               ItemsSource="{Binding GenderOptions}"
+                           SelectedValue="{Binding GenderId}"
+                           SelectedValuePath="Id"
+                           DisplayMemberPath="Name"/>
+
+                        <TextBox Grid.Row="1" Grid.Column="1"
+                           Style="{StaticResource MaterialTextBox}"
+                           materialDesign:HintAssist.Hint="Căn cước công dân"
+                           Padding="8,4,8,4"
+                           Margin="8,8,0,8"
+                           VerticalContentAlignment="Center"
+                           Text="{Binding CustomerIdentityCard, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"                                     
+                            />
+
+                        <TextBox Grid.Row="2" Grid.Column="0"
+                           Style="{StaticResource MaterialTextBox}"
+                           materialDesign:HintAssist.Hint="Số điện thoại"
+                           Padding="8,4,8,4"
+                           Margin="0,8,8,8"
+                           VerticalContentAlignment="Center"
+                           Text="{Binding CustomerPhone, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"                                     
+                           />
+
+                        <TextBox Grid.Row="2" Grid.Column="1"
+                           Style="{StaticResource MaterialTextBox}"
+                           materialDesign:HintAssist.Hint="Email"
+                           Padding="8,4,8,4"
+                           Margin="8,8,0,8"
+                           VerticalContentAlignment="Center"
+                           Text="{Binding CustomerEmail, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"                                     
+                            />
+
+                        <ComboBox Grid.Column="0" Grid.Row="3"
+                                   Style="{StaticResource MaterialComboBox}"
+                                   materialDesign:HintAssist.Hint="Loại khách hàng"
+                                   Margin="0,8,8,8"
+                                      Padding="8,4,8,4"
+                                  ItemsSource="{Binding CustomerTypeOptions}"
+                                      SelectedValue="{Binding CustomerTypeId}"
+                                      SelectedValuePath="Id"
+                                      DisplayMemberPath="Name"/>
+
+                        <TextBox Grid.Row="3" Grid.Column="1"
+                                   Style="{StaticResource MaterialTextBox}"
+                                   materialDesign:HintAssist.Hint="Địa chỉ"
+                                   Padding="8,4,8,4"
+                                   Margin="8,8,0,8"
+                                   VerticalContentAlignment="Center"
+                                   Text="{Binding CustomerAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"                                     
+    />
+                        <TextBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+                                 Height="80"
+                                   Style="{StaticResource MaterialTextBox}"
+                                   materialDesign:HintAssist.Hint="Mô tả"
+                                   Padding="8,4,8,4"
+                                   Margin="0,8,8,8"
+                                   VerticalContentAlignment="Center"
+                                 AcceptsReturn="True"
+                                 TextWrapping="Wrap"
+                                   Text="{Binding CustomerDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"                                     
+                                    />
+
+                    </Grid>
+
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Footer -->
+            <Border Grid.Row="2" 
+                       Background="#FAFAFA"
+                       Height="72">
+                <StackPanel Orientation="Horizontal" 
+                              HorizontalAlignment="Right"
+                              VerticalAlignment="Center"
+                              Margin="24,0">
+
+                    <Button Content="HỦY"
+                              Style="{StaticResource MaterialDesignOutlinedButton}"
+                              Width="100"
+                              Height="40"
+                              Margin="0,0,16,0"
+                              Command="{Binding CancelCommand}"/>
+
+                    <Button Content="Lưu"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            Width="100" Height="40"
+                            Margin="0,0,16,0"
+                            HorizontalAlignment="Right"
+                            IsEnabled="{Binding CanSave}"
+                            Command="{Binding SaveCommand}"/>
+                </StackPanel>
+            </Border>
+
+        </Grid>
+    </Grid>
+</Window>

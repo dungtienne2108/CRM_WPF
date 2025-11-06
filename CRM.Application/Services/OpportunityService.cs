@@ -1,0 +1,354 @@
+﻿using AutoMapper;
+using CRM.Application.Dtos.Customer;
+using CRM.Application.Dtos.Employee;
+using CRM.Application.Dtos.Lead;
+using CRM.Application.Dtos.Opportunity;
+using CRM.Application.Interfaces.Opportunity;
+using CRM.Domain.Filters;
+using CRM.Domain.Interfaces;
+using CRM.Domain.Models;
+using CRM.Shared.Results;
+using Microsoft.Extensions.Caching.Memory;
+
+namespace CRM.Application.Services
+{
+    public class OpportunityService(
+        IRepository<OpportunityStage> opportunityStageRepository,
+        IOpportunityRepository opportunityRepository,
+        IProductRepository productRepository,
+        IUnitOfWork unitOfWork,
+        IMapper mapper,
+        IMemoryCache memoryCache) : IOpportunityService
+    {
+        public async Task<Result> AddItemToOpportunityAsync(AddOpportunityItemRequest request)
+        {
+            try
+            {
+                var opportunity = await opportunityRepository.GetOpportunityByIdAsync(request.OpportunityId);
+                if (opportunity == null)
+                {
+                    return Result.Failure(new("opportunity_not_found", "Không tìm thấy cơ hội"));
+                }
+
+                var existingProductInItems = opportunity.OpportunityItems.FirstOrDefault(i => i.ProductId == request.ProductId);
+                if (existingProductInItems != null)
+                {
+                    return Result.Failure(new("", "Sản phẩm đã tồn tại trong cơ hội"));
+                }
+
+                var product = await productRepository.GetByIdAsync(request.ProductId);
+                if (product != null && product.ProductStatusId == 2)
+                {
+                    return Result.Failure(new("", "Sản phẩm đã được giữ chỗ"));
+                }
+
+                opportunity.OpportunityItems.Add(
+                    new OpportunityItem
+                    {
+                        Opportunity = opportunity,
+                        ProductId = request.ProductId,
+                        SalePrice = request.Price,
+                        Quantity = 1
+                    });
+
+                //product.ProductStatusId = 2; // chuyển sản phẩm thành đã giữ chỗ (id = 2)
+
+                var added = await unitOfWork.SaveChangesAsync();
+                if (added > 0)
+                {
+                    return Result.Success();
+                }
+                else
+                {
+                    return Result.Failure(new("", "thêm sản phẩm vào thất bại"));
+                }
+            }
+            catch { throw; }
+        }
+
+        public async Task<OpportunityDto> AddOpportunityAsync(AddOpportunityRequest request)
+        {
+            var opportunity = new Opportunity
+            {
+                OpportunityName = request.OpportunityName,
+                OpportunityDescription = request.OpportunityDescription,
+                OpportunityStageId = request.OpportunityStatusId,
+                CustomerId = request.CustomerId,
+                EmployeeId = request.EmployeeId,
+                CreateDate = request.StartDate,
+                EndDate = request.EndDate.HasValue ? DateOnly.FromDateTime(request.EndDate.Value) : default,
+                CreateBy = request.EmployeeId.ToString()
+            };
+
+            var opportunityItems = request.OpportunityItems.Select(item => new OpportunityItem
+            {
+                ProductId = item.ProductId,
+                Quantity = item.Quantity,
+                SalePrice = item.Price,
+                ExceptedProfit = item.ExpectedPrice
+            }).ToList();
+
+            opportunity.OpportunityItems = opportunityItems;
+
+            // chuyển sản phẩm thành đã giữ chỗ (id = 2)
+            foreach (var item in opportunityItems)
+            {
+                var product = await productRepository.GetByIdAsync(item.ProductId.Value);
+                if (product != null)
+                {
+                    product.ProductStatusId = 2;
+                }
+            }
+
+            await opportunityRepository.AddAsync(opportunity);
+            await unitOfWork.SaveChangesAsync();
+
+            //memoryCache.Remove($"Opportunity_{opportunity.OpportunityId}");
+
+            return new OpportunityDto
+            {
+                OpportunityId = opportunity.OpportunityId,
+                OpportunityCode = opportunity.OpportunityCode,
+                OpportunityName = opportunity.OpportunityName,
+                OpportunityDescription = opportunity.OpportunityDescription,
+                EndDate = opportunity.EndDate,
+                CreateDate = opportunity.CreateDate,
+                Customer = opportunity.Customer != null ? mapper.Map<CustomerDto>(opportunity.Customer) : null!,
+                Employee = opportunity.Employee != null ? mapper.Map<EmployeeDto>(opportunity.Employee) : null!,
+                OpportunityStatus = opportunity.OpportunityStage != null ? new OpportunityStatusOption
+                {
+                    Id = opportunity.OpportunityStage.OpportunityStageId,
+                    Name = opportunity.OpportunityStage.OpportunityStageName
+                } : null!,
+            };
+        }
+
+        public async Task<Result> DeleteOpportunityAsync(int opportunityId)
+        {
+            try
+            {
+                var opportunity = await opportunityRepository.GetByIdAsync(opportunityId);
+
+                if (opportunity == null)
+                {
+                    return Result.Failure(new("not_found", "Không tìm thấy cơ hội bán hàng"));
+                }
+
+                opportunityRepository.Remove(opportunity);
+
+                var deleted = await unitOfWork.SaveChangesAsync();
+
+                if (deleted > 0)
+                {
+                    return Result.Success();
+                }
+
+                return Result.Failure(new("faield", "lỗi"));
+            }
+            catch { throw; }
+        }
+
+        public async Task<PagedResult<OpportunityDto>> GetAllOpportunitiesAsync(GetOpportunityRequest request)
+        {
+            //if (memoryCache.TryGetValue($"Opportunities_{request.Keyword}_{request.OpportunityStageId}_{request.PageNumber}_{request.PageSize}", out PagedResult<OpportunityDto>? cachedResult))
+            //{
+            //    return cachedResult;
+            //}
+
+            var filter = new OpportunityFilter
+            {
+                Keyword = request.Keyword,
+                OpportunityStageId = request.OpportunityStageId,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize
+            };
+
+            var pagedOpportunities = await opportunityRepository.GetAllOpportunitiesAsync(filter);
+
+            var opportunityDtos = mapper.Map<List<OpportunityDto>>(pagedOpportunities.Items);
+
+            var pagedResult = new PagedResult<OpportunityDto>(opportunityDtos, pagedOpportunities.TotalCount, pagedOpportunities.PageNumber, pagedOpportunities.PageSize);
+
+            //memoryCache.Set($"Opportunities_{request.Keyword}_{request.OpportunityStageId}_{request.PageNumber}_{request.PageSize}", pagedResult, TimeSpan.FromMinutes(1));
+
+            return pagedResult;
+        }
+
+        public async Task<List<OpportunityStatusOption>> GetAllOpportunityStatusesAsync()
+        {
+            //if (memoryCache.TryGetValue("OpportunityStatuses", out List<OpportunityStatusOption>? cachedStatuses))
+            //{
+            //    return cachedStatuses;
+            //}
+
+            var stages = await opportunityStageRepository.GetAllAsync();
+            var opportunityStageOptions = stages
+                .Select(s => new OpportunityStatusOption
+                {
+                    Id = s.OpportunityStageId,
+                    Name = s.OpportunityStageName
+                })
+                .ToList();
+
+            //memoryCache.Set("OpportunityStatuses", opportunityStageOptions, TimeSpan.FromHours(1));
+
+            return opportunityStageOptions;
+        }
+
+        public async Task<Result<IEnumerable<OpportunityDto>>> GetOpportunitiesByCustomerIdAsync(int customerId)
+        {
+            try
+            {
+                var oppotunities = await opportunityRepository.GetOpportunitiesByCustomerIdAsync(customerId);
+
+                if (oppotunities.Count() == 0)
+                {
+                    return Result.Failure<IEnumerable<OpportunityDto>>(new("NOT_FOUND", "Không có cơ hội nào gắn với khashc hàng"));
+                }
+
+                var opportunitiesDto = mapper.Map<List<OpportunityDto>>(oppotunities);
+
+                return opportunitiesDto;
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<IEnumerable<OpportunityDto>>(new("FAILED", ex.Message));
+            }
+        }
+
+        public async Task<Result<OpportunityDto>> GetOpportunityByIdAsync(int id)
+        {
+            try
+            {
+                //if (memoryCache.TryGetValue($"Opportunity_{id}", out OpportunityDto? cachedOpportunity))
+                //{
+                //    return Result.Success(cachedOpportunity);
+                //}
+
+                var opportunity = await opportunityRepository.GetOpportunityByIdAsync(id);
+
+                if (opportunity == null)
+                {
+                    return Result.Failure<OpportunityDto>(new Error("NOT_FOUND", "Cơ hội không tồn tại"));
+                }
+
+                var opportunityDto = mapper.Map<OpportunityDto>(opportunity);
+
+                //memoryCache.Set($"Opportunity_{id}", opportunityDto, TimeSpan.FromMinutes(10));
+
+                return Result.Success(opportunityDto);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<OpportunityDto>(new Error("RETRIEVE_FAILED", $"Lấy thông tin cơ hội thất bại: {ex.Message}"));
+            }
+        }
+
+        public async Task<Result> RemoveProductFromOpportunityAsync(int opportunityId, int productId)
+        {
+            try
+            {
+                var opportunity = await opportunityRepository.GetOpportunityByIdAsync(opportunityId);
+                if (opportunity == null)
+                {
+                    return Result.Failure(new("OPPORTUNITY_NOT_FOUND", "Cơ hội không tồn tại"));
+                }
+
+                var itemToRemove = opportunity.OpportunityItems.FirstOrDefault(i => i.ProductId == productId);
+                if (itemToRemove == null)
+                {
+                    return Result.Failure(new("ITEM_NOT_FOUND", "Sản phẩm không tồn tại trong cơ hội"));
+                }
+
+                opportunity.OpportunityItems.Remove(itemToRemove);
+                var removed = await unitOfWork.SaveChangesAsync();
+                if (removed > 0)
+                {
+                    //memoryCache.Remove($"Opportunity_{opportunityId}");
+                    return Result.Success();
+                }
+                else
+                {
+                    return Result.Failure(new("REMOVE_FAILED", "Xóa sản phẩm khỏi cơ hội thất bại"));
+                }
+            }
+            catch { throw; }
+        }
+
+        public async Task<Result<OpportunityDto>> UpdateOpportunityAsync(UpdateOpportunityRequest request)
+        {
+            try
+            {
+                var opportunity = await opportunityRepository.GetByIdAsync(request.OpportunityId);
+                if (opportunity == null)
+                {
+                    return Result.Failure<OpportunityDto>(new Error("OPPORTUNITY_NOT_FOUND", "Cơ hội không tồn tại"));
+                }
+
+                opportunity.OpportunityName = request.OpportunityName;
+                opportunity.CreateDate = request.StartDate;
+                opportunity.EndDate = request.EndDate.HasValue ? DateOnly.FromDateTime(request.EndDate.Value) : DateOnly.MaxValue;
+                opportunity.OpportunityDescription = request.Description;
+
+                opportunityRepository.Update(opportunity);
+                var updated = await unitOfWork.SaveChangesAsync();
+                if (updated == 0)
+                {
+                    return Result.Failure<OpportunityDto>(new Error("UPDATE_FAILED", "Cập nhật cơ hội thất bại"));
+                }
+                var updatedOpportunity = mapper.Map<OpportunityDto>(opportunity);
+
+                //memoryCache.Remove($"Opportunity_{request.OpportunityId}");
+
+                return Result.Success(updatedOpportunity);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<OpportunityDto>(new Error("UPDATE_FAILED", $"Cập nhật cơ hội thất bại: {ex.Message}"));
+            }
+        }
+
+        public async Task<Result<OpportunityDto>> UpdateOpportunityStageAsync(int opportunityId, int newStageId)
+        {
+            try
+            {
+                var opportunity = await opportunityRepository.GetOpportunityByIdAsync(opportunityId);
+
+                if (opportunity == null)
+                {
+                    return Result.Failure<OpportunityDto>(new Error("OPPORTUNITY_NOT_FOUND", "Cơ hội không tồn tại"));
+                }
+
+                opportunity.OpportunityStageId = newStageId;
+
+                opportunityRepository.Update(opportunity);
+
+
+                if (opportunity.OpportunityStageId == 1 || opportunity.OpportunityStageId == 4)
+                {
+                    // chuyển sản phẩm trong cơ hội thành Đã giữ chỗ (id = 2)
+                    foreach (var item in opportunity.OpportunityItems)
+                    {
+                        var product = await productRepository.GetByIdAsync(item.ProductId.Value);
+                        if (product != null)
+                        {
+                            product.ProductStatusId = 2;
+                        }
+                    }
+                }
+
+                await unitOfWork.SaveChangesAsync();
+
+                var updatedOpportunity = mapper.Map<OpportunityDto>(opportunity);
+
+                //memoryCache.Remove($"Opportunity_{opportunityId}");
+
+                return Result.Success(updatedOpportunity);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<OpportunityDto>(new Error("UPDATE_FAILED", $"Cập nhật trạng thái cơ hội thất bại: {ex.Message}"));
+            }
+        }
+    }
+}

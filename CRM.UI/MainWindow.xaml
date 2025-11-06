@@ -1,0 +1,449 @@
+﻿<Window x:Class="CRM.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:local="clr-namespace:CRM.UI"
+        mc:Ignorable="d"
+        Title="CRM System"
+        WindowState="Maximized"
+        ResizeMode="CanResize"
+        WindowStyle="SingleBorderWindow"
+        WindowStartupLocation="CenterScreen"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}">
+
+    <Window.Resources>
+        <Storyboard x:Key="ExpandSidebar">
+            <DoubleAnimation Storyboard.TargetProperty="Width"
+                           To="240" Duration="0:0:0.3">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+
+        <Storyboard x:Key="CollapseSidebar">
+            <DoubleAnimation Storyboard.TargetProperty="Width"
+                           To="60" Duration="0:0:0.3">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+
+        <!-- Text Fade Animation -->
+        <Storyboard x:Key="FadeOutText">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                           To="0" Duration="0:0:0.2"/>
+        </Storyboard>
+
+        <Storyboard x:Key="FadeInText">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                           To="1" Duration="0:0:0.2" BeginTime="0:0:0.1"/>
+        </Storyboard>
+        
+        <!-- Styles -->
+        <Style x:Key="SidebarMenuButton" TargetType="RadioButton">
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <Grid>
+                                <Rectangle x:Name="SelectionIndicator"
+                                         Width="3"
+                                         HorizontalAlignment="Left"
+                                         Fill="{DynamicResource PrimaryHueMidBrush}"
+                                         Visibility="Collapsed"/>
+
+                                <!-- Hover Background -->
+                                <Rectangle x:Name="HoverBackground"
+                                         Fill="{DynamicResource MaterialDesignDivider}"
+                                         Opacity="0"/>
+
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                Margin="0"/>
+                            </Grid>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="HoverBackground"
+                                                           Storyboard.TargetProperty="Opacity"
+                                                           To="0.08" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="HoverBackground"
+                                                           Storyboard.TargetProperty="Opacity"
+                                                           To="0" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                            
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="SelectionIndicator" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="border" Property="Background" 
+                                       Value="{DynamicResource MaterialDesignSelection}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="MenuSectionHeader" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBodyLight}"/>
+            <Setter Property="Margin" Value="16,16,16,8"/>
+            <Setter Property="Text" Value="Uppercase"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!--Sidebar-->
+        <Border x:Name="Sidebar"
+                Grid.Column="0"
+                Width="240"
+                Background="{DynamicResource MaterialDesignCardBackground}">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="8" Direction="0" Opacity="0.15" ShadowDepth="0"/>
+            </Border.Effect>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" Height="64">
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="16,0">
+                        <!-- Logo/App Icon -->
+                        <Border x:Name="AppIcon"
+                                Margin="36,0,0,0"
+                                Visibility="Visible"
+                                Width="Auto" Height="48"
+                              Background="{DynamicResource PrimaryHueMidBrush}"
+                              CornerRadius="8"
+                              ClipToBounds="True"
+                                VerticalAlignment="Center">
+                            <Image Source="pack://application:,,,/CRM.UI;component/Resources/Logo FLC Group H.png"
+                                                   Stretch="UniformToFill"
+                                                   HorizontalAlignment="Left"
+                                                   VerticalAlignment="Center"/>
+                        </Border>
+
+                      <!--  <TextBlock x:Name="AppTitle"
+                                 Text="FLC CRM"
+                                 FontSize="18"
+                                 FontWeight="Medium"
+                                 VerticalAlignment="Center"
+                                 Margin="12,0,0,0"/> -->
+                    </StackPanel>
+
+                    <!-- Menu Toggle Button -->
+                    <Button x:Name="MenuToggleButton"
+                          Style="{StaticResource MaterialDesignIconButton}"
+                          HorizontalAlignment="Right"
+                          VerticalAlignment="Center"
+                          Margin="0,0,12,0"
+                          Width="40" Height="40"
+                          Click="MenuToggleButton_Click">
+                        <materialDesign:PackIcon Kind="Menu" Width="24" Height="24"/>
+                    </Button>
+                </Grid>
+
+                <ScrollViewer Grid.Row="1"
+                              VerticalScrollBarVisibility="Hidden"
+                              HorizontalScrollBarVisibility="Hidden">
+                    <StackPanel>
+                        <TextBlock x:Name="MainSectionHeader" 
+                                 Text="Main"
+                                 Style="{StaticResource MenuSectionHeader}"/>
+
+                        <RadioButton Name="DashboardMenu"
+                                   Style="{StaticResource SidebarMenuButton}"
+                                   IsChecked="True"
+                                   Click="MenuItem_Click">
+                            <StackPanel Orientation="Horizontal" Margin="16,0">
+                                <materialDesign:PackIcon Kind="ViewDashboardOutline" 
+                                                       Width="24" Height="24"
+                                                       VerticalAlignment="Center"/>
+                                <TextBlock x:Name="DashboardText"
+                                         Text="Trang chủ" 
+                                         Margin="24,0,0,0"
+                                         VerticalAlignment="Center"
+                                         FontSize="14"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton Name="LeadManagement"
+                                   Style="{StaticResource SidebarMenuButton}"
+                                   Click="MenuItem_Click">
+                            <StackPanel Orientation="Horizontal" Margin="16,0">
+                                <materialDesign:PackIcon Kind="AccountSearchOutline" 
+                                                       Width="24" Height="24"
+                                                       VerticalAlignment="Center"/>
+                                <TextBlock x:Name="AttendanceText"
+                                         Text="Khách hàng tiềm năng" 
+                                         Margin="24,0,0,0"
+                                         VerticalAlignment="Center"
+                                         FontSize="14"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton Name="CustomerManagement"
+                                   Style="{StaticResource SidebarMenuButton}"
+                                   Click="MenuItem_Click">
+                            <StackPanel Orientation="Horizontal" Margin="16,0">
+                                <materialDesign:PackIcon Kind="AccountMultipleOutline" 
+                                                       Width="24" Height="24"
+                                                       VerticalAlignment="Center"/>
+                                <TextBlock x:Name="ScheduleText"
+                                         Text="Khách hàng" 
+                                         Margin="24,0,0,0"
+                                         VerticalAlignment="Center"
+                                         FontSize="14"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton Name="ContactManagement"
+                                   Style="{StaticResource SidebarMenuButton}"
+                                   Click="MenuItem_Click">
+                            <StackPanel Orientation="Horizontal" Margin="16,0">
+                                <materialDesign:PackIcon Kind="AccountBoxOutline" 
+                               Width="24" Height="24"
+                               VerticalAlignment="Center"/>
+                                <TextBlock x:Name="BroadcastText"
+                                         Text="Liên hệ" 
+                                         Margin="24,0,0,0"
+                                         VerticalAlignment="Center"
+                                         FontSize="14"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton Name="OpportunityManagement"
+                                   Style="{StaticResource SidebarMenuButton}"
+                                   Click="MenuItem_Click">
+                            <StackPanel Orientation="Horizontal" Margin="16,0">
+                                <materialDesign:PackIcon Kind="HandshakeOutline" 
+                                                       Width="24" Height="24"
+                                                       VerticalAlignment="Center"/>
+                                <TextBlock x:Name="EmployeeText"
+                                         Text="Cơ hội bán hàng" 
+                                         Margin="24,0,0,0"
+                                         VerticalAlignment="Center"
+                                         FontSize="14"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton Name="DepositManagement"
+                                   Style="{StaticResource SidebarMenuButton}"
+                                   Click="MenuItem_Click">
+                            <StackPanel Orientation="Horizontal" Margin="16,0">
+                                <materialDesign:PackIcon Kind="ClipboardCheckOutline" 
+                                                       Width="24" Height="24"
+                                                       VerticalAlignment="Center"/>
+                                <TextBlock x:Name="DepartmentText"
+                                         Text="Đặt cọc" 
+                                         Margin="24,0,0,0"
+                                         VerticalAlignment="Center"
+                                         FontSize="14"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton Name="ContractManagement"
+                                   Style="{StaticResource SidebarMenuButton}"
+                                   Click="MenuItem_Click">
+                            <StackPanel Orientation="Horizontal" Margin="16,0">
+                                <materialDesign:PackIcon Kind="FileDocumentOutline" 
+                                                       Width="24" Height="24"
+                                                       VerticalAlignment="Center"/>
+                                <TextBlock x:Name="DayOffText"
+                                         Text="Hợp đồng" 
+                                         Margin="24,0,0,0"
+                                         VerticalAlignment="Center"
+                                         FontSize="14"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton Name="InvoiceManagement"
+                                   Style="{StaticResource SidebarMenuButton}"
+                                   Click="MenuItem_Click">
+                            <StackPanel Orientation="Horizontal" Margin="16,0">
+                                <materialDesign:PackIcon Kind="ReceiptTextOutline" 
+                                                       Width="24" Height="24"
+                                                       VerticalAlignment="Center"/>
+                                <TextBlock x:Name="PayrollText"
+                                         Text="Hóa đơn" 
+                                         Margin="24,0,0,0"
+                                         VerticalAlignment="Center"
+                                         FontSize="14"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton Name="PaymentManagement"
+                                   Style="{StaticResource SidebarMenuButton}"
+                                   Click="MenuItem_Click">
+                            <StackPanel Orientation="Horizontal" Margin="16,0">
+                                <materialDesign:PackIcon Kind="CreditCardOutline" 
+                                                       Width="24" Height="24"
+                                                       VerticalAlignment="Center"/>
+                                <TextBlock x:Name="ReportsText"
+                                         Text="Thanh toán" 
+                                         Margin="24,0,0,0"
+                                         VerticalAlignment="Center"
+                                         FontSize="14"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                                                <!-- Others Section -->
+                        <StackPanel Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <TextBlock x:Name="OthersSectionHeader"
+                                 Text="Quản lý"
+                                 Style="{StaticResource MenuSectionHeader}"
+                                 Margin="16,24,16,8"/>
+
+                            <RadioButton Name="EmployeeManagement"
+                                   Style="{StaticResource SidebarMenuButton}"
+                                   Click="MenuItem_Click">
+                            <StackPanel Orientation="Horizontal" Margin="16,0">
+                                <materialDesign:PackIcon Kind="AccountCogOutline" 
+                                                       Width="24" Height="24"
+                                                       VerticalAlignment="Center"/>
+                                <TextBlock x:Name="SettingsText"
+                                         Text="Quản lý nhân viên" 
+                                         Margin="24,0,0,0"
+                                         VerticalAlignment="Center"
+                                         FontSize="14"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                            <RadioButton Name="ProjectManagement"
+                                   Style="{StaticResource SidebarMenuButton}"
+                                   Click="MenuItem_Click">
+                            <StackPanel Orientation="Horizontal" Margin="16,0">
+                                <materialDesign:PackIcon Kind="FolderCogOutline" 
+                                                       Width="24" Height="24"
+                                                       VerticalAlignment="Center"/>
+                                <TextBlock x:Name="UserManagementText"
+                                         Text="Quản lý dự án" 
+                                         Margin="24,0,0,0"
+                                         VerticalAlignment="Center"
+                                         FontSize="14"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                            <RadioButton Name="HelpMenu"
+                                   Style="{StaticResource SidebarMenuButton}"
+                                   Click="MenuItem_Click">
+                            <StackPanel Orientation="Horizontal" Margin="16,0">
+                                <materialDesign:PackIcon Kind="HelpCircleOutline" 
+                                                       Width="24" Height="24"
+                                                       VerticalAlignment="Center"/>
+                                <TextBlock x:Name="HelpText"
+                                         Text="Trợ giúp" 
+                                         Margin="24,0,0,0"
+                                         VerticalAlignment="Center"
+                                         FontSize="14"/>
+                            </StackPanel>
+                        </RadioButton>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!--Bottom-->
+                <Border Grid.Row="2"
+                        BorderBrush="{DynamicResource MaterialDesignDivider}"
+                        BorderThickness="0,1,0,0">
+                    <Grid Height="64">
+                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                Height="Auto"
+                                Padding="0"
+                                Command="{Binding UserInfoCommand}">
+                            <Grid Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Button}}">
+                                <StackPanel Orientation="Horizontal" Margin="16,8">
+                                    <!-- User Avatar -->
+                                    <Border Width="40" Height="40"
+                                          CornerRadius="20"
+                                          Background="{DynamicResource SecondaryHueMidBrush}">
+                                        <materialDesign:PackIcon Kind="Account"
+                                                         Foreground="Black"
+                                                         Width="24"
+                                                         Height="24"
+                                                         HorizontalAlignment="Center"
+                                                         VerticalAlignment="Center"/>
+                                    </Border>
+
+                                    <!-- User Info -->
+                                    <StackPanel x:Name="UserInfoPanel"
+                                              Margin="12,0,0,0"
+                                              VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding CurrentAccount.EmployeeName}"
+                                                 FontSize="14"
+                                                 FontWeight="Medium"/>
+                                        <TextBlock Text="{Binding CurrentAccount.AccountName}"
+                                                 FontSize="12"
+                                                 Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+        
+        <!--Main-->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <ContentControl Content="{Binding CurrentView}"
+                            x:Name="MainContent"
+                            Grid.Row="1"
+                            Margin="24">
+                
+            </ContentControl>
+        </Grid>
+    </Grid>
+    
+    
+</Window>
