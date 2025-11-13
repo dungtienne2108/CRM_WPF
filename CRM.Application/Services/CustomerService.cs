@@ -180,7 +180,7 @@ namespace CRM.Application.Services
 
                 var pagedResult = new PagedResult<CustomerDto>(customerDtos, customers.TotalCount, customers.PageSize, customers.PageNumber);
 
-                memoryCache.Set($"CustomerList_{request.Keyword}_{request.PageNumber}_{request.PageSize}", pagedResult, TimeSpan.FromMinutes(1));
+                //memoryCache.Set($"CustomerList_{request.Keyword}_{request.PageNumber}_{request.PageSize}", pagedResult, TimeSpan.FromMinutes(1));
 
                 return pagedResult;
             }

@@ -41,6 +41,7 @@ namespace CRM.Infrastructure.Database.Repositories
                 .Include(c => c.Contact)
                 .Include(c => c.Employee)
                 .Include(c => c.Product)
+                    .ThenInclude(p => p.Project)
                 .AsSplitQuery()
                 .AsQueryable();
 

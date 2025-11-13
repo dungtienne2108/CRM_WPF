@@ -1,9 +1,9 @@
-﻿<Window x:Class="CRM.UI.Views.OpportunityManagement.AddProductToOpportunityDialog"
+﻿<Window x:Class="CRM.UI.Views.LeadManagement.AddProductToLeadDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:CRM.UI.Views.OpportunityManagement"
+        xmlns:local="clr-namespace:CRM.UI.Views.LeadManagement"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:converters="clr-namespace:CRM.UI.Converters"
         mc:Ignorable="d"
@@ -72,7 +72,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Text="Thêm sản phẩm cho cơ hội" 
+                <TextBlock Text="Thêm sản phẩm cho khách hàng tiềm năng" 
                                Grid.Column="0"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Left"

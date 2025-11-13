@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CRM.Application.Dtos.Lead;
+using CRM.Application.Dtos.Project;
 using CRM.Application.Interfaces.Leads;
 using CRM.UI.ViewModels.Base;
 using CRM.UI.Views.LeadManagement;
@@ -63,6 +64,14 @@ namespace CRM.UI.ViewModels.LeadManagement
         [NotifyDataErrorInfo]
         [Required(ErrorMessage = "Ngày kết thúc không được để trống.")]
         private DateTime? _endDate;
+
+        [ObservableProperty]
+        private ObservableCollection<ProductDto> _products;
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(DeleteProductCommand))]
+        private ProductDto? _selectedProduct;
+        [ObservableProperty]
+        private bool _isSelectedProduct = false;
 
         [ObservableProperty]
         private ObservableCollection<LeadPotentialLevelDto> _potentialLevelOptions;
@@ -180,6 +189,7 @@ namespace CRM.UI.ViewModels.LeadManagement
                 Status = Lead.Status;
                 StartDate = Lead.StartDate;
                 EndDate = Lead.EndDate;
+                Products = new ObservableCollection<ProductDto>(Lead.Products);
                 UpdateStatusSteps();
             }
         }
@@ -327,7 +337,7 @@ namespace CRM.UI.ViewModels.LeadManagement
             }
         }
 
-        private bool CanMoveToPreviousStatus => CurrentStatusIndex > 0 && CurrentStatusIndex < 2;
+        private bool CanMoveToPreviousStatus() => CurrentStatusIndex > 0 && CurrentStatusIndex < 2;
 
         [RelayCommand(CanExecute = nameof(CanMoveToPreviousStatus))]
         private async Task PreviousStatus(object parameter)
@@ -341,7 +351,7 @@ namespace CRM.UI.ViewModels.LeadManagement
             }
         }
 
-        private bool CanMoveToNextStatus => CurrentStatusIndex < StatusSteps.Count - 1;
+        private bool CanMoveToNextStatus() => CurrentStatusIndex < StatusSteps.Count - 1;
 
         [RelayCommand(CanExecute = nameof(CanMoveToNextStatus))]
         private async Task NextStatus(object parameter)
@@ -365,8 +375,59 @@ namespace CRM.UI.ViewModels.LeadManagement
             }
         }
 
+        [RelayCommand]
+        private async Task AddProductAsync()
+        {
+            var addProductToLeadViewModel = _serviceProvider.GetRequiredService<AddProductToLeadViewModel>();
+            await addProductToLeadViewModel.LoadDataAsync(LeadId);
+            var addProductToLeadDialog = new AddProductToLeadDialog(addProductToLeadViewModel);
+            addProductToLeadDialog.ShowDialog();
+            await LoadLeadAsync();
+        }
+
+        [RelayCommand(CanExecute = nameof(CanDelete))]
+        private async Task DeleteProductAsync()
+        {
+            if (SelectedProduct == null)
+            {
+                MessageBox.Show("Vui lòng chọn sản phẩm để xóa.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            var result = MessageBox.Show($"Bạn có chắc chắn xóa sản phẩm '{SelectedProduct.ProductName}' khỏi khách hàng tiềm năng?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                var deleteResult = await _leadService.RemoveProductFromLeadAsync(LeadId, SelectedProduct.ProductId);
+                if (deleteResult.IsSuccess)
+                {
+                    MessageBox.Show("Xóa sản phẩm thành công.", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+                    SelectedProduct = null;
+                    Products.Remove(SelectedProduct);
+                    await LoadLeadAsync();
+                }
+                else
+                {
+                    MessageBox.Show("Xóa sản phẩm thất bại.", "Thất bại", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        public bool CanDelete() => SelectedProduct != null;
+
         #endregion
 
+        #region Property changed
+        partial void OnSelectedProductChanged(ProductDto? value)
+        {
+            if (value != null)
+            {
+                IsSelectedProduct = true;
+            }
+            else
+            {
+                IsSelectedProduct = false;
+            }
+        }
+        #endregion
     }
 
     public class RelatedStaff

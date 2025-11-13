@@ -2,8 +2,10 @@
 using CommunityToolkit.Mvvm.Input;
 using CRM.Application.Dtos.Employee;
 using CRM.Application.Dtos.Lead;
+using CRM.Application.Dtos.Project;
 using CRM.Application.Interfaces.Employee;
 using CRM.Application.Interfaces.Leads;
+using CRM.Application.Interfaces.Project;
 using CRM.UI.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -13,6 +15,7 @@ namespace CRM.UI.ViewModels.LeadManagement
     public partial class AddLeadViewModel : ViewModelBase
     {
         private readonly ILeadService _leadService;
+        private readonly IProjectService _projectService;
         private readonly IEmployeeService _employeeService;
 
         //[ObservableProperty]
@@ -90,16 +93,39 @@ namespace CRM.UI.ViewModels.LeadManagement
         [ObservableProperty]
         private bool isValid;
 
+        [ObservableProperty]
+        private int _projectId;
+        [ObservableProperty]
+        private int _productId;
+        [ObservableProperty]
+        private decimal _price;
+
+        [ObservableProperty]
+        private ObservableCollection<ProjectDto> _projectSuggestions = new();
+        [ObservableProperty]
+        private ProjectDto? _selectedProject;
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(SearchProjectCommand))]
+        private string _projectSearchKeyword = string.Empty;
+        [ObservableProperty]
+        private bool _isProjectDropDownOpen;
+
+        [ObservableProperty]
+        private ObservableCollection<ProductDto> _productOptions = new();
+        [ObservableProperty]
+        private ProductDto? _selectedProduct;
+
         public List<LeadPotentialLevelDto> PotentialLevelOptions { get; private set; }
 
         public List<LeadStageDto> StatusOptions { get; private set; }
 
         public List<LeadSourceDto> SourceOptions { get; private set; }
 
-        public AddLeadViewModel(ILeadService leadService, IEmployeeService employeeService)
+        public AddLeadViewModel(ILeadService leadService, IEmployeeService employeeService, IProjectService projectService)
         {
             _leadService = leadService;
             _employeeService = employeeService;
+            _projectService = projectService;
             // Set default values
             Task.Run(async () =>
             {
@@ -121,6 +147,7 @@ namespace CRM.UI.ViewModels.LeadManagement
             await GetPotentialLevelAsync();
             await GetLeadStageAsync();
             await GetLeadSourceAsync();
+            await GetProjectsAsync();
         }
 
         #region Command
@@ -146,7 +173,14 @@ namespace CRM.UI.ViewModels.LeadManagement
                 StatusId = StatusId,
                 EmployeeId = SelectedEmployee.Id,
                 StartDate = StartDate,
-                EndDate = EndDate
+                EndDate = EndDate,
+                LeadItems = SelectedProduct != null ? new List<AddLeadItemRequest>
+                {
+                    new AddLeadItemRequest
+                    {
+                        ProductId = SelectedProduct.ProductId,
+                    }
+                } : null
             });
 
             if (!newLeadResult.IsSuccess)
@@ -164,6 +198,12 @@ namespace CRM.UI.ViewModels.LeadManagement
         private void Cancel()
         {
             DialogCancelled?.Invoke();
+        }
+
+        [RelayCommand]
+        private async Task SearchProjectAsync()
+        {
+            await GetProjectsAsync();
         }
 
         #endregion
@@ -227,6 +267,44 @@ namespace CRM.UI.ViewModels.LeadManagement
         #endregion
 
         #region Private Methods
+        private async Task GetProjectsAsync()
+        {
+            try
+            {
+                IsProjectDropDownOpen = true;
+                var getProjectRequest = new GetProjectRequest
+                {
+                    Keyword = ProjectSearchKeyword,
+                    PageNumber = 1,
+                    PageSize = 1000
+                };
+                var projectPaged = await _projectService.GetProjectsAsync(getProjectRequest);
+                ProjectSuggestions.Clear();
+                foreach (var project in projectPaged.Items)
+                {
+                    ProjectSuggestions.Add(project);
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private async Task GetProductsByProjectIdAsync(int projectId)
+        {
+            try
+            {
+                ProductOptions.Clear();
+                var result = await _projectService.GetProductsByProjectIdAsync(projectId);
+                foreach (var product in result)
+                {
+                    ProductOptions.Add(product);
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
 
         private async Task GetPotentialLevelAsync()
         {
@@ -331,8 +409,35 @@ namespace CRM.UI.ViewModels.LeadManagement
 
         partial void OnNameChanged(string value) => ValidateInput();
 
+        partial void OnSelectedProjectChanged(ProjectDto? value)
+        {
+            if (value != null)
+            {
+                _ = GetProductsByProjectIdAsync(value.ProjectId);
+                System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    ProjectId = value.ProjectId;
+                    ProjectSearchKeyword = value.ProjectName;
+                    IsProjectDropDownOpen = false;
 
+                }));
+            }
+        }
 
+        partial void OnProjectSearchKeywordChanged(string value)
+        {
+            if (SelectedProject != null && SelectedProject.ProjectName != value)
+                _ = GetProjectsAsync();
+        }
+
+        partial void OnSelectedProductChanged(ProductDto? value)
+        {
+            if (value != null)
+            {
+                ProductId = value.ProductId;
+                Price = value.ProductPrice.HasValue ? value.ProductPrice.Value : 0;
+            }
+        }
         #endregion
     }
 }

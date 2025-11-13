@@ -7,7 +7,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:converters="clr-namespace:CRM.UI.Converters"
         mc:Ignorable="d"
-        Title="Thêm hợp đồng"
+        Title="Thêm cơ hội bán hàng"
         Height="600" Width="600"
          WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">

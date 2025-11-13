@@ -419,6 +419,18 @@ namespace CRM.UI.ViewModels.ContractManagement
                 _ = GetContractStatusesAsync();
             }
         }
+
+        partial void OnAmountBeforeTaxChanged(decimal value)
+        {
+            AmountAfterTax = AmountBeforeTax + (AmountBeforeTax * Tax / 100);
+            Amount = AmountAfterTax - DepositAmount;
+        }
+
+        partial void OnTaxChanged(decimal value)
+        {
+            AmountAfterTax = AmountBeforeTax + (AmountBeforeTax * Tax / 100);
+            Amount = AmountAfterTax - DepositAmount;
+        }
         #endregion
     }
 }

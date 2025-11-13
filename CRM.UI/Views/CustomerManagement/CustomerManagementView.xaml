@@ -291,7 +291,7 @@
                    Margin="0,0,8,0"/>
 
                 <ComboBox x:Name="RecordsPerPageComboBox"
-                  ItemsSource="{x:Static viewModels:CustomerManagementViewModel.RecordsPerPageOptions}"
+                  ItemsSource="{Binding RecordsPerPageOptions}"
                   SelectedValue="{Binding RecordsPerPage}"
                   Style="{StaticResource MaterialDesignComboBox}"
                   Width="80"

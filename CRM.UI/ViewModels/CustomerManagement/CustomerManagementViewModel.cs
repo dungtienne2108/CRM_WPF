@@ -41,12 +41,13 @@ namespace CRM.UI.ViewModels.CustomerManagement
             _customerService = customerService;
 
             CurrentPage = 1;
-            RecordsPerPage = 10;
+            RecordsPerPage = 25;
             TotalRecords = 0;
             _serviceProvider = serviceProvider;
         }
 
-        public static readonly List<int> RecordsPerPageOptions = new() { 10, 25, 50, 100 };
+        [ObservableProperty]
+        public ObservableCollection<int> _recordsPerPageOptions = new() { 10, 25, 50, 100 };
 
         public int TotalPages => (int)Math.Ceiling((double)TotalRecords / RecordsPerPage);
 
@@ -200,17 +201,17 @@ namespace CRM.UI.ViewModels.CustomerManagement
                     PageSize = RecordsPerPage
                 };
 
-                var leadDatas = await _customerService.GetAllCustomersAsync(getCustomersRequest);
+                var customers = await _customerService.GetAllCustomersAsync(getCustomersRequest);
 
                 CustomerItems.Clear();
                 int index = (CurrentPage - 1) * RecordsPerPage + 1;
 
-                foreach (var lead in leadDatas.Items)
+                foreach (var lead in customers.Items)
                 {
                     CustomerItems.Add(new CustomerItemViewModel(lead, index++));
                 }
 
-                TotalRecords = leadDatas.TotalCount;
+                TotalRecords = customers.TotalCount;
                 TotalRecordsText = $"Tổng số: {TotalRecords} bản ghi";
             }
             catch (Exception ex)
@@ -223,6 +224,41 @@ namespace CRM.UI.ViewModels.CustomerManagement
             }
         }
 
+        #endregion
+
+        #region Property changed
+        partial void OnCurrentPageChanged(int value)
+        {
+            if (value < 1)
+                CurrentPage = 1;
+            else if (TotalPages > 0 && value > TotalPages)
+                CurrentPage = TotalPages;
+
+            FirstPageCommand.NotifyCanExecuteChanged();
+            PreviousPageCommand.NotifyCanExecuteChanged();
+            NextPageCommand.NotifyCanExecuteChanged();
+            LastPageCommand.NotifyCanExecuteChanged();
+        }
+
+        partial void OnRecordsPerPageChanged(int value)
+        {
+            CurrentPage = 1;
+            _ = InitializeAsync();
+
+            FirstPageCommand.NotifyCanExecuteChanged();
+            PreviousPageCommand.NotifyCanExecuteChanged();
+            NextPageCommand.NotifyCanExecuteChanged();
+            LastPageCommand.NotifyCanExecuteChanged();
+        }
+
+        partial void OnTotalRecordsChanged(int value)
+        {
+            OnPropertyChanged(nameof(TotalPages));
+            FirstPageCommand.NotifyCanExecuteChanged();
+            PreviousPageCommand.NotifyCanExecuteChanged();
+            NextPageCommand.NotifyCanExecuteChanged();
+            LastPageCommand.NotifyCanExecuteChanged();
+        }
         #endregion
 
         #region Events

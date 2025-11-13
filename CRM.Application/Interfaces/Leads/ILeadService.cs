@@ -15,5 +15,7 @@ namespace CRM.Application.Interfaces.Leads
         Task<IEnumerable<LeadStageDto>> GetAllLeadStagesAsync();
         Task<IEnumerable<LeadSourceDto>> GetAllLeadSourcesAsync();
         Task<Result> DeleteLeadAsync(int leadId);
+        Task<Result> AddItemToLeadAsync(int leadId, int productId);
+        Task<Result> RemoveProductFromLeadAsync(int leadId, int productId);
     }
 }

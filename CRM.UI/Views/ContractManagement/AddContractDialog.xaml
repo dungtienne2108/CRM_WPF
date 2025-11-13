@@ -242,7 +242,7 @@
 
                     </Grid>
 
-                    <TextBlock Text="THÔNG TIN HỢP ĐỒNG" Style="{StaticResource SectionHeader}"/>
+                    <TextBlock Text="THÔNG TIN ĐẶT CỌC" Style="{StaticResource SectionHeader}"/>
 
                     <Grid>
                         <Grid.ColumnDefinitions>

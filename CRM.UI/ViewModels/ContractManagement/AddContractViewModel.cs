@@ -247,6 +247,7 @@ namespace CRM.UI.ViewModels.ContractManagement
                 ProjectId = value.ProductId;
                 ProductId = value.ProductId;
                 ProductName = value.ProductName;
+                ProjectName = value.ProjectName;
                 DepositAmount = value.Amount;
                 ProductPrice = value.ProductPrice;
                 IsDepositDropdownOpen = false;

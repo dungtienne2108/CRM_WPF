@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CRM.Application.Dtos.Lead;
+using CRM.Application.Dtos.Project;
 using CRM.Application.Interfaces.Leads;
 using CRM.UI.ViewModels.Base;
 using CRM.UI.Views.LeadManagement;
@@ -63,6 +64,8 @@ namespace CRM.UI.ViewModels.LeadManagement
         public DateTime? StartDate => LeadDto.StartDate;
         [DisplayName("Ngày kết thúc")]
         public DateTime? EndDate => LeadDto.EndDate;
+
+        public List<ProductDto> Products => LeadDto.Products;
 
         [RelayCommand]
         private async Task ConvertStage()

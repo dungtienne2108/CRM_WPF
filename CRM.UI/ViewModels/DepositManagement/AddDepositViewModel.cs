@@ -111,13 +111,20 @@ namespace CRM.UI.ViewModels.DepositManagement
 
         #region Commands
 
-        public bool CanSave => !HasErrors && !IsBusy;
+        public bool CanSave() => !HasErrors && !IsBusy;
 
         [RelayCommand(CanExecute = nameof(CanSave))]
         private async Task SaveAsync()
         {
             ClearAllErrors();
             ValidateAllProperties();
+
+            if (HasErrors)
+            {
+                MessageBox.Show("Có lỗi xảy ra, vui lòng thử lại.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             IsBusy = true;
             try
             {

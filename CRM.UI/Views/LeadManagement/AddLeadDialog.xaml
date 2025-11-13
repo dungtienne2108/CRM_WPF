@@ -201,6 +201,45 @@
                                  VerticalContentAlignment="Center"
                                  Text="{Binding Address, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  />
+
+                        <ComboBox  Grid.Row="4" Grid.Column="1"
+           Style="{StaticResource MaterialComboBox}"
+           IsEditable="True"
+           materialDesign:HintAssist.Hint="Dự án"
+           Margin="8,8,0,8"
+           Padding="8,4,8,4"
+           TextSearch.TextPath="ProjectName"
+           DisplayMemberPath="ProjectName"
+           ItemsSource="{Binding ProjectSuggestions}"
+           SelectedItem="{Binding SelectedProject, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+           StaysOpenOnEdit="True"
+           IsTextSearchEnabled="False"
+           IsDropDownOpen="{Binding IsProjectDropDownOpen, Mode=TwoWay}">
+                            <ComboBox.Text>
+                                <Binding Path="ProjectSearchKeyword"
+                    Mode="TwoWay"
+                    UpdateSourceTrigger="PropertyChanged">
+                                </Binding>
+                            </ComboBox.Text>
+                        </ComboBox>
+
+                        <ComboBox Grid.Column="0" Grid.Row="5"
+           Style="{StaticResource MaterialComboBox}"
+           materialDesign:HintAssist.Hint="Sản phẩm"
+           Margin="0,8,8,8"
+              Padding="8,4,8,4"
+           ItemsSource="{Binding ProductOptions}"
+           SelectedItem="{Binding SelectedProduct, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+           DisplayMemberPath="ProductName"/>
+
+                        <TextBox Grid.Row="5" Grid.Column="1"
+         Style="{StaticResource MaterialTextBox}"
+         materialDesign:HintAssist.Hint="Giá"
+         Padding="8,4,8,4"
+         Margin="8,8,0,8"
+         VerticalContentAlignment="Center"
+         Text="{Binding Price, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+         />
                     </Grid>
                 </StackPanel>
             </ScrollViewer>

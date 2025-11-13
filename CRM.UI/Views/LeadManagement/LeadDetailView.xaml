@@ -24,6 +24,7 @@
         <converters:BoolToFontWeightConverter x:Key="BoolToFontWeightConverter"/>
         <converters:InverseBooleanToVisibleConverter x:Key="InverseBoolToVisConverter"/>
         <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        <converters:CurrencyFormatConverter x:Key="CurrencyFormatConverter"/>
 
         <Style x:Key="GroupBoxStyle" TargetType="GroupBox">
             <Setter Property="Margin" Value="0,0,0,15"/>
@@ -487,7 +488,85 @@
                                 </GroupBox>
                                 
                                 <!-- Sản phẩm -->
-                                
+                                <GroupBox Header="SẢN PHẨM" Style="{StaticResource GroupBoxStyle}" Margin="15">
+
+                                    <StackPanel>
+
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
+                                            <Button
+                                      Width="120"
+                                      Height="35" 
+                                  Margin="0,0,10,0"
+                                      Command="{Binding DeleteProductCommand}"
+                                      Style="{StaticResource MaterialDesignRaisedButton}"
+                                      Visibility="{Binding IsSelectedProduct, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <Button.Content>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <materialDesign:PackIcon Kind="Delete" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                                        <TextBlock Text="Xóa" VerticalAlignment="Center"/>
+                                                    </StackPanel>
+                                                </Button.Content>
+                                            </Button>
+
+                                            <Button
+                                      Width="120"
+                                      Height="35"
+                                      Command="{Binding AddProductCommand}"
+                                      Style="{StaticResource MaterialDesignRaisedButton}">
+                                                <Button.Content>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                                        <TextBlock Text="Thêm" VerticalAlignment="Center"/>
+                                                    </StackPanel>
+                                                </Button.Content>
+                                            </Button>
+
+                                        </StackPanel>
+                                        <DataGrid ItemsSource="{Binding Products}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  IsReadOnly="True"
+                                  HeadersVisibility="Column"
+                                  GridLinesVisibility="Horizontal"
+                                  SelectionMode="Single"
+                                  FontSize="14"
+                                  RowHeight="40"
+                                  BorderThickness="2"
+                                  SelectedItem="{Binding SelectedProduct}"
+                                  materialDesign:DataGridAssist.CellPadding="8"
+                                  materialDesign:DataGridAssist.ColumnHeaderPadding="8">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Dự án" 
+Binding="{Binding ProjectName}" 
+Width="*"
+MinWidth="100"/>
+                                                <DataGridTextColumn Header="Sản phẩm" 
+Binding="{Binding ProductName}" 
+Width="*"
+MinWidth="80"/>
+                                                <DataGridTextColumn Header="Diện tích" 
+Binding="{Binding ProductArea}" 
+Width="*"
+MinWidth="100"/>
+                                                <DataGridTextColumn Header="Giá gốc (VNĐ)" 
+Binding="{Binding ProductPrice, Converter={StaticResource CurrencyFormatConverter}}" 
+Width="*"
+MinWidth="120"/>
+                                                <DataGridTextColumn Header="Trạng thái" 
+Binding="{Binding ProductStatusName}" 
+Width="*"
+MinWidth="120"/>
+                                                <DataGridTextColumn Header="Loại sản phẩm" 
+Binding="{Binding ProductTypeName}" 
+Width="*"
+MinWidth="120"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </StackPanel>
+                                </GroupBox>
+
+
                                 <!-- Mô tả -->
                                 <GroupBox Header="MÔ TẢ" Style="{StaticResource GroupBoxStyle}" Margin="15">
                                     <StackPanel>

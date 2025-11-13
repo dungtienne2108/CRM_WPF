@@ -15,6 +15,8 @@
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
         <converters:StringToIntConverter x:Key="StringToIntConverter"/>
         <converters:StringToDecimalConveter x:Key="StringToDecimalConverter"/>
+        <converters:CurrencyFormatConverter x:Key="CurrencyFormatConverter"/>
+        <converters:PercentageConverter x:Key="PercentageConverter"/>
 
         <Style x:Key="MaterialCard" TargetType="Border">
             <Setter Property="Background" Value="White"/>
@@ -154,12 +156,12 @@
 
                         <TextBox Grid.Row="1" Grid.Column="0"
                            Style="{StaticResource MaterialTextBox}"
-                           materialDesign:HintAssist.Hint="Giá trị hợp đồng"
+                           materialDesign:HintAssist.Hint="Giá trị hợp đồng (VNĐ)"
                            Padding="8,4,8,4"
                            Margin="0,8,8,8"
                                  IsReadOnly="True"
                            VerticalContentAlignment="Center"
-                           Text="{Binding ContractValue, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"                                     
+                           Text="{Binding ContractValue, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StringToDecimalConverter}}"                                     
                             />
 
                         <TextBox Grid.Row="1" Grid.Column="1"
@@ -191,7 +193,7 @@
 
                         <TextBox Grid.Column="1"
                                     Style="{StaticResource MaterialTextBox}"
-                                    materialDesign:HintAssist.Hint="Giá trị giai đoạn"
+                                    materialDesign:HintAssist.Hint="Giá trị giai đoạn (VNĐ)"
                                     Margin="8,8,0,8"
                                     Padding="8,4,8,4"
                                     
@@ -210,7 +212,7 @@
                                 Margin="0,8,8,8"
                                      Padding="8,4,8,4"
                                  IsReadOnly="True"
-                                Text="{Binding ValuePercentage, UpdateSourceTrigger=PropertyChanged}"/>
+                                Text="{Binding ValuePercentage, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource PercentageConverter}}"/>
 
                         <DatePicker Grid.Column="1"
                                 SelectedDate="{Binding DueDate, Mode=TwoWay}"

@@ -291,7 +291,8 @@
                             Width="200" Height="40"
                             Margin="0,24,0,0"
                             HorizontalAlignment="Right"
-                            Command="{Binding SaveContactsCommand}"/>
+                            Command="{Binding SaveContactsCommand}"
+                                Visibility="Hidden"/>
                     </StackPanel>
 
                     <!-- Thông tin cơ hội bán hàng -->
@@ -414,6 +415,7 @@
                         Width="200" Height="40"
                         Margin="0,24,0,0"
                         HorizontalAlignment="Right"
+                            Visibility="Hidden"
                         Command="{Binding SaveOpportunityCommand}"/>
                 </StackPanel>
                 </ScrollViewer>
@@ -435,6 +437,7 @@
                                Foreground="{DynamicResource MaterialDesignValidationErrorBrush}"
                                VerticalAlignment="Center"
                                TextWrapping="Wrap"
+                               Visibility="Hidden"
                                Text="{Binding ValidationMessage}"/>
 
                     <Button Content="HỦY"
@@ -443,6 +446,13 @@
                               Height="40"
                               Margin="0,0,16,0"
                               Command="{Binding CancelCommand}"/>
+
+                    <Button Content="LƯU"
+                          Style="{StaticResource MaterialDesignRaisedButton}"
+                          Width="100"
+                          Height="40"
+                          Margin="0,0,16,0"
+                          Command="{Binding SaveOpportunityCommand}"/>
                 </StackPanel>
                 </Border>
 

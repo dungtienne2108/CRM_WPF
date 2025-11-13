@@ -19,6 +19,10 @@ namespace CRM.Infrastructure.Database.Repositories
                 .Include(l => l.LeadPotentialLevel)
                 .Include(l => l.LeadStage)
                 .Include(l => l.LeadSource)
+                .Include(l => l.LeadItems)
+                    .ThenInclude(li => li.Product)
+                        .ThenInclude(p => p.Project)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(l => l.LeadId == id, cancellationToken);
 
             if (lead != null)

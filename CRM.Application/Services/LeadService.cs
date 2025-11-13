@@ -20,6 +20,40 @@ namespace CRM.Application.Services
             IMapper mapper,
             IMemoryCache memoryCache) : ILeadService
     {
+        public async Task<Result> AddItemToLeadAsync(int leadId, int productId)
+        {
+            try
+            {
+                var lead = await leadRepository.GetLeadByIdAsync(leadId);
+
+                if (lead == null)
+                {
+                    return Result.Failure(new Error("LEAD_NOT_FOUND", $"Không tìm thấy lead với Id: {leadId}"));
+                }
+
+                if (lead.LeadItems.Any(li => li.ProductId == productId))
+                {
+                    return Result.Failure(new Error("LEAD_ITEM_EXISTS", $"Sản phẩm với Id: {productId} đã tồn tại trong lead Id: {leadId}"));
+                }
+
+                var leadItem = new LeadItem
+                {
+                    LeadId = leadId,
+                    ProductId = productId
+                };
+
+                lead.LeadItems.Add(leadItem);
+
+                leadRepository.Update(lead);
+
+                return Result.Success(lead);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure(new Error("ADD_LEAD_ITEM_EXCEPTION", $"Lỗi xảy ra khi thêm sản phẩm với Id: {productId} vào lead Id: {leadId}. Chi tiết: {ex.Message}"));
+            }
+        }
+
         public async Task<Result<LeadDto>> AddLeadAsync(AddLeadRequest request)
         {
             try
@@ -37,6 +71,14 @@ namespace CRM.Application.Services
                     CreateDate = request.StartDate,
                     EndDate = request.EndDate,
                 };
+
+                if (request.LeadItems != null && request.LeadItems.Any())
+                {
+                    lead.LeadItems = request.LeadItems.Select(li => new LeadItem
+                    {
+                        ProductId = li.ProductId,
+                    }).ToList();
+                }
 
                 var leadResult = await leadRepository.AddAsync(lead);
                 await unitOfWork.SaveChangesAsync();
@@ -195,6 +237,45 @@ namespace CRM.Application.Services
             catch (Exception ex)
             {
                 return Result.Failure<LeadDto>(new Error("GET_LEAD_EXCEPTION", $"Lỗi xảy ra khi lấy lead với Id: {leadId}. Chi tiết: {ex.Message}"));
+            }
+        }
+
+        public async Task<Result> RemoveProductFromLeadAsync(int leadId, int productId)
+        {
+            try
+            {
+                var lead = await leadRepository.GetLeadByIdAsync(leadId);
+
+                if (lead == null)
+                {
+                    return Result.Failure(new Error("LEAD_NOT_FOUND", $"Không tìm thấy lead với Id: {leadId}"));
+                }
+
+                var leadItem = lead.LeadItems.FirstOrDefault(li => li.ProductId == productId);
+
+                if (leadItem == null)
+                {
+                    return Result.Failure(new Error("LEAD_ITEM_NOT_FOUND", $"Không tìm thấy sản phẩm với Id: {productId} trong lead Id: {leadId}"));
+                }
+
+                lead.LeadItems.Remove(leadItem);
+
+                leadRepository.Update(lead);
+
+                var changed = await unitOfWork.SaveChangesAsync();
+                if (changed > 0)
+                {
+                    //memoryCache.Remove($"Lead_{lead.LeadId}");
+                    return Result.Success();
+                }
+                else
+                {
+                    return Result.Failure(new Error("REMOVE_LEAD_ITEM_FAILED", $"Lỗi xảy ra khi xóa sản phẩm với Id: {productId} từ lead Id: {leadId}"));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure(new Error("REMOVE_LEAD_ITEM_EXCEPTION", $"Lỗi xảy ra khi xóa sản phẩm với Id: {productId} từ lead Id: {leadId}. Chi tiết: {ex.Message}"));
             }
         }
 

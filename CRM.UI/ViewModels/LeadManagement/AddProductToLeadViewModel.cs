@@ -1,22 +1,21 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CRM.Application.Dtos.Opportunity;
 using CRM.Application.Dtos.Project;
-using CRM.Application.Interfaces.Opportunity;
+using CRM.Application.Interfaces.Leads;
 using CRM.Application.Interfaces.Project;
 using CRM.UI.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.Windows;
 
-namespace CRM.UI.ViewModels.OpportunityManagement
+namespace CRM.UI.ViewModels.LeadManagement
 {
-    public partial class AddProductToOpportunityViewModel : ViewModelBase
+    public partial class AddProductToLeadViewModel : ViewModelBase
     {
         private readonly IProjectService _projectService;
-        private readonly IOpportunityService _opportunityService;
+        private readonly ILeadService _leadService;
 
         [ObservableProperty]
-        private int _opportunityId;
+        private int _leadId;
 
         [ObservableProperty]
         private int _projectId;
@@ -36,16 +35,16 @@ namespace CRM.UI.ViewModels.OpportunityManagement
         [ObservableProperty]
         private ProductDto? _selectedProduct;
 
-        public AddProductToOpportunityViewModel(IProjectService projectService,
-            IOpportunityService opportunityService)
+        public AddProductToLeadViewModel(IProjectService projectService,
+            ILeadService leadService)
         {
             _projectService = projectService;
-            _opportunityService = opportunityService;
+            _leadService = leadService;
         }
 
-        public async Task LoadDataAsync(int opportunityId)
+        public async Task LoadDataAsync(int leadId)
         {
-            OpportunityId = opportunityId;
+            LeadId = leadId;
             await LoadProjectsAsync();
         }
 
@@ -56,7 +55,7 @@ namespace CRM.UI.ViewModels.OpportunityManagement
             ClearAllErrors();
             ValidateAllProperties();
 
-            await AddProductToOpportunityAsync();
+            await AddProductToLeadAsync();
         }
 
         [RelayCommand]
@@ -70,18 +69,17 @@ namespace CRM.UI.ViewModels.OpportunityManagement
         #endregion
 
         #region Private Methods
-        private async Task AddProductToOpportunityAsync()
+        private async Task AddProductToLeadAsync()
         {
             try
             {
-                var addOpportunityItemRequest = new AddOpportunityItemRequest
+                if (SelectedProduct == null)
                 {
-                    OpportunityId = OpportunityId,
-                    ProductId = SelectedProduct.ProductId,
-                    Price = SelectedProduct.ProductPrice.HasValue ? SelectedProduct.ProductPrice.Value : 0
-                };
+                    MessageBox.Show("Vui lòng chọn sản phẩm.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
 
-                var res = await _opportunityService.AddItemToOpportunityAsync(addOpportunityItemRequest);
+                var res = await _leadService.AddItemToLeadAsync(LeadId, SelectedProduct.ProductId);
 
                 if (res.IsSuccess)
                 {

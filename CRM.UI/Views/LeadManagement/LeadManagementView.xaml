@@ -172,21 +172,21 @@
                         <!-- Tên -->
                         <DataGridTextColumn Header="Tên" 
                                         Binding="{Binding Name}"
-                                        Width="150"
+                                        Width="200"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
-                        <!-- Công ty -->
+                        <!-- Công ty 
                         <DataGridTextColumn Header="Công ty" 
                                         Binding="{Binding Company}"
                                         Width="150"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
-
+-->
                         <!-- Số điện thoại -->
                         <DataGridTextColumn Header="Số điện thoại" 
                                         Binding="{Binding Phone}"
-                                        Width="120"
+                                        Width="180"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
@@ -200,30 +200,37 @@
                         <!-- Nhân sự phụ trách -->
                         <DataGridTextColumn Header="Nhân sự phụ trách" 
                                         Binding="{Binding EmployeeName}"
-                                        Width="140"
+                                        Width="200"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Địa chỉ -->
                         <DataGridTextColumn Header="Địa chỉ" 
                                         Binding="{Binding Address}"
-                                        Width="200"
+                                        Width="240"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Mức độ tiềm năng -->
                         <DataGridTextColumn Header="Mức độ tiềm năng" 
                                         Binding="{Binding PotentialLevel}"
-                                        Width="140"
+                                        Width="160"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Trạng thái -->
-                    <DataGridTextColumn Header="Trạng thái" 
+                        <DataGridTextColumn Header="Trạng thái" 
                                         Binding="{Binding CurrentStatusDisplay}"
-                                        Width="120"
+                                        Width="140"
                                         IsReadOnly="True"
-                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/> 
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+                        
+                        <DataGridTextColumn Header="Mô tả" 
+                    Binding="{Binding Description}"
+                    Width="240"
+                    IsReadOnly="True"
+                    ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+
 
                         <!-- Dropdown Actions 
                         <DataGridTemplateColumn Header="Trạng thái" Width="150">
@@ -448,7 +455,7 @@ Tag="4"/>
                            Margin="0,0,8,0"/>
 
                 <ComboBox x:Name="RecordsPerPageComboBox"
-                          ItemsSource="{x:Static viewModels:LeadManagementViewModel.RecordsPerPageOptions}"
+                          ItemsSource="{Binding RecordsPerPageOptions}"
                           SelectedValue="{Binding RecordsPerPage}"
                           Style="{StaticResource MaterialDesignComboBox}"
                           Width="80"

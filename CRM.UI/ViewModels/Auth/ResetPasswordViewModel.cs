@@ -71,6 +71,8 @@ namespace CRM.UI.ViewModels.Auth
             }
             else
             {
+                MessageBox.Show($"Đặt lại mật khẩu thất bại: {result.Error.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+
                 var forgotPasswordWindow = _serviceProvider.GetService<ForgotPasswordWindow>();
                 System.Windows.Application.Current.MainWindow = forgotPasswordWindow;
                 forgotPasswordWindow?.Show();

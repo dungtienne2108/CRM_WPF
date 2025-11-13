@@ -345,10 +345,7 @@ namespace CRM.UI.ViewModels.OpportunityManagement
             }
         }
 
-        public bool CanDelete => SelectedProduct != null;
-        #endregion
-
-        #region Private
+        public bool CanDelete() => SelectedProduct != null;
         #endregion
 
         #region Property changes

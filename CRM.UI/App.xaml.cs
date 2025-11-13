@@ -218,6 +218,7 @@ namespace CRM.UI
             services.AddTransient<LeadManagementViewModel>();
             services.AddTransient<AddLeadViewModel>();
             services.AddTransient<ConvertStageViewModel>();
+            services.AddTransient<AddProductToLeadViewModel>();
 
             // customer management
             //services.AddTransient<CustomerItemViewModel>();

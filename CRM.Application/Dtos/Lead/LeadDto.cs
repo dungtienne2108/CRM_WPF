@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using CRM.Application.Dtos.Project;
+using System.ComponentModel;
 
 namespace CRM.Application.Dtos.Lead
 {
@@ -53,5 +54,7 @@ namespace CRM.Application.Dtos.Lead
 
         [DisplayName("Ngày kết thúc")]
         public DateTime? EndDate { get; set; }
+
+        public List<ProductDto> Products { get; set; } = new List<ProductDto>();
     }
 }

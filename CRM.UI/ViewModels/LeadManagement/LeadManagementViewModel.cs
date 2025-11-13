@@ -47,7 +47,7 @@ namespace CRM.UI.ViewModels.LeadManagement
             _leadService = leadService;
 
             CurrentPage = 1;
-            RecordsPerPage = 10;
+            RecordsPerPage = 25;
             TotalRecords = 0;
             _serviceProvider = serviceProvider;
         }
@@ -60,7 +60,8 @@ namespace CRM.UI.ViewModels.LeadManagement
              new StatusOption { Id = 4, Name = "Loại bỏ" },
          };
 
-        public static readonly List<int> RecordsPerPageOptions = new() { 10, 25, 50, 100 };
+        [ObservableProperty]
+        public ObservableCollection<int> _recordsPerPageOptions = new() { 10, 25, 50, 100 };
 
         public int TotalPages => (int)Math.Ceiling((double)TotalRecords / RecordsPerPage);
 
@@ -301,8 +302,8 @@ namespace CRM.UI.ViewModels.LeadManagement
 
         partial void OnRecordsPerPageChanged(int value)
         {
-            OnPropertyChanged(nameof(TotalPages));
-            ChangeRecordsPerPageCommand.NotifyCanExecuteChanged();
+            CurrentPage = 1;
+            _ = InitializeAsync();
         }
 
         partial void OnTotalRecordsChanged(int value)

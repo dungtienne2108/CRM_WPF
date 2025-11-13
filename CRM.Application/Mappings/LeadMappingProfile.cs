@@ -25,7 +25,8 @@ namespace CRM.Application.Mappings
                 .ForMember(d => d.EmployeeId, opt => opt.MapFrom(s => s.EmployeeId))
                 .ForMember(d => d.Description, opt => opt.MapFrom(s => s.LeadDescription))
                 .ForMember(d => d.StartDate, opt => opt.MapFrom(s => s.CreateDate))
-                .ForMember(d => d.EndDate, opt => opt.MapFrom(s => s.EndDate));
+                .ForMember(d => d.EndDate, opt => opt.MapFrom(s => s.EndDate))
+                .ForMember(d => d.Products, opt => opt.MapFrom(s => s.LeadItems.Select(li => li.Product).ToList()));
         }
     }
 }

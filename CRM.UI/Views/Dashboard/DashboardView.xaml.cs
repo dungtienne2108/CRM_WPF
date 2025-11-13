@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using CRM.UI.Helpers;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace CRM.UI.Views.Dashboard
@@ -8,6 +9,8 @@ namespace CRM.UI.Views.Dashboard
     /// </summary>
     public partial class DashboardView : UserControl
     {
+        private static bool _isInitialized = false;
+
         public DashboardView()
         {
             InitializeComponent();
@@ -17,16 +20,25 @@ namespace CRM.UI.Views.Dashboard
 
         private async void LoadAsync(object sender, RoutedEventArgs e)
         {
-            await PowerBiWebView.EnsureCoreWebView2Async(null);
+            if (!_isInitialized)
+            {
+                var env = await WebViewEnvironmentHelper.GetEnvironmentAsync();
+                await PowerBiWebView.EnsureCoreWebView2Async(env);
 
-            string htmlPath = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Resources", "report.html");
-            PowerBiWebView.Source = new Uri(htmlPath, UriKind.Absolute);
-        }
+                string htmlPath = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Resources", "report.html");
+                PowerBiWebView.Source = new System.Uri(htmlPath, System.UriKind.Absolute);
 
-        private void Open_Click(object sender, RoutedEventArgs e)
-        {
-            var powerBiWindow = new PowerBiEmbedded();
-            powerBiWindow.Show();
+                _isInitialized = true;
+            }
+            else
+            {
+                // Nếu đã khởi tạo rồi, chỉ cần WebView2 tải lại
+                if (PowerBiWebView.CoreWebView2 == null)
+                {
+                    var env = await WebViewEnvironmentHelper.GetEnvironmentAsync();
+                    await PowerBiWebView.EnsureCoreWebView2Async(env);
+                }
+            }
         }
     }
 }

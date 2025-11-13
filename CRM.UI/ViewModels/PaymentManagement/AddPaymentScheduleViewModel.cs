@@ -62,7 +62,7 @@ namespace CRM.UI.ViewModels.PaymentManagement
 
         #region Commands
 
-        public bool CanSave => !HasAnyErrors;
+        public bool CanSave() => !HasAnyErrors;
 
         [RelayCommand(CanExecute = nameof(CanSave))]
         private async Task SaveAsync()

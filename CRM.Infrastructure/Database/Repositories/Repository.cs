@@ -48,7 +48,13 @@ namespace CRM.Infrastructure.Database.Repositories
 
         public async Task<TEntity?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            return await _dbSet.FindAsync(new object[] { id }, cancellationToken);
+            var entity = await _dbSet.FindAsync(new object[] { id }, cancellationToken);
+            // reload entity because trigger may have modified it
+            if (entity != null)
+            {
+                await _context.Entry(entity).ReloadAsync(cancellationToken);
+            }
+            return entity;
         }
 
         public Task<TEntity> GetByIdAsync(int id, params Expression<Func<TEntity, object>>[] includes)

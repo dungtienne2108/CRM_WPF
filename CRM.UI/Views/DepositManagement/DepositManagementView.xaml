@@ -167,14 +167,14 @@
 
                         <!-- Nhân sự phụ trách -->
                         <DataGridTextColumn Header="Ngày có hiệu lực" 
-                                        Binding="{Binding StartDate}"
+                                        Binding="{Binding StartDate, StringFormat={}{0:dd/MM/yyyy}}"
                                         Width="140"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Địa chỉ -->
                         <DataGridTextColumn Header="Ngày hết hiệu lực" 
-                                        Binding="{Binding EndDate}"
+                                        Binding="{Binding EndDate, StringFormat={}{0:dd/MM/yyyy}}"
                                         Width="200"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>

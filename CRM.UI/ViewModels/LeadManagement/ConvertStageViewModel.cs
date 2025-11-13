@@ -162,6 +162,7 @@ namespace CRM.UI.ViewModels.LeadManagement
             await LoadOpportunityStatusesAsync();
             await LoadProjectsAsync();
             await LoadCustomerTypesAsync();
+            await SearchEmployeesAsync();
             //await LoadProductsAsync();
         }
 
@@ -202,13 +203,13 @@ namespace CRM.UI.ViewModels.LeadManagement
 
         private async Task SearchEmployeesAsync()
         {
-            IsEmployeeDropDownOpen = true;
-            if (string.IsNullOrWhiteSpace(EmployeeSearchKeyword))
-            {
-                IsEmployeeDropDownOpen = false;
-                EmployeeSuggestions.Clear();
-                return;
-            }
+            //IsEmployeeDropDownOpen = true;
+            //if (string.IsNullOrWhiteSpace(EmployeeSearchKeyword))
+            //{
+            //    IsEmployeeDropDownOpen = false;
+            //    EmployeeSuggestions.Clear();
+            //    return;
+            //}
 
             var request = new GetEmployeeRequest
             {
@@ -555,9 +556,16 @@ namespace CRM.UI.ViewModels.LeadManagement
                     }
                 }
 
+                if (ContactItems.Count > 0)
+                {
+                    await AddAllContactAsync();
+                }
+
                 await AddOpportunityAsync();
 
                 IsDialogVisible = false;
+
+                MessageBox.Show("Chuyển đổi khách hàng thành công.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 System.Windows.Application.Current.Windows
                     .OfType<Window>()

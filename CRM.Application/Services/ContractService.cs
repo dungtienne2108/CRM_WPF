@@ -10,6 +10,7 @@ using Microsoft.Extensions.Caching.Memory;
 namespace CRM.Application.Services
 {
     public class ContractService(
+        IProductRepository productRepository,
         IContractRepository contractRepository,
         IDepositRepository depositRepository,
         IEmployeeRepository employeeRepository,
@@ -61,6 +62,18 @@ namespace CRM.Application.Services
                 if (request.Amount < deposit.DepositCost)
                 {
                     return Result.Failure<int>(new("Invalid_amount_vs_deposit.", "Tổng số tiền phải lớn hơn hoặc bằng số tiền đặt cọc"));
+                }
+
+                var product = await productRepository.GetByIdAsync(request.ProductId);
+
+                if (product == null)
+                {
+                    return Result.Failure<int>(new("Product_not_found.", "Sản phẩm không tồn tại."));
+                }
+
+                if (request.Amount < product.ProductPrice)
+                {
+                    return Result.Failure<int>(new("Invalid_amount_vs_product_price.", "Tổng số tiền phải lớn hơn hoặc bằng giá sản phẩm"));
                 }
 
                 var contract = new Contract
