@@ -83,7 +83,7 @@ namespace CRM.UI.ViewModels.LeadManagement
 
                 if (res.IsSuccess)
                 {
-                    MessageBox.Show("Thêm sản phẩm cho cơ hội thành công.", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Thêm sản phẩm cho khách hàng tiềm năng thành công.", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
 
                     System.Windows.Application.Current.Windows
                         .OfType<Window>()

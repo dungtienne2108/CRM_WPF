@@ -14,6 +14,7 @@ namespace CRM.UI.Views.LeadManagement
         {
             InitializeComponent();
             _viewModel = viewModel;
+            DataContext = _viewModel;
         }
     }
 }
