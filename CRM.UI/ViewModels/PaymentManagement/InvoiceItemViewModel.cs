@@ -37,7 +37,14 @@ namespace CRM.UI.ViewModels.PaymentManagement
         [DisplayName("Ngày đến hạn")]
         public DateTime DueDate => InvoiceDTO.DueDate;
         [DisplayName("Trạng thái")]
-        public string Status => InvoiceDTO.Status;
+        public string Status => InvoiceDTO.Status switch
+        {
+            CRM.Domain.Models.InvoiceStatus.Pending => "Chưa thanh toán",
+            CRM.Domain.Models.InvoiceStatus.Paid => "Đã thanh toán",
+            CRM.Domain.Models.InvoiceStatus.Overdue => "Quá hạn",
+            CRM.Domain.Models.InvoiceStatus.Canceled => "Đã hủy",
+            _ => "Không xác định",
+        };
         [DisplayName("Thời hạn (ngày)")]
         public int DurationDays => (DueDate - CreatedDate).Days;
 

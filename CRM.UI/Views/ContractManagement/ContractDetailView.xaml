@@ -339,11 +339,11 @@
                                                FontSize="16"
                                                Margin="0,0,15,0"/>
                                             <TextBox Grid.Column="3" Grid.Row="2" 
-     Text="{Binding ContractStageName}"
-     Style="{StaticResource EditTextBoxStyle}" 
-     FontSize="16"
-     Margin="0,10,20,10"
-     IsReadOnly="True"
+                                                     Text="{Binding ContractStageName}"
+                                                     Style="{StaticResource EditTextBoxStyle}" 
+                                                     FontSize="16"
+                                                     Margin="0,10,20,10"
+                                                     IsReadOnly="True"
                                                      Visibility="{Binding IsEditMode, Converter={StaticResource InverseBoolToVisConverter}}"/>
                                             <ComboBox Grid.Column="3" Grid.Row="2"
                                                         Style="{StaticResource EditComboBoxStyle}" 

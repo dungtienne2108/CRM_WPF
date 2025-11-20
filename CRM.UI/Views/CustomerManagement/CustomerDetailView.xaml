@@ -412,7 +412,7 @@
 
 
                                 <!-- Bảng cơ hội bán hàng -->
-                                <TextBlock Text="Cơ hội bán hàng" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" Foreground="#1565C0"/>
+                                <TextBlock Text="Cơ hội bán hàng" FontSize="16" FontWeight="Bold" Margin="0,10,0,10" Foreground="#1565C0"/>
                                 <DataGrid x:Name="OpportunitiesGrid"
     ItemsSource="{Binding Opportunities}"
     Style="{StaticResource MaterialDesignDataGrid}"
@@ -465,7 +465,7 @@
                                 </DataGrid>
 
                                 <!-- Đặt cọc -->
-                                <TextBlock Text="Đặt cọc" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" Foreground="#1565C0"/>
+                                <TextBlock Text="Đặt cọc" FontSize="16" FontWeight="Bold" Margin="0,10,0,10" Foreground="#1565C0"/>
                                 <DataGrid x:Name="DepositsGrid"
     ItemsSource="{Binding Deposits}"
     Style="{StaticResource MaterialDesignDataGrid}"
@@ -518,9 +518,9 @@
                                 </DataGrid>
 
                                 <!-- Bảng hợp đồng -->
-                                <TextBlock Text="Hợp đồng" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" Foreground="#1565C0"/>
+                                <TextBlock Text="Hợp đồng" FontSize="16" FontWeight="Bold" Margin="0,10,0,10" Foreground="#1565C0"/>
                                 <DataGrid x:Name="ContractGrid"
-    ItemsSource="{Binding ContractsItems}"
+    ItemsSource="{Binding Contracts}"
     Style="{StaticResource MaterialDesignDataGrid}"
     BorderBrush="Gray"
     BorderThickness="1"

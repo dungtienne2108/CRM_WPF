@@ -589,6 +589,10 @@ public partial class AppDbContext : DbContext
                 .HasDefaultValue("Pending")
                 .HasColumnName("status");
 
+            entity.Property(e => e.IsDeposited)
+                .HasColumnName("is_deposited")
+                .HasDefaultValue(false);
+
             entity.HasOne(d => d.Contract).WithMany(p => p.InstallmentSchedules)
                 .HasForeignKey(d => d.ContractId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -616,6 +620,12 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("invoice_code");
+
+            entity.Property(e => e.Status)
+                .HasConversion<string>()
+                .HasMaxLength(50)
+                .HasDefaultValue(InvoiceStatus.Pending)
+                .HasColumnName("status");
 
             entity.Property(e => e.TotalAmount)
                 .HasColumnType("decimal(18, 2)")
@@ -747,7 +757,8 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.LeadSourceName)
                 .HasMaxLength(255)
                 .IsUnicode(false)
-                .HasColumnName("lead_source_name");
+                .HasColumnName("lead_source_name")
+                .HasColumnType("nvarchar(255)");
         });
 
         modelBuilder.Entity<LeadStage>(entity =>
@@ -895,6 +906,10 @@ public partial class AppDbContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("payment_date");
             entity.Property(e => e.PaymentMethodId).HasColumnName("payment_method_id");
+
+            entity.Property(e => e.RemainAmount)
+                .HasColumnType("decimal(18, 2)")
+                .HasColumnName("remain_amount");
 
             entity.HasOne(d => d.Invoice).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.InvoiceId)

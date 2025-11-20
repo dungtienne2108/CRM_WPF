@@ -2,7 +2,9 @@
 using CommunityToolkit.Mvvm.Input;
 using CRM.Application.Dtos.Payment;
 using CRM.Application.Interfaces.Payment;
+using CRM.Domain.Models;
 using CRM.UI.ViewModels.Base;
+using System.Collections.ObjectModel;
 using System.Windows;
 
 namespace CRM.UI.ViewModels.PaymentManagement
@@ -37,6 +39,14 @@ namespace CRM.UI.ViewModels.PaymentManagement
         private bool _isEditMode = false;
 
         public bool IsDeleteVisible => !IsEditMode;
+
+        [ObservableProperty]
+        private InvoiceStatus _selectedStatusOption;
+
+        [ObservableProperty]
+        private ObservableCollection<InvoiceStatus> _statusOptions =
+            new ObservableCollection<InvoiceStatus>(Enum.GetValues(typeof(InvoiceStatus)) as InvoiceStatus[]);
+
 
         public InvoiceDetailViewModel(IPaymentService paymentService)
         {
@@ -83,7 +93,8 @@ namespace CRM.UI.ViewModels.PaymentManagement
                 {
                     Id = InvoiceId,
                     DueDate = DueDate,
-                    Amount = Amount
+                    Amount = Amount,
+                    Status = SelectedStatusOption
                 };
 
                 var res = await _paymentService.UpdateInvoiceAsync(updateInvoiceReq);
@@ -121,7 +132,14 @@ namespace CRM.UI.ViewModels.PaymentManagement
                     InstallmentScheduleName = invoice.InstallmentScheduleName;
                     DueDate = invoice.DueDate;
                     Amount = invoice.Amount;
-                    Status = invoice.Status;
+                    Status = invoice.Status switch
+                    {
+                        Domain.Models.InvoiceStatus.Pending => "Chưa thanh toán",
+                        Domain.Models.InvoiceStatus.Paid => "Đã thanh toán",
+                        Domain.Models.InvoiceStatus.Overdue => "Quá hạn",
+                        Domain.Models.InvoiceStatus.Canceled => "Đã hủy",
+                        _ => "Không xác định"
+                    };
                 }
                 else
                 {

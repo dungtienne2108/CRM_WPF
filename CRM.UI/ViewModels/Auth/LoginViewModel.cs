@@ -72,6 +72,9 @@ namespace CRM.UI.ViewModels.Auth
         {
             ClearAllErrors();
             ValidateAllProperties();
+            if (HasErrors)
+                return;
+
             try
             {
                 if (!ValidateInput())

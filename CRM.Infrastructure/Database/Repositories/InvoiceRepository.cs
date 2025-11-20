@@ -43,7 +43,7 @@ namespace CRM.Infrastructure.Database.Repositories
 
             if (filter.IsPaid.HasValue)
             {
-                query = query.Where(i => i.IsPaid == filter.IsPaid.Value);
+                query = query.Where(i => i.Status == InvoiceStatus.Paid);
             }
 
             var totalCount = await query.CountAsync();

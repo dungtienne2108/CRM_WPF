@@ -206,6 +206,7 @@ namespace CRM.UI.ViewModels.ContactManagement
                     if (customerResult.IsFailure)
                     {
                         MessageBox.Show($"Lấy thông tin khách hàng thất bại: {customerResult.Error.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
                     }
                     CustomerName = customerResult.Value.Name;
                 }

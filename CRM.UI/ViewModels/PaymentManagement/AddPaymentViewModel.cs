@@ -30,6 +30,8 @@ namespace CRM.UI.ViewModels.PaymentManagement
         private string _description;
         [ObservableProperty]
         private DateTime _paymentDate = DateTime.UtcNow;
+        [ObservableProperty]
+        private decimal _remainAmount;
 
         [ObservableProperty]
         private string _invoiceSearchKeyword;
@@ -101,7 +103,9 @@ namespace CRM.UI.ViewModels.PaymentManagement
                     Amount = Amount,
                     CustomerId = CustomerId,
                     Description = Description,
-                    PaymentDate = PaymentDate
+                    PaymentDate = PaymentDate,
+                    RemainAmount = RemainAmount
+
                 };
                 var result = await _paymentService.CreatePaymentAsync(request);
                 if (result.IsSuccess)
@@ -204,6 +208,34 @@ namespace CRM.UI.ViewModels.PaymentManagement
             if (value != null)
             {
                 PaymentMethodId = value.Id;
+            }
+        }
+
+        partial void OnAmountChanged(decimal value)
+        {
+            if (SelectedInvoice == null)
+            {
+                RemainAmount = 0;
+                return;
+            }
+
+            if (value > SelectedInvoice.Amount)
+            {
+                MessageBox.Show("Số tiền thanh toán không được lớn hơn số tiền của hóa đơn.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                value = 0;
+                Amount = 0;
+                return;
+            }
+            else
+            {
+                ClearErrors(nameof(Amount));
+            }
+
+            RemainAmount = SelectedInvoice.Amount - value;
+
+            if (RemainAmount < 0)
+            {
+                RemainAmount = 0;
             }
         }
         #endregion

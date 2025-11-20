@@ -48,7 +48,7 @@ namespace CRM.Application.Services
                     CreateDate = request.InvoiceDate,
                     TotalAmount = request.Amount,
                     DueDate = DateOnly.FromDateTime(request.DueDate),
-                    IsPaid = false
+                    Status = InvoiceStatus.Pending
                 };
 
                 await invoiceRepository.AddAsync(invoice);
@@ -79,7 +79,7 @@ namespace CRM.Application.Services
                     return Result.Failure<int>(new("INVOICE_NOT_FOUND", "Hóa đơn không tồn tại"));
                 }
 
-                if (invoice.IsPaid)
+                if (invoice.Status == InvoiceStatus.Paid)
                 {
                     return Result.Failure<int>(new("INVOICE_ALREADY_PAID", "Hóa đơn đã được thanh toán"));
                 }
@@ -97,6 +97,7 @@ namespace CRM.Application.Services
                     Amount = request.Amount,
                     PaymentDate = request.PaymentDate,
                     Description = request.Description,
+                    RemainAmount = request.RemainAmount
                 };
 
                 await paymentRepository.AddAsync(payment);
@@ -356,6 +357,7 @@ namespace CRM.Application.Services
 
                 invoice.DueDate = DateOnly.FromDateTime(request.DueDate);
                 invoice.TotalAmount = request.Amount;
+                invoice.Status = request.Status;
 
                 invoiceRepository.Update(invoice);
                 var updated = await unitOfWork.SaveChangesAsync();

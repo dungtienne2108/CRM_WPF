@@ -176,6 +176,16 @@
                              VerticalContentAlignment="Center"
                              Style="{StaticResource MaterialDatePicker}" />
 
+                        <TextBox Grid.Row="2" Grid.Column="1"
+                            Style="{StaticResource MaterialTextBox}"
+                            materialDesign:HintAssist.Hint="Số tiền còn lại"
+                            Padding="8,4,8,4"
+                            Margin="8,8,0,8"
+                            VerticalContentAlignment="Center"
+                                 IsReadOnly="True"
+                            Text="{Binding RemainAmount, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StringToDecimalConverter}}"                                     
+                             />
+
                         <TextBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
                                  Height="80"
                                  AcceptsReturn="True"

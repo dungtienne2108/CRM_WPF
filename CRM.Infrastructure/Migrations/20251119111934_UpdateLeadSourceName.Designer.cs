@@ -4,6 +4,7 @@ using CRM.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRM.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251119111934_UpdateLeadSourceName")]
+    partial class UpdateLeadSourceName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -947,13 +950,8 @@ namespace CRM.Infrastructure.Migrations
                         .HasColumnType("varchar(50)")
                         .HasColumnName("invoice_code");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasDefaultValue("Pending")
-                        .HasColumnName("status");
+                    b.Property<bool>("IsPaid")
+                        .HasColumnType("bit");
 
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18, 2)")
@@ -1376,10 +1374,6 @@ namespace CRM.Infrastructure.Migrations
                     b.Property<int>("PaymentMethodId")
                         .HasColumnType("int")
                         .HasColumnName("payment_method_id");
-
-                    b.Property<decimal>("RemainAmount")
-                        .HasColumnType("decimal(18, 2)")
-                        .HasColumnName("remain_amount");
 
                     b.HasKey("PaymentId")
                         .HasName("PK__payment__ED1FC9EA67F77743");

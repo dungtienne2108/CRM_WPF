@@ -15,7 +15,9 @@ namespace CRM.Application.Services
         ICustomerRepository customerRepository,
         IContactRepository contactRepository,
         IEmployeeRepository employeeRepository,
+        IContractRepository contractRepository,
         IRepository<Product> productRepository,
+        IRepository<InstallmentSchedule> installmentScheduleRepository,
         IUnitOfWork unitOfWork,
         IMapper mapper,
         IMemoryCache memoryCache) : IDepositService
@@ -212,6 +214,26 @@ namespace CRM.Application.Services
                 deposit.EndDate = request.EndDate;
                 deposit.Description = request.Description;
                 deposit.ContactId = request.ContactId;
+
+                // Cập nhật lại số tiền đặt cọc trong hợp đồng và lịch thanh toán nếu có
+                var contract = await contractRepository.GetContractByDepositIdAsync(deposit.DepositId);
+
+                if (contract != null)
+                {
+                    var installmentSchedules = await installmentScheduleRepository.FindAsync(
+                    s => s.ContractId == contract.ContractId);
+
+                    if (installmentSchedules.Count() > 0)
+                    {
+                        var isDepositSchedule = installmentSchedules
+                            .FirstOrDefault(s => s.IsDeposited);
+
+                        if (isDepositSchedule != null)
+                        {
+                            isDepositSchedule.Amount = request.Amount;
+                        }
+                    }
+                }
 
                 depositRepository.Update(deposit);
                 var updated = await unitOfWork.SaveChangesAsync();

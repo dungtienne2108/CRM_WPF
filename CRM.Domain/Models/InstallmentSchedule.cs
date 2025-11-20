@@ -20,5 +20,7 @@ public partial class InstallmentSchedule
 
     public string? InvoiceNumber { get; set; }
 
+    public bool IsDeposited { get; set; }
+
     public virtual Contract Contract { get; set; } = null!;
 }

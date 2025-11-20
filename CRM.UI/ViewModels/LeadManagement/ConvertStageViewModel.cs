@@ -174,13 +174,13 @@ namespace CRM.UI.ViewModels.LeadManagement
         #region Private Methods
         private async Task SearchCustomersAsync()
         {
-            IsCustomerDropDownOpen = true;
-            if (string.IsNullOrWhiteSpace(CustomerSearchKeyword))
-            {
-                IsCustomerDropDownOpen = false;
-                SelectedCustomer = null;
-                return;
-            }
+            //IsCustomerDropDownOpen = true;
+            //if (string.IsNullOrWhiteSpace(CustomerSearchKeyword))
+            //{
+            //    IsCustomerDropDownOpen = false;
+            //    SelectedCustomer = null;
+            //    return;
+            //}
 
             var request = new GetCustomerRequest
             {

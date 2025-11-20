@@ -12,6 +12,13 @@ namespace CRM.Infrastructure.Database.Repositories
         {
         }
 
+        public async Task<Contract?> GetContractByDepositIdAsync(int depositId)
+        {
+            return await _context.Contracts
+                .AsSplitQuery()
+                .FirstOrDefaultAsync(c => c.DepositId == depositId);
+        }
+
         public async Task<Contract?> GetContractByIdAsync(int contractId)
         {
             return await _context.Contracts

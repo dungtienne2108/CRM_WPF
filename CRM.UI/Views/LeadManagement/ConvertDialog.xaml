@@ -270,14 +270,12 @@
                                             <!-- Hàng 4 -->
                                             <TextBox Grid.Row="3"
                                              Style="{StaticResource MaterialTextBox}"
-                                             materialDesign:HintAssist.Hint="Ghi chú"
+                                             materialDesign:HintAssist.Hint="Loại quan hệ"
                                              Margin="0,8,8,8"
                                                      Padding="8,4,8,4"
                                              Text="{Binding Description}"
-                                             AcceptsReturn="True"
-                                             TextWrapping="Wrap"
-                                             MinLines="2"
-                                             MaxLines="4"/>
+                                             
+                                            />
                                         </Grid>
 
                                         <Separator Margin="0,16,0,0"/>

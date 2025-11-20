@@ -174,14 +174,14 @@
                             </ComboBox.Text>
                         </ComboBox>
 
-                        <!--      <TextBox Grid.Row="3" Grid.Column="1"
+                        <TextBox Grid.Row="3" Grid.Column="1"
                            Style="{StaticResource MaterialTextBox}"
-                           materialDesign:HintAssist.Hint="Mô tả"
+                           materialDesign:HintAssist.Hint="Loại quan hệ"
                            Padding="8,4,8,4"
                            Margin="8,8,0,8"
                            VerticalContentAlignment="Center"
                            Text="{Binding ContactDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"                                     
-                            /> -->
+                            />
 
                     </Grid>
 

@@ -4,6 +4,7 @@ using CRM.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRM.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251115014007_AddIsDepositedToInstallmentSchedule")]
+    partial class AddIsDepositedToInstallmentSchedule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -947,13 +950,8 @@ namespace CRM.Infrastructure.Migrations
                         .HasColumnType("varchar(50)")
                         .HasColumnName("invoice_code");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasDefaultValue("Pending")
-                        .HasColumnName("status");
+                    b.Property<bool>("IsPaid")
+                        .HasColumnType("bit");
 
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18, 2)")
@@ -1145,7 +1143,7 @@ namespace CRM.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .IsUnicode(false)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("varchar(255)")
                         .HasColumnName("lead_source_name");
 
                     b.HasKey("LeadSourceId")
@@ -1376,10 +1374,6 @@ namespace CRM.Infrastructure.Migrations
                     b.Property<int>("PaymentMethodId")
                         .HasColumnType("int")
                         .HasColumnName("payment_method_id");
-
-                    b.Property<decimal>("RemainAmount")
-                        .HasColumnType("decimal(18, 2)")
-                        .HasColumnName("remain_amount");
 
                     b.HasKey("PaymentId")
                         .HasName("PK__payment__ED1FC9EA67F77743");

@@ -1,4 +1,6 @@
-﻿namespace CRM.Domain.Models;
+﻿using System.ComponentModel;
+
+namespace CRM.Domain.Models;
 
 public partial class Invoice
 {
@@ -14,7 +16,7 @@ public partial class Invoice
 
     public int InstallmentScheduleId { get; set; }
 
-    public bool IsPaid { get; set; }
+    public InvoiceStatus Status { get; set; }
 
     public DateTime? CreateDate { get; set; }
 
@@ -25,4 +27,17 @@ public partial class Invoice
     public virtual InstallmentSchedule InstallmentSchedule { get; set; } = null!;
 
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+}
+
+
+public enum InvoiceStatus
+{
+    [Description("Chưa thanh toán")]
+    Pending,
+    [Description("Đã thanh toán")]
+    Paid,
+    [Description("Quá hạn")]
+    Overdue,
+    [Description("Đã hủy")]
+    Canceled
 }

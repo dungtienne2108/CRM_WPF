@@ -211,7 +211,7 @@ namespace CRM.UI
             {
                 return new ResetPasswordViewModel(email, sp.GetRequiredService<IAuthenticationService>(), sp.GetRequiredService<IServiceProvider>());
             });
-            services.AddTransient<DashboardView>();
+            services.AddSingleton<DashboardView>();
 
             // lead mângement
             //services.AddTransient<LeadItemViewModel>();

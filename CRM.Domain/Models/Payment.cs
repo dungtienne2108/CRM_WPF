@@ -16,6 +16,8 @@ public partial class Payment
 
     public DateTime? PaymentDate { get; set; }
 
+    public decimal RemainAmount { get; set; }
+
     public string? Description { get; set; }
 
     public string? CreateBy { get; set; }

@@ -167,21 +167,21 @@ VerticalAlignment="Center"/>
                         <!-- Tên -->
                         <DataGridTextColumn Header="Tên" 
                                         Binding="{Binding Name}"
-                                        Width="150"
+                                        Width="240"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Công ty -->
                         <DataGridTextColumn Header="Địa chỉ" 
                                         Binding="{Binding Address}"
-                                        Width="150"
+                                        Width="220"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Số điện thoại -->
                         <DataGridTextColumn Header="Ngày bắt đầu" 
                                         Binding="{Binding StartDate}"
-                                        Width="120"
+                                        Width="180"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
@@ -195,14 +195,14 @@ VerticalAlignment="Center"/>
                         <!-- Nhân sự phụ trách -->
                         <DataGridTextColumn Header="Trạng thái" 
                                         Binding="{Binding Status}"
-                                        Width="140"
+                                        Width="180"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Địa chỉ -->
                         <DataGridTextColumn Header="Ngày còn lại" 
                                         Binding="{Binding DaysRemaining}"
-                                        Width="200"
+                                        Width="*"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
                     </DataGrid.Columns>

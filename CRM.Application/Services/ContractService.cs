@@ -108,9 +108,13 @@ namespace CRM.Application.Services
                     ContractValuePercentage = deposit.DepositCost.HasValue ?
                         deposit.DepositCost.Value / request.Amount
                         : 0,
+                    IsDeposited = true,
                 };
 
                 await installmentScheduleRepository.AddAsync(installmentSchedule);
+
+                // chuyển sản phẩm sang đã bán
+                product.ProductStatusId = 3; // Đã bán
 
                 var added = await unitOfWork.SaveChangesAsync();
                 if (added <= 0)
@@ -218,7 +222,7 @@ namespace CRM.Application.Services
             {
                 var contracts = await contractRepository.GetContractsByCustomerIdAsync(customerId);
 
-                if (!contracts.Any())
+                if (contracts.Count() == 0)
                 {
                     return Result.Failure<IEnumerable<ContractDto>>(new("NOT_FOUND", "Không thấy hợp đồng nào của khashc hàng"));
                 }
@@ -347,6 +351,7 @@ namespace CRM.Application.Services
                 contract.ContractDescription = request.Description;
 
                 contractRepository.Update(contract);
+
                 var updated = await unitOfWork.SaveChangesAsync();
                 if (updated <= 0)
                 {

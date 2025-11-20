@@ -107,6 +107,7 @@ namespace CRM.UI.ViewModels.ContractManagement
             ContractId = contractItem.Id;
             await InitializeAsync();
             await GetPaymentSchedulesAsync();
+            await GetContractStatusesAsync();
         }
         #endregion
 
@@ -412,13 +413,13 @@ namespace CRM.UI.ViewModels.ContractManagement
         #endregion
 
         #region Property changed
-        partial void OnIsEditModeChanged(bool value)
-        {
-            if (value)
-            {
-                _ = GetContractStatusesAsync();
-            }
-        }
+        //partial void OnIsEditModeChanged(bool value)
+        //{
+        //    if (value)
+        //    {
+        //        _ = GetContractStatusesAsync();
+        //    }
+        //}
 
         partial void OnAmountBeforeTaxChanged(decimal value)
         {

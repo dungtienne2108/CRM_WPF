@@ -188,21 +188,21 @@
                     <!-- Giai đoạn -->
                     <DataGridTextColumn Header="Giai đoạn" 
                                         Binding="{Binding OpportunityStatus.Name}"
-                                        Width="130"
+                                        Width="180"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                     <!-- Khách hàng -->
                     <DataGridTextColumn Header="Khách hàng" 
                                         Binding="{Binding Customer.Name}"
-                                        Width="160"
+                                        Width="200"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                     <!-- Lãi dự kiến -->
                     <DataGridTextColumn Header="Lãi dự kiến (VNĐ)" 
                                         Binding="{Binding ExpectedPrice, Converter={StaticResource CurrencyFormatConverter}}"
-                                        Width="130"
+                                        Width="150"
                                         IsReadOnly="True">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
@@ -214,7 +214,7 @@
                     <!-- Lãi thực tế -->
                     <DataGridTextColumn Header="Lãi thực tế (VNĐ)" 
                                         Binding="{Binding RealPrice, Converter={StaticResource CurrencyFormatConverter}}"
-                                        Width="130"
+                                        Width="150"
                                         IsReadOnly="True">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">

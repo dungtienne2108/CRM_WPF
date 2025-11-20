@@ -148,6 +148,7 @@ namespace CRM.UI.ViewModels.LeadManagement
             await GetLeadStageAsync();
             await GetLeadSourceAsync();
             await GetProjectsAsync();
+            await SearchEmployeesAsync();
         }
 
         #region Command
@@ -271,7 +272,7 @@ namespace CRM.UI.ViewModels.LeadManagement
         {
             try
             {
-                IsProjectDropDownOpen = true;
+                //IsProjectDropDownOpen = true;
                 var getProjectRequest = new GetProjectRequest
                 {
                     Keyword = ProjectSearchKeyword,
@@ -329,19 +330,19 @@ namespace CRM.UI.ViewModels.LeadManagement
 
         private async Task SearchEmployeesAsync()
         {
-            IsEmployeeDropDownOpen = true;
-            if (string.IsNullOrEmpty(EmployeeSearchKeyword))
-            {
-                IsEmployeeDropDownOpen = false;
-                EmployeeSuggestions.Clear();
-                return;
-            }
+            //IsEmployeeDropDownOpen = true;
+            //if (string.IsNullOrEmpty(EmployeeSearchKeyword))
+            //{
+            //    IsEmployeeDropDownOpen = false;
+            //    EmployeeSuggestions.Clear();
+            //    return;
+            //}
 
             var request = new GetEmployeeRequest
             {
                 Keyword = EmployeeSearchKeyword,
                 PageNumber = 1,
-                PageSize = 10
+                PageSize = 1000
             };
 
             var pagedEmployee = await _employeeService.GetAllEmployeesAsync(request);

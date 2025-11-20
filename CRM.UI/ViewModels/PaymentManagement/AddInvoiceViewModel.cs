@@ -147,7 +147,7 @@ namespace CRM.UI.ViewModels.PaymentManagement
         {
             try
             {
-                IsContractDropdownOpen = true;
+                //IsContractDropdownOpen = true;
                 var getContractRequest = new GetContractRequest
                 {
                     Keyword = ContractSearchKeyword,

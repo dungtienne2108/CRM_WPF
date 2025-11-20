@@ -134,6 +134,12 @@ namespace CRM.UI.ViewModels.ContractManagement
         {
             try
             {
+                if (AmountBeforeTax < ProductPrice)
+                {
+                    MessageBox.Show($"Số tiền trước thuế không được nhỏ hơn giá sản phẩm ({ProductPrice:N0} VND).", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
                 var createContractRequest = new CreateContractRequest
                 {
                     ContractName = ContractName,
@@ -257,6 +263,17 @@ namespace CRM.UI.ViewModels.ContractManagement
 
         partial void OnAmountBeforeTaxChanged(decimal value)
         {
+            if (AmountBeforeTax < ProductPrice)
+            {
+                MessageBox.Show($"Số tiền trước thuế không được nhỏ hơn giá sản phẩm ({ProductPrice:N0} VND).", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                AmountBeforeTax = ProductPrice;
+                return;
+            }
+            else
+            {
+                ClearErrors(nameof(AmountBeforeTax));
+            }
+
             AmountAfterTax = AmountBeforeTax + (AmountBeforeTax * Tax / 100);
             Amount = AmountAfterTax - DepositAmount;
         }

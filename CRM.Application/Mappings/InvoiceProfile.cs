@@ -17,7 +17,7 @@ namespace CRM.Application.Mappings
                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.TotalAmount))
                 .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreateDate))
                 .ForMember(dest => dest.DueDate, opt => opt.MapFrom(src => src.DueDate.HasValue ? src.DueDate.Value.ToDateTime(TimeOnly.MinValue) : DateTime.MinValue))
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.IsPaid ? "Đã thanh toán" : "Chưa thanh toán"))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
                 .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.Contract.CustomerId))
                 .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.Contract.Customer.CustomerName));
         }

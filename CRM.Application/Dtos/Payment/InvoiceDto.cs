@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using CRM.Domain.Models;
+using System.ComponentModel;
 
 namespace CRM.Application.Dtos.Payment
 {
@@ -35,7 +36,7 @@ namespace CRM.Application.Dtos.Payment
         public DateTime DueDate { get; set; }
 
         [DisplayName("Trạng thái")]
-        public string Status { get; set; } = string.Empty;
+        public InvoiceStatus Status { get; set; }
 
         public int CustomerId { get; set; }
 
