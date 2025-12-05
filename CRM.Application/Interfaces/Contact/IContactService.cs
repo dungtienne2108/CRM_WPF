@@ -11,5 +11,7 @@ namespace CRM.Application.Interfaces.Contact
         Task<IEnumerable<ContactDto>> GetContactsByCustomerIdAsync(int customerId);
         Task<Result<ContactDto?>> GetContactByIdAsync(int contactId);
         Task<Result> DeleteContactAsync(int contactId);
+        Task<IEnumerable<ContactSalutationOptions>> GetContactSalutationOptionsAsync();
+        Task<IEnumerable<ContactTypeOption>> GetContactTypeOptionsAsync();
     }
 }

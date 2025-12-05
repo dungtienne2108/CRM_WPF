@@ -248,7 +248,7 @@ namespace CRM.UI.ViewModels.OpportunityManagement
         {
             try
             {
-                IsProjectDropDownOpen = true;
+                //IsProjectDropDownOpen = true;
                 var getProjectRequest = new GetProjectRequest
                 {
                     Keyword = ProjectSearchKeyword,
@@ -273,6 +273,12 @@ namespace CRM.UI.ViewModels.OpportunityManagement
             {
                 ProductOptions.Clear();
                 var result = await _projectService.GetProductsByProjectIdAsync(projectId);
+                if (!result.Any())
+                {
+                    ProductOptions.Clear();
+                    MessageBox.Show("Dự án hiện tại đã hết sản phẩm.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
                 foreach (var product in result)
                 {
                     ProductOptions.Add(product);

@@ -49,6 +49,8 @@ namespace CRM.UI.ViewModels.ContractManagement
         [ObservableProperty]
         private decimal _tax;
         [ObservableProperty]
+        private decimal _taxAmount;
+        [ObservableProperty]
         private decimal _amountAfterTax;
         [ObservableProperty]
         private decimal _amount;
@@ -279,7 +281,7 @@ namespace CRM.UI.ViewModels.ContractManagement
                     AmountBeforeTax = AmountBeforeTax,
                     Tax = Tax,
                     AmountAfterTax = AmountAfterTax,
-                    Amount = Amount,
+                    Amount = AmountAfterTax,
                     StartDate = StartDate,
                     EndDate = EndDate,
                     Description = ContractDescription
@@ -347,6 +349,7 @@ namespace CRM.UI.ViewModels.ContractManagement
                     ContractDescription = contract.Description;
                     AmountBeforeTax = contract.AmountBeforeTax;
                     Tax = contract.Tax;
+                    TaxAmount = contract.AmountAfterTax - contract.AmountBeforeTax;
                     AmountAfterTax = contract.AmountAfterTax;
                     Amount = contract.Amount;
                     StartDate = contract.StartDate;
@@ -425,12 +428,14 @@ namespace CRM.UI.ViewModels.ContractManagement
         {
             AmountAfterTax = AmountBeforeTax + (AmountBeforeTax * Tax / 100);
             Amount = AmountAfterTax - DepositAmount;
+            TaxAmount = AmountBeforeTax * Tax / 100;
         }
 
         partial void OnTaxChanged(decimal value)
         {
             AmountAfterTax = AmountBeforeTax + (AmountBeforeTax * Tax / 100);
             Amount = AmountAfterTax - DepositAmount;
+            TaxAmount = AmountBeforeTax * Tax / 100;
         }
         #endregion
     }

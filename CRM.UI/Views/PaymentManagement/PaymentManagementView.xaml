@@ -175,13 +175,13 @@
                         <!-- Email -->
                         <DataGridTextColumn Header="Tồng tiền (VNĐ)" 
                                         Binding="{Binding Amount, Converter={StaticResource CurrencyFormatConverter}}"
-                                        Width="180"
+                                        Width="220"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Địa chỉ -->
                         <DataGridTextColumn Header="Ngày thanh toán" 
-                                        Binding="{Binding PaymentDate}"
+                                        Binding="{Binding PaymentDate, StringFormat={}{0:dd/MM/yyyy}}"
                                         Width="*"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>

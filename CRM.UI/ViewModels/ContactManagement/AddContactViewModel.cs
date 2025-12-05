@@ -20,7 +20,15 @@ namespace CRM.UI.ViewModels.ContactManagement
         [ObservableProperty]
         private ObservableCollection<SalutationOption> _salutationOptions = new();
         [ObservableProperty]
+        [NotifyDataErrorInfo]
+        [Required(ErrorMessage = "Vui lòng chọn danh xưng")]
         private int _salutationId;
+        [ObservableProperty]
+        private ObservableCollection<ContactTypeOption> _contactTypeOptions = new();
+        [ObservableProperty]
+        [NotifyDataErrorInfo]
+        [Required(ErrorMessage = "Vui lòng chọn loại liên hệ")]
+        private int _contactTypeId;
 
         [ObservableProperty]
         [NotifyDataErrorInfo]
@@ -72,6 +80,7 @@ namespace CRM.UI.ViewModels.ContactManagement
         public async Task LoadDataAsync()
         {
             await LoadSalutationsAsync();
+            await LoadContactTypesAsync();
             await GetCustomersAsync();
         }
         #endregion
@@ -111,7 +120,8 @@ namespace CRM.UI.ViewModels.ContactManagement
                 Email = ContactEmail,
                 Phone = ContactPhone,
                 Address = ContactAddress,
-                Description = ContactDescription
+                Description = ContactDescription,
+                ContactTypeId = ContactTypeId
             };
 
             if (CustomerId.HasValue)
@@ -136,6 +146,12 @@ namespace CRM.UI.ViewModels.ContactManagement
         {
             var options = await _customerService.GetAllSalutationsAsync();
             SalutationOptions = new(options);
+        }
+
+        private async Task LoadContactTypesAsync()
+        {
+            var options = await _contactService.GetContactTypeOptionsAsync();
+            ContactTypeOptions = new(options);
         }
 
         private async Task GetCustomersAsync()

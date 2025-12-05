@@ -22,6 +22,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<ContactSalutation> ContactSalutations { get; set; }
 
+    public virtual DbSet<ContactType> ContactTypes { get; set; }
+
     public virtual DbSet<Contract> Contracts { get; set; }
 
     public virtual DbSet<ContractItem> ContractItems { get; set; }
@@ -100,7 +102,7 @@ public partial class AppDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("account_code");
             entity.Property(e => e.AccountDescription)
-                .HasColumnType("text")
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("account_description");
             entity.Property(e => e.AccountName)
                 .HasMaxLength(100)
@@ -158,7 +160,7 @@ public partial class AppDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("contact_address");
             entity.Property(e => e.ContactDescription)
-                .HasColumnType("text")
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("contact_description");
             entity.Property(e => e.ContactEmail)
                 .HasMaxLength(100)
@@ -172,6 +174,7 @@ public partial class AppDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("contact_phone");
             entity.Property(e => e.ContactSalutationId).HasColumnName("contact_salutation_id");
+            entity.Property(e => e.ContactTypeId).HasColumnName("contact_type_id");
             entity.Property(e => e.CreateBy)
                 .HasMaxLength(100)
                 .IsUnicode(false)
@@ -184,6 +187,10 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.ContactSalutation).WithMany(p => p.Contacts)
                 .HasForeignKey(d => d.ContactSalutationId)
                 .HasConstraintName("fk_contact_salutation");
+
+            entity.HasOne(d => d.ContactType).WithMany(p => p.Contacts)
+                .HasForeignKey(d => d.ContactTypeId)
+                .HasConstraintName("fk_contact_type");
         });
 
         modelBuilder.Entity<ContactSalutation>(entity =>
@@ -205,6 +212,28 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("contact_salutation_name");
+        });
+
+        modelBuilder.Entity<ContactType>(entity =>
+        {
+            entity.HasKey(e => e.ContactTypeId).HasName("PK__contact___3A81B3272D8C2C1E");
+
+            entity.ToTable("contact_type");
+
+            entity.HasIndex(e => e.ContactTypeCode, "UQ__contact___D4C9E3B2E2E2F6C3").IsUnique();
+
+            entity.Property(e => e.ContactTypeId)
+                .ValueGeneratedNever()
+                .HasColumnName("contact_type_id");
+            entity.Property(e => e.ContactTypeCode)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("contact_type_code");
+            entity.Property(e => e.ContactTypeName)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("contact_type_name")
+                .HasColumnType("nvarchar");
         });
 
         modelBuilder.Entity<Contract>(entity =>
@@ -361,7 +390,7 @@ public partial class AppDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("customer_code");
             entity.Property(e => e.CustomerDescription)
-                .HasColumnType("text")
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("customer_description");
             entity.Property(e => e.CustomerEmail)
                 .HasMaxLength(100)
@@ -465,7 +494,7 @@ public partial class AppDbContext : DbContext
                 .HasColumnType("decimal(18, 2)")
                 .HasColumnName("deposit_cost");
             entity.Property(e => e.Description)
-                .HasColumnType("text")
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("description");
             entity.Property(e => e.OpportunityId).HasColumnName("opportunity_id");
 
@@ -502,7 +531,7 @@ public partial class AppDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("employee_code");
             entity.Property(e => e.EmployeeDescription)
-                .HasColumnType("text")
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("employee_description");
             entity.Property(e => e.EmployeeEmail)
                 .HasMaxLength(100)

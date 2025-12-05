@@ -58,6 +58,8 @@ namespace CRM.UI.ViewModels.ContractManagement
         [Range(0, 100, ErrorMessage = "Thuế phải từ 0 đến 100")]
         private decimal _tax;
         [ObservableProperty]
+        private decimal _taxAmount;
+        [ObservableProperty]
         [NotifyDataErrorInfo]
         [Required(ErrorMessage = "Số tiền thực thu không được để trống")]
         [Range(0, double.MaxValue, ErrorMessage = "Số tiền thực thu phải lớn hơn hoặc bằng 0")]
@@ -151,7 +153,7 @@ namespace CRM.UI.ViewModels.ContractManagement
                     AmountBeforeTax = AmountBeforeTax,
                     Tax = Tax,
                     AmountAfterTax = AmountAfterTax,
-                    Amount = Amount,
+                    Amount = AmountAfterTax,
                     StartDate = StartDate,
                     EndDate = EndDate,
                     DepositId = DepositId,
@@ -249,7 +251,7 @@ namespace CRM.UI.ViewModels.ContractManagement
                 EmployeeId = value.EmployeeId;
                 CustomerId = value.CustomerId;
                 CustomerName = value.CustomerName;
-                AmountBeforeTax = value.Amount;
+                AmountBeforeTax = value.ProductPrice;
                 ProjectId = value.ProductId;
                 ProductId = value.ProductId;
                 ProductName = value.ProductName;
@@ -275,12 +277,14 @@ namespace CRM.UI.ViewModels.ContractManagement
             }
 
             AmountAfterTax = AmountBeforeTax + (AmountBeforeTax * Tax / 100);
+            TaxAmount = AmountBeforeTax * Tax / 100;
             Amount = AmountAfterTax - DepositAmount;
         }
 
         partial void OnTaxChanged(decimal value)
         {
             AmountAfterTax = AmountBeforeTax + (AmountBeforeTax * Tax / 100);
+            TaxAmount = AmountBeforeTax * Tax / 100;
             Amount = AmountAfterTax - DepositAmount;
         }
 

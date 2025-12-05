@@ -164,8 +164,6 @@ namespace CRM.UI.ViewModels.CustomerManagement
                 {
                     EmployeeSuggestions.Add(employee);
                 }
-
-                IsEmployeeDropDownOpen = EmployeeSuggestions.Any();
             }
             catch (Exception)
 

@@ -5,6 +5,7 @@ using CRM.UI.ViewModels.Base;
 using CRM.UI.Views.Admin.ProjectManagement;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace CRM.UI.ViewModels.Admin.ProjectManagement
 {
@@ -110,6 +111,13 @@ namespace CRM.UI.ViewModels.Admin.ProjectManagement
             try
             {
                 var products = await _projectService.GetProductsByProjectIdAsync(projectId);
+
+                if (!products.Any())
+                {
+                    Products.Clear();
+                    MessageBox.Show("Dự án hiện tại đã hết sản phẩm.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
 
                 Products.Clear();
 

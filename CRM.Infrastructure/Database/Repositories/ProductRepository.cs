@@ -25,7 +25,7 @@ namespace CRM.Infrastructure.Database.Repositories
             var products = await _context.Products
                 .Include(p => p.ProductType)
                 .Include(p => p.ProductStatus)
-                .Where(p => p.ProjectId == projectId && p.ProductStatusId != 3)
+                .Where(p => p.ProjectId == projectId && p.ProductStatusId == 1)
                 .AsSplitQuery()
                 .ToListAsync();
 

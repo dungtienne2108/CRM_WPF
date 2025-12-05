@@ -145,21 +145,21 @@
                     <!-- Tên -->
                     <DataGridTextColumn Header="Họ và tên" 
                     Binding="{Binding Name}"
-                    Width="180"
+                    Width="220"
                     IsReadOnly="True"
                     ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                     <!-- Số điện thoại -->
                     <DataGridTextColumn Header="Số điện thoại" 
                     Binding="{Binding Phone}"
-                    Width="120"
+                    Width="180"
                     IsReadOnly="True"
                     ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                     <!-- Email -->
                     <DataGridTextColumn Header="Email" 
                     Binding="{Binding Email}"
-                    Width="180"
+                    Width="220"
                     IsReadOnly="True"
                     ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
@@ -173,7 +173,7 @@
                     <!-- Địa chỉ -->
                     <DataGridTextColumn Header="Địa chỉ" 
                     Binding="{Binding Address}"
-                    Width="200"
+                    Width="220"
                     IsReadOnly="True"
                     ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 

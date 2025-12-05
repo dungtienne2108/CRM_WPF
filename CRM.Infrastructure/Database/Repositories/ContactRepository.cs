@@ -26,9 +26,24 @@ namespace CRM.Infrastructure.Database.Repositories
             return await _context.Contacts
                 .AsNoTracking()
                 .Include(c => c.ContactSalutation)
+                .Include(c => c.ContactType)
                 .Include(c => c.CustomerContacts)
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(c => c.ContactId == contactId);
+        }
+
+        public async Task<IEnumerable<ContactSalutation>> GetContactSalutationsAsync()
+        {
+            return await _context.ContactSalutations
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<ContactType>> GetContactTypesAsync()
+        {
+            return await _context.ContactTypes
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task<PagedResult<Contact>> GetContactsAsync(ContactFilter filter)

@@ -71,7 +71,16 @@ namespace CRM.Infrastructure.Database.Repositories
                 .AsSplitQuery()
                 .AsQueryable();
 
-            return query.FirstOrDefaultAsync(o => o.OpportunityId == id);
+            var opportunity = query.FirstOrDefaultAsync(o => o.OpportunityId == id);
+
+            if (opportunity != null)
+            {
+                // reload entity to ensure all navigation properties are loaded
+                _context.Entry(opportunity).Reload();
+                return opportunity;
+            }
+
+            return null;
         }
     }
 }

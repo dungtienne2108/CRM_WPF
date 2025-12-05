@@ -8,6 +8,7 @@
         public string Phone { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public int ContactTypeId { get; set; }
         public int? CustomerId { get; set; }
     }
 }

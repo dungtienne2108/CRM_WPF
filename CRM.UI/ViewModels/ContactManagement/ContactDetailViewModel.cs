@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CRM.Application.Dtos.Contact;
 using CRM.Application.Dtos.Customer;
 using CRM.Application.Dtos.Lead;
 using CRM.Application.Interfaces.Contact;
@@ -34,12 +35,18 @@ namespace CRM.UI.ViewModels.ContactManagement
         [ObservableProperty]
         private int _salutationId;
         [ObservableProperty]
+        private string _contactTypeName = string.Empty;
+        [ObservableProperty]
+        private int _contactTypeId;
+        [ObservableProperty]
         private int? _customerId;
         [ObservableProperty]
         private string? _customerName = string.Empty;
 
         [ObservableProperty]
         private ObservableCollection<SalutationOption> _salutationOptions = new();
+        [ObservableProperty]
+        private ObservableCollection<ContactTypeOption> _contactTypeOptions = new();
 
         [ObservableProperty]
         private ObservableCollection<CustomerDto> _customerOptions = new();
@@ -74,6 +81,7 @@ namespace CRM.UI.ViewModels.ContactManagement
             ContactId = contactId;
             await GetContactAsync(contactId);
             await LoadSalutationOptionsAsync();
+            await LoadContactTypeOptionsAsync();
             await GetCustomersAsync();
         }
         #endregion
@@ -143,6 +151,7 @@ namespace CRM.UI.ViewModels.ContactManagement
                     Address = ContactAddress,
                     Description = ContactDescription,
                     SalutationId = SalutationId,
+                    ContactTypeId = ContactTypeId,
                     CustomerId = CustomerId
                 };
                 var updateResult = await _contactService.UpdateContactAsync(updateDto);
@@ -200,6 +209,8 @@ namespace CRM.UI.ViewModels.ContactManagement
                     ContactDescription = contact.Description ?? string.Empty;
                     SalutationId = contact.SalutationId;
                     SalutationName = contact.Salutation ?? string.Empty;
+                    ContactTypeId = contact.ContactTypeId;
+                    ContactTypeName = contact.ContactType ?? string.Empty;
 
                     CustomerId = contact.CustomerId;
                     var customerResult = await _customerService.GetCustomerById(contact.CustomerId.Value);
@@ -228,6 +239,22 @@ namespace CRM.UI.ViewModels.ContactManagement
                 foreach (var salutation in salutationResult)
                 {
                     SalutationOptions.Add(salutation);
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private async Task LoadContactTypeOptionsAsync()
+        {
+            try
+            {
+                var contactTypeResult = await _contactService.GetContactTypeOptionsAsync();
+                ContactTypeOptions.Clear();
+                foreach (var contactType in contactTypeResult)
+                {
+                    ContactTypeOptions.Add(contactType);
                 }
             }
             catch (Exception)

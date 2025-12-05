@@ -50,6 +50,23 @@ namespace CRM.Application.Services
                     return Result.Failure<int>(new("PRODUCT_NOT_FOUND", "Sản phẩm không tồn tại"));
                 }
 
+                var existingDepositByProduct = await depositRepository.GetDepositByProductIdAsync(product.ProductId);
+                // nếu đặt cọc đã tồn tại nhưng hết hạn thì cho phép đặt cọc lại và xóa đặt cọc cũ
+                if (existingDepositByProduct != null)
+                {
+                    if (existingDepositByProduct.EndDate < DateTime.UtcNow)
+                    {
+                        // hết hạn xóa và cho đặt lại
+                        depositRepository.Remove(existingDepositByProduct);
+                    }
+                    else
+                    {
+                        // còn hiệu lực không cho đặt
+                        return Result.Failure<int>(new("DUPLICATE_DEPOSIT_PRODUCT", "Sản phẩm đã được người khác đặt cọc."));
+                    }
+                }
+
+
                 if (request.ContactId.HasValue)
                 {
                     var contact = await contactRepository.GetByIdAsync(request.ContactId.Value);
@@ -90,6 +107,11 @@ namespace CRM.Application.Services
                 };
 
                 await depositRepository.AddAsync(deposit);
+
+                // cập nhật trạng thái sản phẩm để tránh đặt cọc trùng
+                product.ProductStatusId = 2;
+                productRepository.Update(product);
+
                 var added = await unitOfWork.SaveChangesAsync();
 
                 if (added > 0)

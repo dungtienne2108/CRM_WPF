@@ -37,9 +37,18 @@ namespace CRM.Application.Services
                 }
 
                 var product = await productRepository.GetByIdAsync(request.ProductId);
-                if (product != null && product.ProductStatusId == 2)
+                if (product == null)
+                {
+                    return Result.Failure(new("", "Không tìm thấy sản phẩm"));
+                }
+
+                if (product.ProductStatusId == 2)
                 {
                     return Result.Failure(new("", "Sản phẩm đã được giữ chỗ"));
+                }
+                else if (product.ProductStatusId == 3)
+                {
+                    return Result.Failure(new("", "Sản phẩm đã được bán"));
                 }
 
                 opportunity.OpportunityItems.Add(
@@ -68,6 +77,16 @@ namespace CRM.Application.Services
 
         public async Task<OpportunityDto> AddOpportunityAsync(AddOpportunityRequest request)
         {
+            if (string.IsNullOrWhiteSpace(request.OpportunityName))
+            {
+                throw new ArgumentException("Tên cơ hội không được để trống");
+            }
+
+            if (request.OpportunityItems == null || !request.OpportunityItems.Any())
+            {
+                throw new ArgumentException("Cơ hội phải có ít nhất một sản phẩm");
+            }
+
             var opportunity = new Opportunity
             {
                 OpportunityName = request.OpportunityName,

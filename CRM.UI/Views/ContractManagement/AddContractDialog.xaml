@@ -197,7 +197,7 @@
 
                         <TextBox Grid.Row="3" Grid.Column="1"
                            Style="{StaticResource MaterialTextBox}"
-                           materialDesign:HintAssist.Hint="Thuế"
+                           materialDesign:HintAssist.Hint="Thuế suất (%)"
                            Padding="8,4,8,4"
                            Margin="8,8,0,8"
                            VerticalContentAlignment="Center"
@@ -216,12 +216,12 @@
 
                         <TextBox Grid.Row="4" Grid.Column="1"
                            Style="{StaticResource MaterialTextBox}"
-                           materialDesign:HintAssist.Hint="Thực thu"
+                           materialDesign:HintAssist.Hint="Tiền thuế"
                            Padding="8,4,8,4"
                            Margin="8,8,0,8"
                            VerticalContentAlignment="Center"
                                  IsReadOnly="True"
-                           Text="{Binding Amount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StringToDecimalConverter}}"                                     
+                           Text="{Binding TaxAmount, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StringToDecimalConverter}}"  
                            />
 
                         <DatePicker Grid.Column="0" Grid.Row="5"
@@ -277,7 +277,7 @@
                                     Margin="8,8,0,8"
                                     Padding="8,4,8,4"
                                      IsReadOnly="True"
-                                    Text="{Binding DepositAmount}"/>
+                                    Text="{Binding DepositAmount, Converter={StaticResource StringToDecimalConverter}}"/>
                     </Grid>
 
                     <Grid>

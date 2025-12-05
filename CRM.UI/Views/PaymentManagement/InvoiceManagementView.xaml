@@ -163,35 +163,35 @@
                         <!-- Công ty -->
                         <DataGridTextColumn Header="Tên hợp đồng" 
                                         Binding="{Binding ContractName}"
-                                        Width="180"
+                                        Width="220"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Số điện thoại -->
                         <DataGridTextColumn Header="Phương thức thanh toán" 
                                         Binding="{Binding PaymentMethod}"
-                                        Width="180"
+                                        Width="220"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Email -->
                         <DataGridTextColumn Header="Tồng tiền (VNĐ)" 
                                         Binding="{Binding Amount, Converter={StaticResource CurrencyFormatConverter}}"
-                                        Width="140"
+                                        Width="180"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Địa chỉ -->
                         <DataGridTextColumn Header="Ngày xuất hóa đơn" 
-                                        Binding="{Binding CreatedDate}"
+                                        Binding="{Binding CreatedDate, StringFormat={}{0:dd/MM/yyyy}}"
                                         Width="160"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Mức độ tiềm năng -->
                         <DataGridTextColumn Header="Ngày đến hạn" 
-                                        Binding="{Binding DueDate}"
-                                        Width="140"
+                                        Binding="{Binding DueDate, StringFormat={}{0:dd/MM/yyyy}}"
+                                        Width="160"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 

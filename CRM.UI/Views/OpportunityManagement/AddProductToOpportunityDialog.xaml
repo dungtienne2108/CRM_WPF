@@ -14,6 +14,7 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
         <converters:StringToIntConverter x:Key="StringToIntConverter"/>
+        <converters:StringToDecimalConveter x:Key="StringToDecimalConverter"/>
 
         <Style x:Key="MaterialCard" TargetType="Border">
             <Setter Property="Background" Value="White"/>
@@ -144,7 +145,7 @@
                            Padding="8,4,8,4"
                            Margin="8,8,0,8"
                            VerticalContentAlignment="Center"
-                           Text="{Binding ProductPrice, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"   
+                           Text="{Binding ProductPrice, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StringToDecimalConverter}}"   
                                  IsReadOnly="True"
                             />
 

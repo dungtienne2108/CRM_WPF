@@ -9,6 +9,7 @@ using CRM.Application.Interfaces.Project;
 using CRM.UI.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.Windows;
 
 namespace CRM.UI.ViewModels.LeadManagement
 {
@@ -297,6 +298,14 @@ namespace CRM.UI.ViewModels.LeadManagement
             {
                 ProductOptions.Clear();
                 var result = await _projectService.GetProductsByProjectIdAsync(projectId);
+
+                if (!result.Any())
+                {
+                    ProductOptions.Clear();
+                    MessageBox.Show("Dự án hiện tại đã hết sản phẩm.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
                 foreach (var product in result)
                 {
                     ProductOptions.Add(product);

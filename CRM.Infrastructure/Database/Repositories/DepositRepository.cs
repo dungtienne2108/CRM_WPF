@@ -32,6 +32,22 @@ namespace CRM.Infrastructure.Database.Repositories
             return deposit;
         }
 
+        public async Task<Deposit?> GetDepositByProductIdAsync(int productId)
+        {
+            var deposit = await _context.Deposits
+                //.Include(c => c.Opportunity)
+                //.Include(c => c.Customer)
+                //.Include(c => c.Contact)
+                //.Include(c => c.Employee)
+                //.Include(c => c.Product)
+                //    .ThenInclude(p => p.Project)
+                .AsNoTracking()
+                .AsSplitQuery()
+                .FirstOrDefaultAsync(d => d.ProductId == productId);
+
+            return deposit;
+        }
+
         public async Task<PagedResult<Deposit>> GetDepositsAsync(DepositFilter filter)
         {
             var query = _context.Deposits

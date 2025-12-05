@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace CRM.Domain.Models;
+﻿namespace CRM.Domain.Models;
 
 public partial class Contact
 {
@@ -17,6 +14,8 @@ public partial class Contact
 
     public int? ContactSalutationId { get; set; }
 
+    public int? ContactTypeId { get; set; }
+
     public string? ContactDescription { get; set; }
 
     public DateTime? CreateDate { get; set; }
@@ -24,6 +23,8 @@ public partial class Contact
     public string? CreateBy { get; set; }
 
     public virtual ContactSalutation? ContactSalutation { get; set; }
+
+    public virtual ContactType? ContactType { get; set; }
 
     public virtual ICollection<CustomerContact> CustomerContacts { get; set; } = new List<CustomerContact>();
 }

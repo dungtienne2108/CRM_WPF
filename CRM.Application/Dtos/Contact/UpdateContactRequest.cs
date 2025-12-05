@@ -9,6 +9,7 @@
         public string Address { get; set; } = string.Empty;
         public string? Description { get; set; }
         public int SalutationId { get; set; }
+        public int ContactTypeId { get; set; }
         public int? CustomerId { get; set; }
     }
 }

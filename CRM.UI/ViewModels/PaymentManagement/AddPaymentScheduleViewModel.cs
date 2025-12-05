@@ -27,6 +27,12 @@ namespace CRM.UI.ViewModels.PaymentManagement
         [ObservableProperty]
         private string _employeeName = string.Empty;
 
+        // số tiền đã thanh tonas và còn lại
+        [ObservableProperty]
+        private decimal _paidAmount;
+        [ObservableProperty]
+        private decimal _remainingAmount;
+
         [ObservableProperty]
         [NotifyDataErrorInfo]
         [Required(ErrorMessage = "Vui lòng nhập tên kế hoạch thanh toán")]
@@ -165,7 +171,7 @@ namespace CRM.UI.ViewModels.PaymentManagement
         #region Property changed
         partial void OnAmountChanged(decimal value)
         {
-            if (value >= ContractValue)
+            if (value > ContractValue)
             {
                 Amount = 0;
                 ValuePercentage = 0;

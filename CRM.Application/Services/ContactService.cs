@@ -28,6 +28,7 @@ namespace CRM.Application.Services
                     ContactPhone = request.Phone,
                     ContactAddress = request.Address,
                     ContactDescription = request.Description,
+                    ContactTypeId = request.ContactTypeId
                 };
 
                 await contactRepository.AddAsync(contact);
@@ -98,6 +99,19 @@ namespace CRM.Application.Services
             return Result.Success<ContactDto?>(contactDto);
         }
 
+        public async Task<IEnumerable<ContactSalutationOptions>> GetContactSalutationOptionsAsync()
+        {
+            var contactSalutations = await contactRepository.GetContactSalutationsAsync();
+
+            var salutationOptions = contactSalutations.Select(s => new ContactSalutationOptions
+            {
+                Id = s.ContactSalutationId,
+                Name = s.ContactSalutationName
+            });
+
+            return salutationOptions;
+        }
+
         public async Task<PagedResult<ContactDto>> GetContactsAsync(GetContactRequest request)
         {
             //if (memoryCache.TryGetValue($"Contacts_{request.Keyword}_{request.PageNumber}_{request.PageSize}", out PagedResult<ContactDto>? cachedContacts))
@@ -135,6 +149,19 @@ namespace CRM.Application.Services
             return mapper.Map<IEnumerable<ContactDto>>(contacts);
         }
 
+        public async Task<IEnumerable<ContactTypeOption>> GetContactTypeOptionsAsync()
+        {
+            var contactTypes = await contactRepository.GetContactTypesAsync();
+
+            var typeOptions = contactTypes.Select(t => new ContactTypeOption
+            {
+                Id = t.ContactTypeId,
+                Name = t.ContactTypeName
+            });
+
+            return typeOptions;
+        }
+
         public async Task<Result<ContactDto>> UpdateContactAsync(UpdateContactRequest request)
         {
             try
@@ -153,6 +180,7 @@ namespace CRM.Application.Services
                 contact.ContactAddress = request.Address;
                 contact.ContactDescription = request.Description;
                 contact.ContactSalutationId = request.SalutationId;
+                contact.ContactTypeId = request.ContactTypeId;
 
                 if (request.CustomerId.HasValue)
                 {

@@ -17,6 +17,9 @@ namespace CRM.Application.Dtos.Contact
         public int SalutationId { get; set; }
         [DisplayName("Xưng hô")]
         public string? Salutation { get; set; } = string.Empty;
+        public int ContactTypeId { get; set; }
+        [DisplayName("Loại liên hệ")]
+        public string? ContactType { get; set; } = string.Empty;
         [DisplayName("Ngày tạo")]
         public DateTime CreatedDate { get; set; }
         [DisplayName("Mô tả")]

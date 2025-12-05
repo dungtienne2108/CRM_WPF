@@ -10,5 +10,7 @@ namespace CRM.Domain.Interfaces
         Task<Contact?> GetContactByIdAsync(int contactId);
         Task<PagedResult<Contact>> GetContactsAsync(ContactFilter filter);
         Task<IEnumerable<Contact>> GetContactsByCustomerIdAsync(int customerId);
+        Task<IEnumerable<ContactSalutation>> GetContactSalutationsAsync();
+        Task<IEnumerable<ContactType>> GetContactTypesAsync();
     }
 }

@@ -4,6 +4,7 @@ using CRM.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRM.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251204153126_AddContactTypeTable")]
+    partial class AddContactTypeTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,7 +41,7 @@ namespace CRM.Infrastructure.Migrations
                         .HasColumnName("account_code");
 
                     b.Property<string>("AccountDescription")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasColumnName("account_description");
 
                     b.Property<string>("AccountName")
@@ -131,7 +134,7 @@ namespace CRM.Infrastructure.Migrations
                         .HasColumnName("contact_address");
 
                     b.Property<string>("ContactDescription")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasColumnName("contact_description");
 
                     b.Property<string>("ContactEmail")
@@ -528,7 +531,7 @@ namespace CRM.Infrastructure.Migrations
                         .HasColumnName("customer_code");
 
                     b.Property<string>("CustomerDescription")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasColumnName("customer_description");
 
                     b.Property<string>("CustomerEmail")
@@ -705,7 +708,7 @@ namespace CRM.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasColumnName("description");
 
                     b.Property<int?>("EmployeeId")
@@ -782,7 +785,7 @@ namespace CRM.Infrastructure.Migrations
                         .HasColumnName("employee_code");
 
                     b.Property<string>("EmployeeDescription")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasColumnName("employee_description");
 
                     b.Property<string>("EmployeeEmail")

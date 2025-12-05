@@ -9,5 +9,6 @@ namespace CRM.Domain.Interfaces
         Task<PagedResult<Deposit>> GetDepositsAsync(DepositFilter filter);
         Task<Deposit?> GetDepositByIdAsync(int depositId);
         Task<IEnumerable<Deposit>> GetDepositsByCustomerIdAsync(int customerId);
+        Task<Deposit?> GetDepositByProductIdAsync(int productId);
     }
 }
