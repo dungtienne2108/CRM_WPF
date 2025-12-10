@@ -192,6 +192,11 @@ namespace CRM.Application.Services
 
         public async Task<List<CustomerTypeOption>> GetAllCustomerTypeAsync()
         {
+            if (memoryCache.TryGetValue("CustomerTypeOptions", out List<CustomerTypeOption>? cachedCustomerTypes))
+            {
+                return cachedCustomerTypes;
+            }
+
             var customerTypes = await customerTypeRepository.GetAllAsync();
 
             var customerTypeOptions = customerTypes

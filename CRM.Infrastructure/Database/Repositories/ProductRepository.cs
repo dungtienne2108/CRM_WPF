@@ -20,6 +20,17 @@ namespace CRM.Infrastructure.Database.Repositories
                 .FirstOrDefaultAsync(p => p.ProductId == productId);
         }
 
+        public async Task<IEnumerable<Product>> GetProductsByIdsAsync(IEnumerable<int> productIds)
+        {
+            return await _context.Products
+                .Include(p => p.ProductType)
+                .Include(p => p.ProductStatus)
+                .Where(p => productIds.Contains(p.ProductId))
+                .AsSplitQuery()
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<Product>> GetProductsByProjectIdAsync(int projectId)
         {
             var products = await _context.Products

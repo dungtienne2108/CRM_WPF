@@ -129,10 +129,10 @@ namespace CRM.Application.Services
 
         public async Task<IEnumerable<LeadPotentialLevelDto>> GetAllLeadPotentialLevelsAsync()
         {
-            //if (memoryCache.TryGetValue("LeadPotentialLevels", out IEnumerable<LeadPotentialLevelDto> cachedLevels))
-            //{
-            //    return cachedLevels;
-            //}
+            if (memoryCache.TryGetValue("LeadPotentialLevels", out IEnumerable<LeadPotentialLevelDto> cachedLevels))
+            {
+                return cachedLevels;
+            }
 
             var leadPotentialLevels = await leadPotentialLevelRepository.GetAllAsync();
 
@@ -142,7 +142,7 @@ namespace CRM.Application.Services
                 Name = lpl.LeadPotentialLevelName
             });
 
-            //memoryCache.Set("LeadPotentialLevels", leadPotentialLevelOptions, TimeSpan.FromHours(1));
+            memoryCache.Set("LeadPotentialLevels", leadPotentialLevelOptions, TimeSpan.FromHours(1));
 
             return leadPotentialLevelOptions;
         }
@@ -174,10 +174,10 @@ namespace CRM.Application.Services
 
         public async Task<IEnumerable<LeadSourceDto>> GetAllLeadSourcesAsync()
         {
-            //if (memoryCache.TryGetValue("LeadSources", out IEnumerable<LeadSourceDto> cachedSources))
-            //{
-            //    return cachedSources;
-            //}
+            if (memoryCache.TryGetValue("LeadSources", out IEnumerable<LeadSourceDto>? cachedSources))
+            {
+                return cachedSources;
+            }
 
             var leadSources = await leadSourceRepository.GetAllAsync();
 
@@ -187,17 +187,17 @@ namespace CRM.Application.Services
                 Name = ls.LeadSourceName
             });
 
-            //memoryCache.Set("LeadSources", leadSourceOptions, TimeSpan.FromHours(1));
+            memoryCache.Set("LeadSources", leadSourceOptions, TimeSpan.FromHours(1));
 
             return leadSourceOptions;
         }
 
         public async Task<IEnumerable<LeadStageDto>> GetAllLeadStagesAsync()
         {
-            //if (memoryCache.TryGetValue("LeadStages", out IEnumerable<LeadStageDto> cachedStages))
-            //{
-            //    return cachedStages;
-            //}
+            if (memoryCache.TryGetValue("LeadStages", out IEnumerable<LeadStageDto> cachedStages))
+            {
+                return cachedStages;
+            }
 
             var leadStages = await leadStageRepository.GetAllAsync();
 
@@ -207,7 +207,7 @@ namespace CRM.Application.Services
                 Name = ls.LeadStageName
             });
 
-            //memoryCache.Set("LeadStages", leadStageOptions, TimeSpan.FromHours(1));
+            memoryCache.Set("LeadStages", leadStageOptions, TimeSpan.FromHours(1));
 
             return leadStageOptions;
         }
@@ -216,10 +216,10 @@ namespace CRM.Application.Services
         {
             try
             {
-                //if (memoryCache.TryGetValue($"Lead_{leadId}", out LeadDto cachedLead))
-                //{
-                //    return Result.Success(cachedLead);
-                //}
+                if (memoryCache.TryGetValue($"Lead_{leadId}", out LeadDto? cachedLead))
+                {
+                    return Result.Success(cachedLead);
+                }
 
                 var lead = await leadRepository.GetLeadByIdAsync(leadId);
 
@@ -230,7 +230,7 @@ namespace CRM.Application.Services
 
                 var leadDto = mapper.Map<LeadDto>(lead);
 
-                //memoryCache.Set($"Lead_{leadId}", leadDto, TimeSpan.FromMinutes(10));
+                memoryCache.Set($"Lead_{leadId}", leadDto, TimeSpan.FromMinutes(10));
 
                 return Result.Success(leadDto);
             }
@@ -265,7 +265,7 @@ namespace CRM.Application.Services
                 var changed = await unitOfWork.SaveChangesAsync();
                 if (changed > 0)
                 {
-                    //memoryCache.Remove($"Lead_{lead.LeadId}");
+                    memoryCache.Remove($"Lead_{lead.LeadId}");
                     return Result.Success();
                 }
                 else
@@ -313,7 +313,7 @@ namespace CRM.Application.Services
             await unitOfWork.SaveChangesAsync();
             await unitOfWork.CommitTransactionAsync();
 
-            //memoryCache.Remove($"Lead_{lead.LeadId}");
+            memoryCache.Remove($"Lead_{lead.LeadId}");
 
             var leadDto = mapper.Map<LeadDto>(lead);
             return Result.Success(leadDto);
@@ -360,7 +360,7 @@ namespace CRM.Application.Services
                 if (changed > 0)
                 {
                     var leadDto = mapper.Map<LeadDto>(lead);
-                    //memoryCache.Remove($"Lead_{lead.LeadId}");
+                    memoryCache.Remove($"Lead_{lead.LeadId}");
                     return Result.Success<LeadDto>(leadDto);
                 }
                 else
@@ -395,7 +395,7 @@ namespace CRM.Application.Services
 
                 if (changed > 0)
                 {
-                    //memoryCache.Remove($"Lead_{lead.LeadId}");
+                    memoryCache.Remove($"Lead_{lead.LeadId}");
                     return Result.Success<LeadDto>(leadDto);
                 }
                 else

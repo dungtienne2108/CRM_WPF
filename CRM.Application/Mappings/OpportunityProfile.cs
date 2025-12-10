@@ -12,10 +12,12 @@ namespace CRM.Application.Mappings
             CreateMap<OpportunityItem, OpportunityItemDto>()
                 .ForMember(dest => dest.OpportunityId, opt => opt.MapFrom(src => src.OpportunityId))
                 .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
-                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.ProductName))
-                .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.Product.Project.ProjectName))
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product != null ? src.Product.ProductName : null))
+                .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.Product != null ? src.Product.Project.ProjectName : null))
                 .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
-                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.SalePrice));
+                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.SalePrice))
+                .ForMember(dest => dest.ProductStatusId, opt => opt.MapFrom(src => src.Product.ProductStatusId))
+                .ForMember(dest => dest.ProductStatus, opt => opt.MapFrom(src => src.Product.ProductStatus.ProductStatusName));
 
             CreateMap<OpportunityStage, OpportunityStatusOption>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.OpportunityStageId))

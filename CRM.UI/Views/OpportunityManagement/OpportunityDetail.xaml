@@ -570,7 +570,7 @@
                                                     AutoGenerateColumns="False"
                                                     CanUserAddRows="False"
                                                     CanUserDeleteRows="False"
-                                                    IsReadOnly="True"
+                                                    IsReadOnly="False"
                                                     HeadersVisibility="Column"
                                                     GridLinesVisibility="Horizontal"
                                                     SelectionMode="Single"
@@ -583,26 +583,51 @@
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Dự án" 
                   Binding="{Binding ProjectName}" 
+                                                                    IsReadOnly="True"
                   Width="*"
                   MinWidth="100"/>
                                                 <DataGridTextColumn Header="Sản phẩm" 
                   Binding="{Binding ProductName}" 
+                                                                    IsReadOnly="True"
                   Width="*"
                   MinWidth="80"/>
                                                 <DataGridTextColumn Header="Diện tích" 
                   Binding="{Binding ProductArea}" 
+                                                                    IsReadOnly="True"
                   Width="*"
                   MinWidth="100"/>
                                                 <DataGridTextColumn Header="Giá gốc (VNĐ)" 
                   Binding="{Binding ProductPrice, Converter={StaticResource CurrencyFormatConverter}}" 
+                                                                    IsReadOnly="True"
                   Width="*"
                   MinWidth="120"/>
-                                                <DataGridTextColumn Header="Trạng thái" 
-                  Binding="{Binding ProductStatusName}" 
-                  Width="*"
-                  MinWidth="120"/>
+                                                <DataGridTemplateColumn Header="Trạng thái" MinWidth="120">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <!-- Hiển thị dạng text -->
+                                                            <TextBlock Text="{Binding ProductStatusName}" />
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+
+                                                    <DataGridTemplateColumn.CellEditingTemplate>
+                                                        <DataTemplate>
+                                                            <!-- Khi edit -> hiện ComboBox -->
+                                                            <ComboBox
+                                                                ItemsSource="{Binding DataContext.ProductStatusOptions, 
+                                                                                      RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                SelectedValue="{Binding DataContext.SelectedStatusOptionId,
+                                                                RelativeSource={RelativeSource AncestorType=DataGrid}
+                                                                , Mode=TwoWay}"
+                                                                SelectedValuePath="Id"
+                                                                DisplayMemberPath="Name"
+                                                                />
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellEditingTemplate>
+                                                </DataGridTemplateColumn>
+
                                                 <DataGridTextColumn Header="Loại sản phẩm" 
                   Binding="{Binding ProductTypeName}" 
+                                                                    IsReadOnly="True"
                   Width="*"
                   MinWidth="120"/>
                                             </DataGrid.Columns>

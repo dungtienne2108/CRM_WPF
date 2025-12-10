@@ -109,7 +109,7 @@ namespace CRM.Application.Services
                 await depositRepository.AddAsync(deposit);
 
                 // cập nhật trạng thái sản phẩm để tránh đặt cọc trùng
-                product.ProductStatusId = 2;
+                product.ProductStatusId = 4;
                 productRepository.Update(product);
 
                 var added = await unitOfWork.SaveChangesAsync();

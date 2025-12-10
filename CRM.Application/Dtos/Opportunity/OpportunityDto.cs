@@ -72,5 +72,10 @@ namespace CRM.Application.Dtos.Opportunity
 
         [DisplayName("Đơn giá")]
         public decimal Price { get; set; }
+
+        public int ProductStatusId { get; set; }
+
+        [DisplayName("Trạng thái sản phẩm")]
+        public string ProductStatus { get; set; } = null!;
     }
 }

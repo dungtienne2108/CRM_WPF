@@ -37,8 +37,8 @@ namespace CRM.Application.Services
                 if (request.CustomerId.HasValue)
                 {
                     await contactRepository.AssignContactToCustomerAsync(contact.ContactId, request.CustomerId.Value);
+                    memoryCache.Remove($"CustomerContacts_{request.CustomerId.Value}");
                     await unitOfWork.SaveChangesAsync();
-
                 }
 
                 await unitOfWork.CommitTransactionAsync();
@@ -65,6 +65,7 @@ namespace CRM.Application.Services
                 var deleted = await unitOfWork.SaveChangesAsync();
                 if (deleted > 0)
                 {
+                    memoryCache.Remove($"Contact_{contactId}");
                     return Result.Success();
                 }
                 else
@@ -80,10 +81,10 @@ namespace CRM.Application.Services
 
         public async Task<Result<ContactDto?>> GetContactByIdAsync(int contactId)
         {
-            //if (memoryCache.TryGetValue($"Contact_{contactId}", out ContactDto? cachedContact))
-            //{
-            //    return Result.Success(cachedContact);
-            //}
+            if (memoryCache.TryGetValue($"Contact_{contactId}", out ContactDto? cachedContact))
+            {
+                return Result.Success(cachedContact);
+            }
 
             var contact = await contactRepository.GetContactByIdAsync(contactId);
 
@@ -94,13 +95,18 @@ namespace CRM.Application.Services
 
             var contactDto = mapper.Map<ContactDto>(contact);
 
-            //memoryCache.Set($"Contact_{contactId}", contactDto, TimeSpan.FromMinutes(10));
+            memoryCache.Set($"Contact_{contactId}", contactDto, TimeSpan.FromMinutes(10));
 
             return Result.Success<ContactDto?>(contactDto);
         }
 
         public async Task<IEnumerable<ContactSalutationOptions>> GetContactSalutationOptionsAsync()
         {
+            if (memoryCache.TryGetValue("ContactSalutationOptions", out IEnumerable<ContactSalutationOptions>? cachedSalutations))
+            {
+                return cachedSalutations;
+            }
+
             var contactSalutations = await contactRepository.GetContactSalutationsAsync();
 
             var salutationOptions = contactSalutations.Select(s => new ContactSalutationOptions
@@ -108,6 +114,8 @@ namespace CRM.Application.Services
                 Id = s.ContactSalutationId,
                 Name = s.ContactSalutationName
             });
+
+            memoryCache.Set("ContactSalutationOptions", salutationOptions, TimeSpan.FromHours(1));
 
             return salutationOptions;
         }
@@ -137,20 +145,25 @@ namespace CRM.Application.Services
 
         public async Task<IEnumerable<ContactDto>> GetContactsByCustomerIdAsync(int customerId)
         {
-            //if (memoryCache.TryGetValue($"CustomerContacts_{customerId}", out IEnumerable<ContactDto>? cachedContacts))
-            //{
-            //    return cachedContacts;
-            //}
+            if (memoryCache.TryGetValue($"CustomerContacts_{customerId}", out IEnumerable<ContactDto>? cachedContacts))
+            {
+                return cachedContacts;
+            }
 
             var contacts = await contactRepository.GetContactsByCustomerIdAsync(customerId);
 
-            //memoryCache.Set($"CustomerContacts_{customerId}", mapper.Map<IEnumerable<ContactDto>>(contacts), TimeSpan.FromMinutes(10));
+            memoryCache.Set($"CustomerContacts_{customerId}", mapper.Map<IEnumerable<ContactDto>>(contacts), TimeSpan.FromMinutes(10));
 
             return mapper.Map<IEnumerable<ContactDto>>(contacts);
         }
 
         public async Task<IEnumerable<ContactTypeOption>> GetContactTypeOptionsAsync()
         {
+            if (memoryCache.TryGetValue("ContactTypeOptions", out IEnumerable<ContactTypeOption>? cachedTypes))
+            {
+                return cachedTypes;
+            }
+
             var contactTypes = await contactRepository.GetContactTypesAsync();
 
             var typeOptions = contactTypes.Select(t => new ContactTypeOption
@@ -158,6 +171,8 @@ namespace CRM.Application.Services
                 Id = t.ContactTypeId,
                 Name = t.ContactTypeName
             });
+
+            memoryCache.Set("ContactTypeOptions", typeOptions, TimeSpan.FromHours(1));
 
             return typeOptions;
         }
@@ -191,6 +206,8 @@ namespace CRM.Application.Services
                 var updated = await unitOfWork.SaveChangesAsync();
                 if (updated > 0)
                 {
+                    memoryCache.Remove($"CustomerContacts_{request.CustomerId}");
+                    memoryCache.Remove($"Contact_{request.Id}");
                     var contactDto = mapper.Map<ContactDto>(contact);
                     return Result.Success(contactDto);
                 }

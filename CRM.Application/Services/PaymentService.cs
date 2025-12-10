@@ -56,6 +56,7 @@ namespace CRM.Application.Services
 
                 if (added > 0)
                 {
+                    memoryCache.Remove($"Invoice_{invoice.InvoiceId}");
                     return Result.Success(invoice.InvoiceId);
                 }
                 else
@@ -105,6 +106,7 @@ namespace CRM.Application.Services
                 var added = await unitOfWork.SaveChangesAsync();
                 if (added > 0)
                 {
+                    memoryCache.Remove($"Payment_{payment.PaymentId}");
                     return Result.Success(payment.PaymentId);
                 }
                 else
@@ -155,6 +157,7 @@ namespace CRM.Application.Services
 
                 if (added > 0)
                 {
+                    memoryCache.Remove($"PaymentSchedules_Contract_{request.ContractId}");
                     return Result.Success(installmentSchedule.InstallmentId);
                 }
                 else
@@ -186,6 +189,7 @@ namespace CRM.Application.Services
 
                 if (deleted > 0)
                 {
+                    memoryCache.Remove($"Payment_{paymentId}");
                     return Result.Success();
                 }
 
@@ -198,6 +202,11 @@ namespace CRM.Application.Services
         {
             try
             {
+                if (memoryCache.TryGetValue($"Invoice_{invoiceId}", out InvoiceDto cachedInvoice))
+                {
+                    return Result.Success(cachedInvoice);
+                }
+
                 var invoice = await invoiceRepository.GetInvoiceByIdAsync(invoiceId);
                 if (invoice == null)
                 {
@@ -205,6 +214,8 @@ namespace CRM.Application.Services
                 }
 
                 var invoiceDto = mapper.Map<InvoiceDto>(invoice);
+
+                memoryCache.Set($"Invoice_{invoiceId}", invoiceDto, TimeSpan.FromMinutes(5));
 
                 return Result.Success(invoiceDto);
             }
@@ -242,6 +253,11 @@ namespace CRM.Application.Services
         {
             try
             {
+                if (memoryCache.TryGetValue($"Payment_{paymentId}", out PaymentDto cachedPayment))
+                {
+                    return Result.Success(cachedPayment);
+                }
+
                 var payment = await paymentRepository.GetPaymentByIdAsync(paymentId);
                 if (payment == null)
                 {
@@ -249,6 +265,8 @@ namespace CRM.Application.Services
                 }
 
                 var paymentDto = mapper.Map<PaymentDto>(payment);
+
+                memoryCache.Set($"Payment_{paymentId}", paymentDto, TimeSpan.FromMinutes(5));
 
                 return Result.Success(paymentDto);
             }
@@ -262,17 +280,20 @@ namespace CRM.Application.Services
         {
             try
             {
-                //if (memoryCache.TryGetValue("PaymentMethodOptions", out IEnumerable<PaymentMethodOption> cachedOptions))
-                //{
-                //    return Result.Success(cachedOptions);
-                //}
+                if (memoryCache.TryGetValue("PaymentMethodOptions", out IEnumerable<PaymentMethodOption>? cachedOptions))
+                {
+                    return Result.Success(cachedOptions);
+                }
+
                 var paymentMethods = await paymentMethodRepository.GetAllAsync();
                 var paymentMethodOptions = paymentMethods.Select(pm => new PaymentMethodOption
                 {
                     Id = pm.PaymentMethodId,
                     Name = pm.PaymentMethodName
                 });
-                //memoryCache.Set("PaymentMethodOptions", paymentMethodOptions, TimeSpan.FromHours(1));
+
+                memoryCache.Set("PaymentMethodOptions", paymentMethodOptions, TimeSpan.FromHours(1));
+
                 return Result.Success(paymentMethodOptions);
             }
             catch (Exception ex)
@@ -317,10 +338,10 @@ namespace CRM.Application.Services
         {
             try
             {
-                //if (memoryCache.TryGetValue($"PaymentSchedules_Contract_{contractId}", out IEnumerable<PaymentScheduleDto> cachedSchedules))
-                //{
-                //    return Result.Success(cachedSchedules);
-                //}
+                if (memoryCache.TryGetValue($"PaymentSchedules_Contract_{contractId}", out IEnumerable<PaymentScheduleDto>? cachedSchedules))
+                {
+                    return Result.Success(cachedSchedules);
+                }
 
                 var paymentSchedules = await paymentScheduleRepository.FindAsync(ps => ps.ContractId == contractId);
 
@@ -335,7 +356,7 @@ namespace CRM.Application.Services
                     Status = ps.Status
                 });
 
-                //memoryCache.Set($"PaymentSchedules_Contract_{contractId}", paymentScheduleDtos, TimeSpan.FromMinutes(1));
+                memoryCache.Set($"PaymentSchedules_Contract_{contractId}", paymentScheduleDtos, TimeSpan.FromMinutes(1));
 
                 return Result.Success(paymentScheduleDtos);
             }
@@ -365,6 +386,7 @@ namespace CRM.Application.Services
                 if (updated > 0)
                 {
                     var invoiceDto = mapper.Map<InvoiceDto>(invoice);
+                    memoryCache.Remove($"Invoice_{invoice.InvoiceId}");
                     return Result.Success(invoiceDto);
                 }
                 else

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CRM.Application.Dtos.Project;
+using CRM.Application.Interfaces;
 using CRM.Application.Interfaces.Project;
 using CRM.Domain.Filters;
 using CRM.Domain.Interfaces;
@@ -9,10 +10,12 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace CRM.Application.Services
 {
-    public class ProjectService(IProjectRepository projectRepository,
+    public class ProjectService(
+            IProjectRepository projectRepository,
             IProductRepository productRepository,
             IRepository<ProductType> productTypeRepository,
             IRepository<ProductStatus> productStatusRepository,
+            ISessionService sessionService,
             IUnitOfWork unitOfWork,
             IMapper mapper,
             IMemoryCache memoryCache) : IProjectService
@@ -44,8 +47,8 @@ namespace CRM.Application.Services
 
                 if (added > 0)
                 {
-                    //memoryCache.Remove("AllProducts");
-                    //memoryCache.Remove($"Products_Project_{request.ProjectId}");
+                    memoryCache.Remove("AllProducts");
+                    memoryCache.Remove($"Products_Project_{request.ProjectId}");
                     return Result.Success(product.ProductId);
                 }
                 else
@@ -77,7 +80,7 @@ namespace CRM.Application.Services
 
                 if (added > 0)
                 {
-                    //memoryCache.Remove("AllProjects");
+                    memoryCache.Remove("AllProjects");
                     return Result.Success(project.ProjectId);
                 }
                 else
@@ -135,26 +138,26 @@ namespace CRM.Application.Services
 
         public async Task<IEnumerable<ProjectDto>> GetAllProjectsAsync()
         {
-            //if (memoryCache.TryGetValue("AllProjects", out IEnumerable<ProjectDto>? cachedProjects))
-            //{
-            //    return cachedProjects;
-            //}
+            if (memoryCache.TryGetValue("AllProjects", out IEnumerable<ProjectDto>? cachedProjects))
+            {
+                return cachedProjects;
+            }
 
             var projects = await projectRepository.GetAllAsync();
 
             var projectDtos = mapper.Map<IEnumerable<ProjectDto>>(projects);
 
-            //memoryCache.Set("AllProjects", projectDtos, TimeSpan.FromMinutes(1));
+            memoryCache.Set("AllProjects", projectDtos, TimeSpan.FromMinutes(1));
 
             return projectDtos;
         }
 
         public async Task<Result<ProductDto?>> GetProductByIdAsync(int productId)
         {
-            //if (memoryCache.TryGetValue($"Product_{productId}", out ProductDto? cachedProduct))
-            //{
-            //    return Result.Success(cachedProduct);
-            //}
+            if (memoryCache.TryGetValue($"Product_{productId}", out ProductDto? cachedProduct))
+            {
+                return Result.Success(cachedProduct);
+            }
 
             var product = await productRepository.GetProductByIdAsync(productId);
 
@@ -165,50 +168,50 @@ namespace CRM.Application.Services
 
             var productDto = mapper.Map<ProductDto>(product);
 
-            //memoryCache.Set($"Product_{productId}", productDto, TimeSpan.FromMinutes(10));
+            memoryCache.Set($"Product_{productId}", productDto, TimeSpan.FromMinutes(10));
 
             return Result.Success<ProductDto?>(productDto);
         }
 
         public async Task<Result<IEnumerable<ProductDto>>> GetProductByOpportunityIdAsync(int opportunityId)
         {
-            //if (memoryCache.TryGetValue($"Products_Opportunity_{opportunityId}", out IEnumerable<ProductDto>? cachedProducts))
-            //{
-            //    return Result.Success(cachedProducts);
-            //}
+            if (memoryCache.TryGetValue($"Products_Opportunity_{opportunityId}", out IEnumerable<ProductDto>? cachedProducts))
+            {
+                return Result.Success(cachedProducts);
+            }
 
             var products = await projectRepository.GetProductsByOpportunityIdAsync(opportunityId);
 
             var productDtos = mapper.Map<IEnumerable<ProductDto>>(products);
 
-            //memoryCache.Set($"Products_Opportunity_{opportunityId}", productDtos, TimeSpan.FromMinutes(10));
+            memoryCache.Set($"Products_Opportunity_{opportunityId}", productDtos, TimeSpan.FromMinutes(10));
 
             return Result.Success(productDtos);
         }
 
         public async Task<IEnumerable<ProductDto>> GetProductsByProjectIdAsync(int projectId)
         {
-            //if (memoryCache.TryGetValue($"Products_Project_{projectId}", out IEnumerable<ProductDto>? cachedProducts))
-            //{
-            //    return cachedProducts;
-            //}
+            if (memoryCache.TryGetValue($"Products_Project_{projectId}", out IEnumerable<ProductDto>? cachedProducts))
+            {
+                return cachedProducts;
+            }
 
             // trừ cái đã bán
             var products = await productRepository.GetProductsByProjectIdAsync(projectId);
 
             var productDtos = mapper.Map<IEnumerable<ProductDto>>(products);
 
-            //memoryCache.Set($"Products_Project_{projectId}", productDtos, TimeSpan.FromMinutes(10));
+            memoryCache.Set($"Products_Project_{projectId}", productDtos, TimeSpan.FromMinutes(10));
 
             return productDtos;
         }
 
         public async Task<Result<IEnumerable<ProductStatusOption>>> GetProductStatusesAsync()
         {
-            //if (memoryCache.TryGetValue("ProductStatuses", out IEnumerable<ProductStatusOption>? cachedStatuses))
-            //{
-            //    return Result.Success(cachedStatuses);
-            //}
+            if (memoryCache.TryGetValue("ProductStatuses", out IEnumerable<ProductStatusOption>? cachedStatuses))
+            {
+                return Result.Success(cachedStatuses);
+            }
 
             var productStatuses = await productStatusRepository.GetAllAsync();
             var productStatusOptions = productStatuses
@@ -219,16 +222,16 @@ namespace CRM.Application.Services
                 })
                 .ToList();
 
-            //memoryCache.Set("ProductStatuses", productStatusOptions, TimeSpan.FromMinutes(10));
+            memoryCache.Set("ProductStatuses", productStatusOptions, TimeSpan.FromMinutes(10));
             return Result.Success<IEnumerable<ProductStatusOption>>(productStatusOptions);
         }
 
         public async Task<Result<IEnumerable<ProductTypeOption>>> GetProductTypesAsync()
         {
-            //if (memoryCache.TryGetValue("ProductTypes", out IEnumerable<ProductTypeOption>? cachedTypes))
-            //{
-            //    return Result.Success(cachedTypes);
-            //}
+            if (memoryCache.TryGetValue("ProductTypes", out IEnumerable<ProductTypeOption>? cachedTypes))
+            {
+                return Result.Success(cachedTypes);
+            }
 
             var productTypes = await productTypeRepository.GetAllAsync();
             var productTypeOptions = productTypes
@@ -239,16 +242,16 @@ namespace CRM.Application.Services
                 })
                 .ToList();
 
-            //memoryCache.Set("ProductTypes", productTypeOptions, TimeSpan.FromHours(1));
+            memoryCache.Set("ProductTypes", productTypeOptions, TimeSpan.FromHours(1));
             return Result.Success<IEnumerable<ProductTypeOption>>(productTypeOptions);
         }
 
         public async Task<Result<ProjectDto?>> GetProjectByIdAsync(int projectId)
         {
-            //if (memoryCache.TryGetValue($"Project_{projectId}", out ProjectDto? cachedProject))
-            //{
-            //    return Result.Success(cachedProject);
-            //}
+            if (memoryCache.TryGetValue($"Project_{projectId}", out ProjectDto? cachedProject))
+            {
+                return Result.Success(cachedProject);
+            }
 
             var project = await projectRepository.GetByIdAsync(projectId);
 
@@ -259,7 +262,7 @@ namespace CRM.Application.Services
 
             var projectDto = mapper.Map<ProjectDto>(project);
 
-            //memoryCache.Set($"Project_{projectId}", projectDto, TimeSpan.FromMinutes(10));
+            memoryCache.Set($"Project_{projectId}", projectDto, TimeSpan.FromMinutes(10));
 
             return Result.Success<ProjectDto?>(projectDto);
         }
@@ -319,7 +322,7 @@ namespace CRM.Application.Services
                 if (updated > 0)
                 {
                     var productDtp = mapper.Map<ProductDto>(product);
-                    //memoryCache.Remove($"Product_{productDtp.ProductId}");
+                    memoryCache.Remove($"Product_{productDtp.ProductId}");
                     return Result.Success(productDtp);
                 }
                 else
@@ -328,6 +331,42 @@ namespace CRM.Application.Services
                 }
             }
             catch { throw; }
+        }
+
+        public async Task<Result> UpdateProductStatusAsync(int productId, int productStatusId)
+        {
+            try
+            {
+                var product = await productRepository.GetByIdAsync(productId);
+                if (product == null)
+                {
+                    return Result.Failure(new Error("PRODUCT_NOT_FOUND", $"Không tìm thấy sản phẩm với Id: {productId}"));
+                }
+
+                // kiểm tra nếu product đã có updatedBy thì updatedBy phải trung user hiện tại mới được cập nhật trạng thái
+                if (product.ProductStatusId != 1 && !string.IsNullOrEmpty(product.UpdatedBy) && product.UpdatedBy != sessionService.CurrentAccount.EmployeeId.ToString())
+                {
+                    return Result.Failure(new Error("PRODUCT_UPDATE_FORBIDDEN", "Bạn không có quyền cập nhật trạng thái sản phẩm này"));
+                }
+
+                product.ProductStatusId = productStatusId;
+                product.UpdatedBy = sessionService.CurrentAccount.EmployeeId.ToString();
+                productRepository.Update(product);
+                var updated = await unitOfWork.SaveChangesAsync();
+                if (updated > 0)
+                {
+                    memoryCache.Remove($"Product_{product.ProductId}");
+                    return Result.Success();
+                }
+                else
+                {
+                    return Result.Failure(new Error("UPDATE_PRODUCT_STATUS_FAILED", "Lỗi xảy ra khi cập nhật trạng thái sản phẩm"));
+                }
+            }
+            catch
+            {
+                throw;
+            }
         }
     }
 }

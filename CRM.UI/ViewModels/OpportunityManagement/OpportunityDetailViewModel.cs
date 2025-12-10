@@ -5,6 +5,7 @@ using CRM.Application.Dtos.Lead;
 using CRM.Application.Dtos.Opportunity;
 using CRM.Application.Dtos.Project;
 using CRM.Application.Interfaces.Opportunity;
+using CRM.Application.Interfaces.Project;
 using CRM.UI.ViewModels.Base;
 using CRM.UI.ViewModels.DepositManagement;
 using CRM.UI.ViewModels.LeadManagement;
@@ -20,6 +21,7 @@ namespace CRM.UI.ViewModels.OpportunityManagement
     public partial class OpportunityDetailViewModel : ViewModelBase
     {
         private readonly IOpportunityService _opportunityService;
+        private readonly IProjectService _projectService;
         private readonly IServiceProvider _serviceProvider;
 
         [ObservableProperty]
@@ -71,6 +73,10 @@ namespace CRM.UI.ViewModels.OpportunityManagement
 
         [ObservableProperty]
         private ObservableCollection<OpportunityStatusOption> _statusOptions;
+        [ObservableProperty]
+        private ObservableCollection<ProductStatusOption> _productStatusOptions;
+        [ObservableProperty]
+        private int _selectedStatusOptionId;
 
         [ObservableProperty]
         private bool _isEditMode = false;
@@ -87,9 +93,11 @@ namespace CRM.UI.ViewModels.OpportunityManagement
 
         public OpportunityDetailViewModel(
             IOpportunityService opportunityService,
+            IProjectService projectService,
             IServiceProvider serviceProvider)
         {
             _opportunityService = opportunityService;
+            _projectService = projectService;
             _serviceProvider = serviceProvider;
         }
 
@@ -106,6 +114,7 @@ namespace CRM.UI.ViewModels.OpportunityManagement
             Opportunity = opportunity;
             await LoadOpportunityAsync();
             await LoadOpportunityStatusAsync();
+            await LoadProductStatusesAsync();
             await InitializeStatusOptions();
         }
         #region Private Methods
@@ -345,6 +354,46 @@ namespace CRM.UI.ViewModels.OpportunityManagement
             }
         }
 
+        private async Task LoadProductStatusesAsync()
+        {
+            var result = await _projectService.GetProductStatusesAsync();
+            if (result.IsSuccess)
+            {
+                ProductStatusOptions = new ObservableCollection<ProductStatusOption>(result.Value);
+            }
+            else
+            {
+                ProductStatusOptions = new ObservableCollection<ProductStatusOption>();
+            }
+        }
+
+        private async Task UpdateProductStatusAsync(int productId, int newStatusId)
+        {
+            try
+            {
+                if (SelectedProduct != null && SelectedProduct.ProductStatusId == newStatusId)
+                {
+                    MessageBox.Show("Trạng thái sản phẩm không thay đổi.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                var result = await _projectService.UpdateProductStatusAsync(productId, newStatusId);
+                if (result.IsSuccess)
+                {
+                    await LoadOpportunityAsync();
+                    MessageBox.Show("Cập nhật trạng thái sản phẩm thành công.", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show($"{result.Error.Message}", "Thất bại", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show($"Cập nhật trạng thái sản phẩm thất bại. Vui lòng kiểm tra lại.", "Thất bại", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         public bool CanDelete() => SelectedProduct != null;
         #endregion
 
@@ -358,6 +407,14 @@ namespace CRM.UI.ViewModels.OpportunityManagement
             else
             {
                 IsSelectedProduct = false;
+            }
+        }
+
+        partial void OnSelectedStatusOptionIdChanged(int value)
+        {
+            if (SelectedProduct != null)
+            {
+                _ = UpdateProductStatusAsync(SelectedProduct.ProductId, value);
             }
         }
         #endregion

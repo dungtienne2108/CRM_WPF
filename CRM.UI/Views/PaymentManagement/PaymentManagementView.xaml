@@ -134,55 +134,55 @@
                         <!-- STT -->
                         <DataGridTextColumn Header="STT" 
                                         Binding="{Binding Index}"
-                                        Width="60"
+                                        Width="0.6*"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- CheckBox -->
                         <DataGridCheckBoxColumn Header="" 
                                             Binding="{Binding IsSelected}"
-                                            Width="50"
+                                            Width="0.5*"
                                             ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"/>
 
                         <!-- Mã -->
                         <DataGridTextColumn Header="Mã" 
                                         Binding="{Binding Code}"
-                                        Width="120"
+                                        Width="1*"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Tên -->
                         <DataGridTextColumn Header="Khách hàng" 
                                         Binding="{Binding CustomerName}"
-                                        Width="220"
+                                        Width="1.5*"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Công ty -->
                         <DataGridTextColumn Header="Hóa đơn" 
                                         Binding="{Binding InvoiceName}"
-                                        Width="220"
+                                        Width="1.5*"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Số điện thoại -->
                         <DataGridTextColumn Header="Phương thức thanh toán" 
                                         Binding="{Binding PaymentMethod}"
-                                        Width="220"
+                                        Width="1.5*"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Email -->
                         <DataGridTextColumn Header="Tồng tiền (VNĐ)" 
                                         Binding="{Binding Amount, Converter={StaticResource CurrencyFormatConverter}}"
-                                        Width="220"
+                                        Width="1.2*"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Địa chỉ -->
                         <DataGridTextColumn Header="Ngày thanh toán" 
                                         Binding="{Binding PaymentDate, StringFormat={}{0:dd/MM/yyyy}}"
-                                        Width="*"
+                                        Width="1*"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
                     </DataGrid.Columns>

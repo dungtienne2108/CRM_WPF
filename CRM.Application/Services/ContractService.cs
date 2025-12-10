@@ -241,10 +241,10 @@ namespace CRM.Application.Services
         {
             try
             {
-                //if (memoryCache.TryGetValue("ContractStages", out IEnumerable<ContractStageOption> cachedStages))
-                //{
-                //    return Result.Success(cachedStages);
-                //}
+                if (memoryCache.TryGetValue("ContractStages", out IEnumerable<ContractStageOption>? cachedStages))
+                {
+                    return Result.Success(cachedStages);
+                }
 
                 var stages = await contractStageRepository.GetAllAsync();
                 var stageOptions = stages
@@ -254,7 +254,7 @@ namespace CRM.Application.Services
                         Name = s.ContractStageName
                     });
 
-                //memoryCache.Set("ContractStages", stageOptions, TimeSpan.FromHours(1));
+                memoryCache.Set("ContractStages", stageOptions, TimeSpan.FromHours(1));
 
                 return Result.Success(stageOptions);
             }
@@ -268,10 +268,10 @@ namespace CRM.Application.Services
         {
             try
             {
-                //if (memoryCache.TryGetValue("ContractTypes", out IEnumerable<ContractTypeOption> cachedTypes))
-                //{
-                //    return Result.Success(cachedTypes);
-                //}
+                if (memoryCache.TryGetValue("ContractTypes", out IEnumerable<ContractTypeOption>? cachedTypes))
+                {
+                    return Result.Success(cachedTypes);
+                }
 
                 var types = await contractTypeRepository.GetAllAsync();
 
@@ -282,7 +282,7 @@ namespace CRM.Application.Services
                         Name = t.ContractTypeName
                     });
 
-                //memoryCache.Set("ContractTypes", typesOptions, TimeSpan.FromHours(1));
+                memoryCache.Set("ContractTypes", typesOptions, TimeSpan.FromHours(1));
 
                 return Result.Success(typesOptions);
             }

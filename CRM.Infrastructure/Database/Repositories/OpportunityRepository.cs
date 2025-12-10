@@ -59,28 +59,33 @@ namespace CRM.Infrastructure.Database.Repositories
                 .ToListAsync();
         }
 
-        public Task<Opportunity?> GetOpportunityByIdAsync(int id)
+        public async Task<Opportunity?> GetOpportunityByIdAsync(int id)
         {
-            var query = _context.Opportunities
+            var opportunity = await _context.Opportunities
                 .Include(o => o.Customer)
                 .Include(o => o.Employee)
                 .Include(o => o.OpportunityStage)
                 .Include(o => o.OpportunityItems)
                     .ThenInclude(oi => oi.Product)
                         .ThenInclude(p => p.Project)
+                .Include(o => o.OpportunityItems)
+                    .ThenInclude(oi => oi.Product)
+                        .ThenInclude(p => p.ProductStatus)
+                .Include(o => o.OpportunityItems)
+                    .ThenInclude(oi => oi.Product)
+                        .ThenInclude(p => p.ProductType)
                 .AsSplitQuery()
-                .AsQueryable();
+                .FirstOrDefaultAsync(o => o.OpportunityId == id);
 
-            var opportunity = query.FirstOrDefaultAsync(o => o.OpportunityId == id);
-
-            if (opportunity != null)
+            if (opportunity == null)
             {
-                // reload entity to ensure all navigation properties are loaded
-                _context.Entry(opportunity).Reload();
-                return opportunity;
+                return null;
             }
 
-            return null;
+            await _context.Entry(opportunity).ReloadAsync();
+
+            return opportunity;
         }
+
     }
 }

@@ -22,11 +22,17 @@ namespace CRM.Infrastructure.Database.Repositories
                 .Include(l => l.LeadItems)
                     .ThenInclude(li => li.Product)
                         .ThenInclude(p => p.Project)
+                .Include(l => l.LeadItems)
+                    .ThenInclude(li => li.Product)
+                        .ThenInclude(p => p.ProductStatus)
+                .Include(l => l.LeadItems)
+                    .ThenInclude(li => li.Product)
+                        .ThenInclude(p => p.ProductType)
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(l => l.LeadId == id, cancellationToken);
 
             if (lead != null)
-                await _context.Entry(lead).ReloadAsync();
+                await _context.Entry(lead).ReloadAsync(cancellationToken);
 
             return lead;
         }

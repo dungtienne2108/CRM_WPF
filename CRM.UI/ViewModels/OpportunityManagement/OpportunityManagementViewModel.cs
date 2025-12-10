@@ -225,7 +225,7 @@ namespace CRM.UI.ViewModels.OpportunityManagement
                 return;
             }
 
-            var detailViewModel = new OpportunityDetailViewModel(_opportunityService, _serviceProvider);
+            var detailViewModel = _serviceProvider.GetRequiredService<OpportunityDetailViewModel>();
             await detailViewModel.LoadDataAsync(opportunity);
             var detailWindow = new OpportunityDetail(detailViewModel);
             detailWindow.Show();

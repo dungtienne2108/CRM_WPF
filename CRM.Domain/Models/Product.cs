@@ -22,6 +22,8 @@ public partial class Product
 
     public string? CreateBy { get; set; }
 
+    public string? UpdatedBy { get; set; }
+
     public int ProductTypeId { get; set; }
 
     public int? ProjectId { get; set; }

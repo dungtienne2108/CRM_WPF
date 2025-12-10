@@ -152,27 +152,27 @@
                         <!-- STT -->
                         <DataGridTextColumn Header="STT" 
                                         Binding="{Binding Index}"
-                                        Width="60"
+                                        Width="0.6*"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- CheckBox -->
                         <DataGridCheckBoxColumn Header="" 
                                             Binding="{Binding IsSelected}"
-                                            Width="50"
+                                            Width="0.5*"
                                             ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"/>
 
                         <!-- Mã -->
                         <DataGridTextColumn Header="Mã" 
                                         Binding="{Binding Code}"
-                                        Width="100"
+                                        Width="1*"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Tên -->
                         <DataGridTextColumn Header="Tên" 
                                         Binding="{Binding Name}"
-                                        Width="200"
+                                        Width="1.5*"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
@@ -186,48 +186,48 @@
                         <!-- Số điện thoại -->
                         <DataGridTextColumn Header="Số điện thoại" 
                                         Binding="{Binding Phone}"
-                                        Width="180"
+                                        Width="1.2*"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Email -->
                         <DataGridTextColumn Header="Email" 
                                         Binding="{Binding Email}"
-                                        Width="180"
+                                        Width="1.2*"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Nhân sự phụ trách -->
                         <DataGridTextColumn Header="Nhân sự phụ trách" 
                                         Binding="{Binding EmployeeName}"
-                                        Width="200"
+                                        Width="1.3*"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Địa chỉ -->
                         <DataGridTextColumn Header="Địa chỉ" 
                                         Binding="{Binding Address}"
-                                        Width="240"
+                                        Width="1.5*"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Mức độ tiềm năng -->
                         <DataGridTextColumn Header="Mức độ tiềm năng" 
                                         Binding="{Binding PotentialLevel}"
-                                        Width="160"
+                                        Width="1*"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
                         <!-- Trạng thái -->
                         <DataGridTextColumn Header="Trạng thái" 
                                         Binding="{Binding CurrentStatusDisplay}"
-                                        Width="140"
+                                        Width="0.9*"
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
                         
                         <DataGridTextColumn Header="Mô tả" 
                     Binding="{Binding Description}"
-                    Width="240"
+                    Width="1.3*"
                     IsReadOnly="True"
                     ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 

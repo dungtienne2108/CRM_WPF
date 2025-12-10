@@ -146,10 +146,10 @@ namespace CRM.Application.Services
         {
             try
             {
-                //if (memoryCache.TryGetValue("EmployeeLevels", out IEnumerable<EmployeeLevelOption>? cachedLevels))
-                //{
-                //    return Result.Success(cachedLevels);
-                //}
+                if (memoryCache.TryGetValue("EmployeeLevels", out IEnumerable<EmployeeLevelOption>? cachedLevels))
+                {
+                    return Result.Success(cachedLevels);
+                }
 
                 var employeeLevels = await employeeLevelRepository.GetAllAsync();
 
@@ -159,7 +159,7 @@ namespace CRM.Application.Services
                     Name = el.EmployeeLevelName
                 });
 
-                //memoryCache.Set("EmployeeLevels", employeeLevelOptions, TimeSpan.FromHours(1));
+                memoryCache.Set("EmployeeLevels", employeeLevelOptions, TimeSpan.FromHours(1));
 
                 return Result.Success(employeeLevelOptions);
             }
@@ -203,10 +203,10 @@ namespace CRM.Application.Services
         {
             try
             {
-                //if (memoryCache.TryGetValue("Genders", out IEnumerable<GenderOption>? cachedGenders))
-                //{
-                //    return Result.Success(cachedGenders);
-                //}
+                if (memoryCache.TryGetValue("Genders", out IEnumerable<GenderOption>? cachedGenders))
+                {
+                    return Result.Success(cachedGenders);
+                }
 
                 var genders = await genderRepository.GetAllAsync();
 
@@ -216,7 +216,7 @@ namespace CRM.Application.Services
                     Name = g.GenderName
                 });
 
-                //memoryCache.Set("Genders", genderOptions, TimeSpan.FromHours(1));
+                memoryCache.Set("Genders", genderOptions, TimeSpan.FromHours(1));
 
                 return Result.Success(genderOptions);
             }
@@ -230,10 +230,10 @@ namespace CRM.Application.Services
         {
             try
             {
-                //if (memoryCache.TryGetValue($"Employee_{employeeId}", out EmployeeDto? cachedEmployee))
-                //{
-                //    return Result.Success(cachedEmployee);
-                //}
+                if (memoryCache.TryGetValue($"Employee_{employeeId}", out EmployeeDto? cachedEmployee))
+                {
+                    return Result.Success(cachedEmployee);
+                }
 
                 var employee = await employeeRepository.GetEmployeeByIdAsync(employeeId);
 
@@ -244,7 +244,7 @@ namespace CRM.Application.Services
 
                 var employeeDto = mapper.Map<EmployeeDto>(employee);
 
-                //memoryCache.Set($"Employee_{employeeId}", employeeDto, TimeSpan.FromMinutes(10));
+                memoryCache.Set($"Employee_{employeeId}", employeeDto, TimeSpan.FromMinutes(10));
 
                 return Result.Success(employeeDto);
             }
@@ -280,6 +280,7 @@ namespace CRM.Application.Services
                 if (updated > 0)
                 {
                     // xóa cache
+                    memoryCache.Remove($"Employee_{request.Id}");
                     var employeeDto = mapper.Map<EmployeeDto>(employee);
                     return Result.Success(employeeDto);
                 }

@@ -65,6 +65,8 @@ namespace CRM.Application.Services
                 var added = await unitOfWork.SaveChangesAsync();
                 if (added > 0)
                 {
+                    memoryCache.Remove($"Opportunity_{request.OpportunityId}");
+                    memoryCache.Remove($"Products_Opportunity_{request.OpportunityId}");
                     return Result.Success();
                 }
                 else
@@ -99,6 +101,20 @@ namespace CRM.Application.Services
                 CreateBy = request.EmployeeId.ToString()
             };
 
+            var productIds = request.OpportunityItems.Select(item => item.ProductId).ToList();
+            var products = await productRepository.GetProductsByIdsAsync(productIds);
+
+            if (products.Count() != productIds.Count)
+            {
+                throw new ArgumentException("Một hoặc nhiều sản phẩm không tồn tại");
+            }
+
+            // Kiểm tra trạng thái sản phẩm nếu không phải là "Chưa bán" (id = 1)
+            if (products.Any(p => p.ProductStatusId != 1))
+            {
+                throw new ArgumentException("Một hoặc nhiều sản phẩm đã được giữ chỗ");
+            }
+
             var opportunityItems = request.OpportunityItems.Select(item => new OpportunityItem
             {
                 ProductId = item.ProductId,
@@ -107,17 +123,14 @@ namespace CRM.Application.Services
                 ExceptedProfit = item.ExpectedPrice
             }).ToList();
 
-            opportunity.OpportunityItems = opportunityItems;
-
-            // chuyển sản phẩm thành đã giữ chỗ (id = 2)
-            foreach (var item in opportunityItems)
+            // Cập nhật trạng thái sản phẩm thành "Đã giữ chỗ" (id = 2)
+            foreach (var product in products)
             {
-                var product = await productRepository.GetByIdAsync(item.ProductId.Value);
-                if (product != null)
-                {
-                    product.ProductStatusId = 2;
-                }
+                product.ProductStatusId = 2;
             }
+
+            productRepository.UpdateRange(products);
+            opportunity.OpportunityItems = opportunityItems;
 
             await opportunityRepository.AddAsync(opportunity);
             await unitOfWork.SaveChangesAsync();
@@ -159,6 +172,7 @@ namespace CRM.Application.Services
 
                 if (deleted > 0)
                 {
+                    memoryCache.Remove($"Opportunity_{opportunityId}");
                     return Result.Success();
                 }
 
@@ -195,10 +209,10 @@ namespace CRM.Application.Services
 
         public async Task<List<OpportunityStatusOption>> GetAllOpportunityStatusesAsync()
         {
-            //if (memoryCache.TryGetValue("OpportunityStatuses", out List<OpportunityStatusOption>? cachedStatuses))
-            //{
-            //    return cachedStatuses;
-            //}
+            if (memoryCache.TryGetValue("OpportunityStatuses", out List<OpportunityStatusOption>? cachedStatuses))
+            {
+                return cachedStatuses;
+            }
 
             var stages = await opportunityStageRepository.GetAllAsync();
             var opportunityStageOptions = stages
@@ -209,7 +223,7 @@ namespace CRM.Application.Services
                 })
                 .ToList();
 
-            //memoryCache.Set("OpportunityStatuses", opportunityStageOptions, TimeSpan.FromHours(1));
+            memoryCache.Set("OpportunityStatuses", opportunityStageOptions, TimeSpan.FromHours(1));
 
             return opportunityStageOptions;
         }
@@ -239,10 +253,10 @@ namespace CRM.Application.Services
         {
             try
             {
-                //if (memoryCache.TryGetValue($"Opportunity_{id}", out OpportunityDto? cachedOpportunity))
-                //{
-                //    return Result.Success(cachedOpportunity);
-                //}
+                if (memoryCache.TryGetValue($"Opportunity_{id}", out OpportunityDto? cachedOpportunity))
+                {
+                    return Result.Success(cachedOpportunity);
+                }
 
                 var opportunity = await opportunityRepository.GetOpportunityByIdAsync(id);
 
@@ -253,7 +267,7 @@ namespace CRM.Application.Services
 
                 var opportunityDto = mapper.Map<OpportunityDto>(opportunity);
 
-                //memoryCache.Set($"Opportunity_{id}", opportunityDto, TimeSpan.FromMinutes(10));
+                memoryCache.Set($"Opportunity_{id}", opportunityDto, TimeSpan.FromMinutes(10));
 
                 return Result.Success(opportunityDto);
             }
@@ -283,7 +297,7 @@ namespace CRM.Application.Services
                 var removed = await unitOfWork.SaveChangesAsync();
                 if (removed > 0)
                 {
-                    //memoryCache.Remove($"Opportunity_{opportunityId}");
+                    memoryCache.Remove($"Opportunity_{opportunityId}");
                     return Result.Success();
                 }
                 else
@@ -317,7 +331,7 @@ namespace CRM.Application.Services
                 }
                 var updatedOpportunity = mapper.Map<OpportunityDto>(opportunity);
 
-                //memoryCache.Remove($"Opportunity_{request.OpportunityId}");
+                memoryCache.Remove($"Opportunity_{request.OpportunityId}");
 
                 return Result.Success(updatedOpportunity);
             }
@@ -345,14 +359,18 @@ namespace CRM.Application.Services
 
                 if (opportunity.OpportunityStageId == 1 || opportunity.OpportunityStageId == 4)
                 {
-                    // chuyển sản phẩm trong cơ hội thành Đã giữ chỗ (id = 2)
-                    foreach (var item in opportunity.OpportunityItems)
+                    var productIds = opportunity.OpportunityItems
+                        .Where(item => item.ProductId.HasValue)
+                        .Select(item => item.ProductId!.Value)
+                        .Distinct()
+                        .ToList();
+
+                    var products = await productRepository.GetProductsByIdsAsync(productIds);
+
+                    // chuyển thành đã giữ chỗ (id = 2)
+                    foreach (var product in products)
                     {
-                        var product = await productRepository.GetByIdAsync(item.ProductId.Value);
-                        if (product != null)
-                        {
-                            product.ProductStatusId = 2;
-                        }
+                        product.ProductStatusId = 2;
                     }
                 }
 
@@ -360,7 +378,7 @@ namespace CRM.Application.Services
 
                 var updatedOpportunity = mapper.Map<OpportunityDto>(opportunity);
 
-                //memoryCache.Remove($"Opportunity_{opportunityId}");
+                memoryCache.Remove($"Opportunity_{opportunityId}");
 
                 return Result.Success(updatedOpportunity);
             }

@@ -8,6 +8,7 @@ namespace CRM.Application.Interfaces.Project
         Task<Result<int>> CreateProjectAsync(CreateProjectRequest request);
         Task<Result<int>> CreateProductAsync(CreateProductRequest request);
         Task<Result<ProductDto>> UpdateProductAsync(UpdateProductRequest request);
+        Task<Result> UpdateProductStatusAsync(int productId, int productStatusId);
         Task<Result> DeleteProductAsync(int productId);
         Task<Result<IEnumerable<ProductDto>>> GetProductByOpportunityIdAsync(int opportunityId);
         Task<Result<ProjectDto?>> GetProjectByIdAsync(int projectId);
