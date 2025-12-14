@@ -15,6 +15,7 @@
         public string? EmployeeName { get; set; }
         public string? EmployeeEmail { get; set; }
         public string? EmployeePhone { get; set; }
+        public int EmployeeLevelId { get; set; }
         public DateOnly? EmployeeBirthDay { get; set; }
     }
 }

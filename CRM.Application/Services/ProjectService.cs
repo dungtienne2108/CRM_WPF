@@ -333,7 +333,7 @@ namespace CRM.Application.Services
             catch { throw; }
         }
 
-        public async Task<Result> UpdateProductStatusAsync(int productId, int productStatusId)
+        public async Task<Result> UpdateProductStatusAsync(int opportunityId, int productId, int productStatusId)
         {
             try
             {
@@ -356,6 +356,7 @@ namespace CRM.Application.Services
                 if (updated > 0)
                 {
                     memoryCache.Remove($"Product_{product.ProductId}");
+                    memoryCache.Remove($"Opportunity_{opportunityId}");
                     return Result.Success();
                 }
                 else

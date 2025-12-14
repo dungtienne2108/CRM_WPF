@@ -100,6 +100,13 @@ namespace CRM.Application.Services
                         "Sai thông tin tài khoản hoặc mật khẩu"));
                 }
 
+                if (account.Employee == null)
+                {
+                    return Result.Failure<LoginResponseDto>(new Error(
+                        "INVALID_CREDENTIALS",
+                        "Tài khoản không hợp lệ!"));
+                }
+
                 var accountDto = new AccountDto
                 {
                     AccountId = account.AccountId,
@@ -114,6 +121,7 @@ namespace CRM.Application.Services
                     EmployeeEmail = account.Employee.EmployeeEmail,
                     EmployeePhone = account.Employee.EmployeePhone,
                     EmployeeBirthDay = account.Employee.EmployeeBirthDay,
+                    EmployeeLevelId = account.Employee.EmployeeLevelId != null ? account.Employee.EmployeeLevelId.Value : 0
                 };
 
                 var loginRespone = new LoginResponseDto

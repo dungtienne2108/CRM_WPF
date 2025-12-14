@@ -200,7 +200,7 @@ namespace CRM.UI.ViewModels.OpportunityManagement
         {
             try
             {
-                IsEmployeeDropDownOpen = true;
+                //IsEmployeeDropDownOpen = true;
                 var getEmployeeRequest = new GetEmployeeRequest
                 {
                     Keyword = EmployeeSearchKeyword,
@@ -225,7 +225,7 @@ namespace CRM.UI.ViewModels.OpportunityManagement
         {
             try
             {
-                IsCustomerDropDownOpen = true;
+                //IsCustomerDropDownOpen = true;
                 var getCustomerRequest = new GetCustomerRequest
                 {
                     Keyword = CustomerSearchKeyword,

@@ -38,7 +38,7 @@ namespace CRM.Application.Services
                 }
 
                 var deposit = await depositRepository.GetByIdAsync(request.DepositId);
-                if (deposit == null)
+                if (deposit == null || deposit.IsDeleted)
                 {
                     return Result.Failure<int>(new("Deposit_not_found.", "Không tìm thấy đặt cọc"));
                 }

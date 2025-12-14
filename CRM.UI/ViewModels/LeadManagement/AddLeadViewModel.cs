@@ -127,11 +127,11 @@ namespace CRM.UI.ViewModels.LeadManagement
             _leadService = leadService;
             _employeeService = employeeService;
             _projectService = projectService;
-            // Set default values
-            Task.Run(async () =>
-            {
-                await LoadDataAsync();
-            });
+            //// Set default values
+            //Task.Run(async () =>
+            //{
+            //    await LoadDataAsync();
+            //});
             IsValid = true;
 
             EmployeeSuggestions = new();
@@ -143,7 +143,7 @@ namespace CRM.UI.ViewModels.LeadManagement
         }
 
 
-        private async Task LoadDataAsync()
+        public async Task LoadDataAsync()
         {
             await GetPotentialLevelAsync();
             await GetLeadStageAsync();

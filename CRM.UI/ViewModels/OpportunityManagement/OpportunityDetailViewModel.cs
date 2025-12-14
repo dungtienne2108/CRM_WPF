@@ -377,7 +377,7 @@ namespace CRM.UI.ViewModels.OpportunityManagement
                     return;
                 }
 
-                var result = await _projectService.UpdateProductStatusAsync(productId, newStatusId);
+                var result = await _projectService.UpdateProductStatusAsync(OpportunityId, productId, newStatusId);
                 if (result.IsSuccess)
                 {
                     await LoadOpportunityAsync();

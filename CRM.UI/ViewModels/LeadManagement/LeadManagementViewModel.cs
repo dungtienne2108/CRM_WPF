@@ -77,6 +77,7 @@ namespace CRM.UI.ViewModels.LeadManagement
         private async Task CreateNew()
         {
             var addLeadViewModel = _serviceProvider.GetRequiredService<AddLeadViewModel>();
+            await addLeadViewModel.LoadDataAsync();
             var window = Window.GetWindow(System.Windows.Application.Current.MainWindow);
             var newLead = AddLeadDialog.ShowAddDialog(Window.GetWindow(window), addLeadViewModel);
 

@@ -16,6 +16,8 @@ public partial class Deposit
 
     public bool IsCreatedContract { get; set; }
 
+    public bool IsDeleted { get; set; }
+
     public int? CustomerId { get; set; }
 
     public int? OpportunityId { get; set; }

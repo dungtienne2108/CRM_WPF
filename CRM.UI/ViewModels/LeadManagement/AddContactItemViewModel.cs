@@ -19,6 +19,8 @@ namespace CRM.UI.ViewModels.LeadManagement
         private string _role = string.Empty;
         [ObservableProperty]
         private string _description = string.Empty;
+        [ObservableProperty]
+        private int _contactTypeId;
 
         [ObservableProperty]
         private string? _validationMessage = string.Empty;

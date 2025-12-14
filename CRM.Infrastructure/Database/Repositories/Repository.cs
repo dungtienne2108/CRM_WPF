@@ -89,7 +89,7 @@ namespace CRM.Infrastructure.Database.Repositories
 
         public void UpdateRange(IEnumerable<TEntity> entities)
         {
-            throw new NotImplementedException();
+            _dbSet.UpdateRange(entities);
         }
     }
 }

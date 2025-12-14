@@ -77,12 +77,12 @@ namespace CRM.Infrastructure.Database.Repositories
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(o => o.OpportunityId == id);
 
-            if (opportunity == null)
-            {
-                return null;
-            }
+            //if (opportunity == null)
+            //{
+            //    return null;
+            //}
 
-            await _context.Entry(opportunity).ReloadAsync();
+            //await _context.Entry(opportunity).ReloadAsync();
 
             return opportunity;
         }

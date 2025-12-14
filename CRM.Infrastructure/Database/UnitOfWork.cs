@@ -27,9 +27,9 @@ namespace CRM.Infrastructure.Database
             GC.SuppressFinalize(this);
         }
 
-        public Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
+        public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            await _context.Database.RollbackTransactionAsync(cancellationToken);
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -40,6 +40,16 @@ namespace CRM.Infrastructure.Database
         public Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
+        }
+
+        public void ClearChangeTracker()
+        {
+            _context.ChangeTracker.Clear();
+        }
+
+        public async Task ReloadEntityAsync<T>(T entity, CancellationToken cancellationToken = default) where T : class
+        {
+            await _context.Entry(entity).ReloadAsync(cancellationToken);
         }
     }
 }

@@ -9,5 +9,6 @@
         public int ContactSalutationId { get; set; }
         public string? ContactRole { get; set; }
         public string? ContactDescription { get; set; }
+        public int ContactTypeId { get; set; }
     }
 }

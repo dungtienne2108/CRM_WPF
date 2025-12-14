@@ -64,6 +64,7 @@ namespace CRM.Application.Services
                 ContactSalutationId = newContact.ContactSalutationId,
                 ContactDescription = newContact.ContactDescription,
                 CreateDate = DateTime.UtcNow,
+                ContactTypeId = newContact.ContactTypeId,
                 CustomerContacts = new List<CustomerContact>
                 {
                     new CustomerContact
@@ -126,6 +127,7 @@ namespace CRM.Application.Services
 
                 if (added > 0)
                 {
+                    await unitOfWork.ReloadEntityAsync(customer);
                     var customerDto = mapper.Map<CustomerDto>(customer);
                     return Result.Success(customerDto);
                 }

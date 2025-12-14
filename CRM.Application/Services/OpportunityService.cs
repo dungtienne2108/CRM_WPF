@@ -79,80 +79,91 @@ namespace CRM.Application.Services
 
         public async Task<OpportunityDto> AddOpportunityAsync(AddOpportunityRequest request)
         {
-            if (string.IsNullOrWhiteSpace(request.OpportunityName))
+            await unitOfWork.BeginTransactionAsync();
+            try
             {
-                throw new ArgumentException("Tên cơ hội không được để trống");
-            }
-
-            if (request.OpportunityItems == null || !request.OpportunityItems.Any())
-            {
-                throw new ArgumentException("Cơ hội phải có ít nhất một sản phẩm");
-            }
-
-            var opportunity = new Opportunity
-            {
-                OpportunityName = request.OpportunityName,
-                OpportunityDescription = request.OpportunityDescription,
-                OpportunityStageId = request.OpportunityStatusId,
-                CustomerId = request.CustomerId,
-                EmployeeId = request.EmployeeId,
-                CreateDate = request.StartDate,
-                EndDate = request.EndDate.HasValue ? DateOnly.FromDateTime(request.EndDate.Value) : default,
-                CreateBy = request.EmployeeId.ToString()
-            };
-
-            var productIds = request.OpportunityItems.Select(item => item.ProductId).ToList();
-            var products = await productRepository.GetProductsByIdsAsync(productIds);
-
-            if (products.Count() != productIds.Count)
-            {
-                throw new ArgumentException("Một hoặc nhiều sản phẩm không tồn tại");
-            }
-
-            // Kiểm tra trạng thái sản phẩm nếu không phải là "Chưa bán" (id = 1)
-            if (products.Any(p => p.ProductStatusId != 1))
-            {
-                throw new ArgumentException("Một hoặc nhiều sản phẩm đã được giữ chỗ");
-            }
-
-            var opportunityItems = request.OpportunityItems.Select(item => new OpportunityItem
-            {
-                ProductId = item.ProductId,
-                Quantity = item.Quantity,
-                SalePrice = item.Price,
-                ExceptedProfit = item.ExpectedPrice
-            }).ToList();
-
-            // Cập nhật trạng thái sản phẩm thành "Đã giữ chỗ" (id = 2)
-            foreach (var product in products)
-            {
-                product.ProductStatusId = 2;
-            }
-
-            productRepository.UpdateRange(products);
-            opportunity.OpportunityItems = opportunityItems;
-
-            await opportunityRepository.AddAsync(opportunity);
-            await unitOfWork.SaveChangesAsync();
-
-            //memoryCache.Remove($"Opportunity_{opportunity.OpportunityId}");
-
-            return new OpportunityDto
-            {
-                OpportunityId = opportunity.OpportunityId,
-                OpportunityCode = opportunity.OpportunityCode,
-                OpportunityName = opportunity.OpportunityName,
-                OpportunityDescription = opportunity.OpportunityDescription,
-                EndDate = opportunity.EndDate,
-                CreateDate = opportunity.CreateDate,
-                Customer = opportunity.Customer != null ? mapper.Map<CustomerDto>(opportunity.Customer) : null!,
-                Employee = opportunity.Employee != null ? mapper.Map<EmployeeDto>(opportunity.Employee) : null!,
-                OpportunityStatus = opportunity.OpportunityStage != null ? new OpportunityStatusOption
+                if (string.IsNullOrWhiteSpace(request.OpportunityName))
                 {
-                    Id = opportunity.OpportunityStage.OpportunityStageId,
-                    Name = opportunity.OpportunityStage.OpportunityStageName
-                } : null!,
-            };
+                    throw new ArgumentException("Tên cơ hội không được để trống");
+                }
+
+                if (request.OpportunityItems == null || !request.OpportunityItems.Any())
+                {
+                    throw new ArgumentException("Cơ hội phải có ít nhất một sản phẩm");
+                }
+
+                var productIds = request.OpportunityItems.Select(item => item.ProductId).ToList();
+                // Get products without tracking first to validate
+                var productsToCheck = (await productRepository.GetProductsByIdsAsync(productIds)).ToList();
+
+                if (productsToCheck.Count != productIds.Count)
+                {
+                    throw new ArgumentException("Một hoặc nhiều sản phẩm không tồn tại");
+                }
+
+                // Kiểm tra trạng thái sản phẩm nếu không phải là "Chưa bán" (id = 1)
+                if (productsToCheck.Any(p => p.ProductStatusId != 1))
+                {
+                    throw new ArgumentException("Một hoặc nhiều sản phẩm đã được giữ chỗ");
+                }
+
+                // Cập nhật trạng thái sản phẩm thành "Đã giữ chỗ" (id = 2)
+                // Use dedicated method to avoid tracking conflicts
+                await productRepository.UpdateProductStatusByIdsAsync(productIds, 2);
+
+                var opportunity = new Opportunity
+                {
+                    OpportunityName = request.OpportunityName,
+                    OpportunityDescription = request.OpportunityDescription,
+                    OpportunityStageId = request.OpportunityStatusId,
+                    CustomerId = request.CustomerId,
+                    EmployeeId = request.EmployeeId,
+                    CreateDate = request.StartDate,
+                    EndDate = request.EndDate.HasValue ? DateOnly.FromDateTime(request.EndDate.Value) : default,
+                    CreateBy = request.EmployeeId.ToString()
+                };
+
+                var opportunityItems = request.OpportunityItems.Select(item => new OpportunityItem
+                {
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    SalePrice = item.Price,
+                    ExceptedProfit = item.ExpectedPrice
+                }).ToList();
+
+                opportunity.OpportunityItems = opportunityItems;
+
+                await opportunityRepository.AddAsync(opportunity);
+                await unitOfWork.SaveChangesAsync();
+
+                //unitOfWork.ClearChangeTracker();
+
+                //memoryCache.Remove($"Opportunity_{opportunity.OpportunityId}");
+                await unitOfWork.CommitTransactionAsync();
+                await unitOfWork.ReloadEntityAsync(opportunity);
+
+                return new OpportunityDto
+                {
+                    OpportunityId = opportunity.OpportunityId,
+                    OpportunityCode = opportunity.OpportunityCode,
+                    OpportunityName = opportunity.OpportunityName,
+                    OpportunityDescription = opportunity.OpportunityDescription,
+                    EndDate = opportunity.EndDate,
+                    CreateDate = opportunity.CreateDate,
+                    Customer = opportunity.Customer != null ? mapper.Map<CustomerDto>(opportunity.Customer) : null!,
+                    Employee = opportunity.Employee != null ? mapper.Map<EmployeeDto>(opportunity.Employee) : null!,
+                    OpportunityStatus = opportunity.OpportunityStage != null ? new OpportunityStatusOption
+                    {
+                        Id = opportunity.OpportunityStage.OpportunityStageId,
+                        Name = opportunity.OpportunityStage.OpportunityStageName
+                    } : null!,
+                };
+            }
+            catch
+            {
+                await unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
         }
 
         public async Task<Result> DeleteOpportunityAsync(int opportunityId)

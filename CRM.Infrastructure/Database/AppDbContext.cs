@@ -497,6 +497,12 @@ public partial class AppDbContext : DbContext
                 .HasColumnType("nvarchar(max)")
                 .HasColumnName("description");
             entity.Property(e => e.OpportunityId).HasColumnName("opportunity_id");
+            entity.Property(e => e.IsCreatedContract)
+                .HasColumnName("is_created_contract")
+                .HasDefaultValue(false);
+            entity.Property(e => e.IsDeleted)
+                .HasColumnName("is_deleted")
+                .HasDefaultValue(false);
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Deposits)
                 .HasForeignKey(d => d.CustomerId)
@@ -505,6 +511,8 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.Opportunity).WithMany(p => p.Deposits)
                 .HasForeignKey(d => d.OpportunityId)
                 .HasConstraintName("fk_deposit_opportunity");
+
+            entity.HasQueryFilter(d => !d.IsDeleted);
         });
 
         modelBuilder.Entity<Employee>(entity =>

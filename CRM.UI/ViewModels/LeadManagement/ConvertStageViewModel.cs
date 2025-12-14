@@ -1,10 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CRM.Application.Dtos.Contact;
 using CRM.Application.Dtos.Customer;
 using CRM.Application.Dtos.Employee;
 using CRM.Application.Dtos.Lead;
 using CRM.Application.Dtos.Opportunity;
 using CRM.Application.Dtos.Project;
+using CRM.Application.Interfaces.Contact;
 using CRM.Application.Interfaces.Customers;
 using CRM.Application.Interfaces.Employee;
 using CRM.Application.Interfaces.Opportunity;
@@ -22,6 +24,7 @@ namespace CRM.UI.ViewModels.LeadManagement
         private readonly IOpportunityService _opportunityService;
         private readonly IProjectService _projectService;
         private readonly IEmployeeService _employeeService;
+        private readonly IContactService _contactService;
 
         [ObservableProperty]
         private bool _isDialogVisible;
@@ -82,7 +85,7 @@ namespace CRM.UI.ViewModels.LeadManagement
         [ObservableProperty]
         private string _employeeSearchKeyword = string.Empty;
         [ObservableProperty]
-        private int? _expectedPrice;
+        private decimal? _expectedPrice;
         [ObservableProperty]
         private int _selectedProjectId;
         [ObservableProperty]
@@ -128,18 +131,27 @@ namespace CRM.UI.ViewModels.LeadManagement
         private ProductDto? _selectedProduct;
 
         [ObservableProperty]
+        private ObservableCollection<ContactTypeOption> _contactTypeOptions;
+        [ObservableProperty]
+        [NotifyDataErrorInfo]
+        [Required(ErrorMessage = "Vui lòng chọn loại liên hệ")]
+        private int _contactTypeId;
+
+        [ObservableProperty]
         private string? _validationMessage;
 
         public ConvertStageViewModel(
             ICustomerService customerService,
             IOpportunityService oppoturnityService,
             IProjectService projectService,
-            IEmployeeService employeeService)
+            IEmployeeService employeeService,
+            IContactService contactService)
         {
             _customerService = customerService;
             _opportunityService = oppoturnityService;
             _projectService = projectService;
             _employeeService = employeeService;
+            _contactService = contactService;
 
             CustomerTypeOptions = new();
             SalutationOptions = new();
@@ -149,6 +161,7 @@ namespace CRM.UI.ViewModels.LeadManagement
             CustomerSuggestions = new();
             EmployeeSuggestions = new();
             ContactItems = new();
+            ContactTypeOptions = new();
 
             //Task.Run(async () => await LoadDataAsync());
 
@@ -163,6 +176,8 @@ namespace CRM.UI.ViewModels.LeadManagement
             await LoadProjectsAsync();
             await LoadCustomerTypesAsync();
             await SearchEmployeesAsync();
+            await SearchCustomersAsync();
+            await LoadContactTypesAsync();
             //await LoadProductsAsync();
         }
 
@@ -255,12 +270,13 @@ namespace CRM.UI.ViewModels.LeadManagement
                     ContactAddress = item.Address,
                     ContactSalutationId = item.SalutationId,
                     ContactDescription = item.Description,
-                    ContactRole = item.Role
+                    ContactRole = item.Role,
+                    ContactTypeId = item.ContactTypeId
                 };
                 newContacts.Add(newContact);
 
             }
-            if (newContacts.Any())
+            if (newContacts.Count != 0)
             {
                 await _customerService.AddContactRangeAsync(SelectedCustomer.Id, newContacts);
 
@@ -368,6 +384,12 @@ namespace CRM.UI.ViewModels.LeadManagement
             var options = await _customerService.GetAllCustomerTypeAsync();
 
             CustomerTypeOptions = new(options);
+        }
+
+        private async Task LoadContactTypesAsync()
+        {
+            var options = await _contactService.GetContactTypeOptionsAsync();
+            ContactTypeOptions = new(options);
         }
 
         private async Task LoadSalutationsAsync()
@@ -577,9 +599,10 @@ namespace CRM.UI.ViewModels.LeadManagement
                     .OfType<Window>()
                     .SingleOrDefault(w => w.DataContext == this)?.Close();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 IsValid = false;
+                MessageBox.Show(ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

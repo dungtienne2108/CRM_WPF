@@ -16,7 +16,7 @@ namespace CRM.Application.Services
         IContactRepository contactRepository,
         IEmployeeRepository employeeRepository,
         IContractRepository contractRepository,
-        IRepository<Product> productRepository,
+        IProductRepository productRepository,
         IRepository<InstallmentSchedule> installmentScheduleRepository,
         IUnitOfWork unitOfWork,
         IMapper mapper,
@@ -44,7 +44,7 @@ namespace CRM.Application.Services
                     return Result.Failure<int>(new("CUSTOMER_NOT_FOUND", "Khách hàng không tồn tại"));
                 }
 
-                var product = await productRepository.GetByIdAsync(request.ProductId);
+                var product = await productRepository.GetProductByIdAsync(request.ProductId);
                 if (product == null)
                 {
                     return Result.Failure<int>(new("PRODUCT_NOT_FOUND", "Sản phẩm không tồn tại"));
@@ -57,7 +57,9 @@ namespace CRM.Application.Services
                     if (existingDepositByProduct.EndDate < DateTime.UtcNow)
                     {
                         // hết hạn xóa và cho đặt lại
-                        depositRepository.Remove(existingDepositByProduct);
+                        //depositRepository.Remove(existingDepositByProduct);
+                        existingDepositByProduct.IsDeleted = true;
+                        depositRepository.Update(existingDepositByProduct);
                     }
                     else
                     {
@@ -109,8 +111,9 @@ namespace CRM.Application.Services
                 await depositRepository.AddAsync(deposit);
 
                 // cập nhật trạng thái sản phẩm để tránh đặt cọc trùng
-                product.ProductStatusId = 4;
-                productRepository.Update(product);
+                //product.ProductStatusId = 4;
+                //productRepository.Update(product);
+                await productRepository.UpdateProductStatusByIdAsync(product.ProductId, 4);
 
                 var added = await unitOfWork.SaveChangesAsync();
 
