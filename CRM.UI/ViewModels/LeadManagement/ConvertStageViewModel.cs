@@ -669,6 +669,14 @@ namespace CRM.UI.ViewModels.LeadManagement
             }
         }
 
+        partial void OnSelectedProductChanged(ProductDto? value)
+        {
+            if (value != null)
+            {
+                ExpectedPrice = value.ProductPrice;
+            }
+        }
+
         #endregion
     }
 }

@@ -44,7 +44,7 @@ namespace CRM.UI.ViewModels
             {
                 IsBusy = true;
                 CurrentAccount = _sessionService.CurrentAccount;
-                IsAdmin = CurrentAccount.AccountTypeId == 1;
+                IsAdmin = CurrentAccount.AccountTypeId == 1 || CurrentAccount.EmployeeLevelId == 4;
                 ClearAllErrors();
             }
             catch (Exception ex)
