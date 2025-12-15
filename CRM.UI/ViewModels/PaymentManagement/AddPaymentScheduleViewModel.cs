@@ -140,7 +140,7 @@ namespace CRM.UI.ViewModels.PaymentManagement
                     ContractId = ContractId,
                     InstallmentName = ScheduleName,
                     Amount = Amount,
-                    ContractValuePercentage = Amount / ContractValue,
+                    ContractValuePercentage = Amount * 100 / ContractValue,
                     DueDate = DueDate
                 };
 

@@ -102,7 +102,7 @@ namespace CRM.Application.Services
                 {
                     Contract = contract,
                     DueDate = DateOnly.FromDateTime(request.EndDate),
-                    Amount = deposit.DepositCost.HasValue ? deposit.DepositCost.Value : 0,
+                    Amount = deposit.DepositCost ?? 0,
                     Status = "Chờ thanh toán",
                     InstallmentName = "Đặt cọc",
                     ContractValuePercentage = deposit.DepositCost.HasValue ?
