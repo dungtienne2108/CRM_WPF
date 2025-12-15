@@ -6,6 +6,7 @@ using CRM.Domain.Interfaces;
 using CRM.Domain.Models;
 using CRM.Shared.Results;
 using Microsoft.Extensions.Caching.Memory;
+using Serilog;
 
 namespace CRM.Application.Services
 {
@@ -28,39 +29,46 @@ namespace CRM.Application.Services
                 var contractType = await contractTypeRepository.GetByIdAsync(request.ContractTypeId);
                 if (contractType == null)
                 {
+                    Log.Error("Contract type  ID {ContractTypeId} không tồn tại.", request.ContractTypeId);
                     return Result.Failure<int>(new("Contract_type_not_found.", "Không tìm thấy loại hợp đồng"));
                 }
 
                 var contractStage = await contractStageRepository.GetByIdAsync(request.ContractStageId);
                 if (contractStage == null)
                 {
+                    Log.Error("Contract stage ID {ContractStageId} không tồn tại.", request.ContractStageId);
                     return Result.Failure<int>(new("Contract_stage_not_found.", "Không tìm thấy giai đoạn hợp đồng"));
                 }
 
                 var deposit = await depositRepository.GetByIdAsync(request.DepositId);
                 if (deposit == null || deposit.IsDeleted)
                 {
+                    Log.Error("Deposit ID {DepositId} không tồn tại.", request.DepositId);
                     return Result.Failure<int>(new("Deposit_not_found.", "Không tìm thấy đặt cọc"));
                 }
 
                 var employee = await employeeRepository.GetByIdAsync(request.EmployeeId);
                 if (employee == null)
                 {
+                    Log.Error("Employee ID {EmployeeId} không tồn tại.", request.EmployeeId);
                     return Result.Failure<int>(new("Employee_not_found.", "Không tìm thấy nhân viên"));
                 }
 
                 if (request.StartDate >= request.EndDate)
                 {
+                    Log.Error("Ngày bắt đầu {StartDate} phải trước ngày kết thúc {EndDate}.", request.StartDate, request.EndDate);
                     return Result.Failure<int>(new("Invalid_dates.", "Ngày bắt đầu phải trước ngày kết thúc"));
                 }
 
                 if (request.Amount < 0)
                 {
+                    Log.Error("Tổng số tiền {Amount} không hợp lệ.", request.Amount);
                     return Result.Failure<int>(new("Invalid_total_amount.", "Tổng số tiền phải lớn hơn hoặc bằng 0"));
                 }
 
                 if (request.Amount < deposit.DepositCost)
                 {
+                    Log.Error("Tổng số tiền {Amount} phải lớn hơn hoặc bằng số tiền đặt cọc {DepositCost}.", request.Amount, deposit.DepositCost);
                     return Result.Failure<int>(new("Invalid_amount_vs_deposit.", "Tổng số tiền phải lớn hơn hoặc bằng số tiền đặt cọc"));
                 }
 
@@ -68,11 +76,13 @@ namespace CRM.Application.Services
 
                 if (product == null)
                 {
+                    Log.Error("Product ID {ProductId} không tồn tại.", request.ProductId);
                     return Result.Failure<int>(new("Product_not_found.", "Sản phẩm không tồn tại."));
                 }
 
                 if (request.Amount < product.ProductPrice)
                 {
+                    Log.Error("Tổng số tiền {Amount} phải lớn hơn hoặc bằng giá sản phẩm {ProductPrice}.", request.Amount, product.ProductPrice);
                     return Result.Failure<int>(new("Invalid_amount_vs_product_price.", "Tổng số tiền phải lớn hơn hoặc bằng giá sản phẩm"));
                 }
 
@@ -112,6 +122,7 @@ namespace CRM.Application.Services
                 };
 
                 await installmentScheduleRepository.AddAsync(installmentSchedule);
+                Log.Information("Tạo lịch thanh toán cho hợp đồng ID {ContractId}.", contract.ContractId);
 
                 // chuyển sản phẩm sang đã bán
                 product.ProductStatusId = 3; // Đã bán
@@ -119,15 +130,17 @@ namespace CRM.Application.Services
                 var added = await unitOfWork.SaveChangesAsync();
                 if (added <= 0)
                 {
+                    Log.Error("Tạo hợp đồng thất bại cho Deposit ID {DepositId}.", request.DepositId);
                     return Result.Failure<int>(new("Create_contract_failed.", "Tạo hợp đồng thất bại"));
                 }
 
                 //memoryCache.Remove($"Contract_{contract.ContractId}");
-
+                Log.Information("Tạo hợp đồng thành công với Contract ID {ContractId}.", contract.ContractId);
                 return Result.Success(contract.ContractId);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Error(ex, "Đã xảy ra lỗi khi tạo hợp đồng: {message}", ex.Message);
                 throw;
             }
         }
