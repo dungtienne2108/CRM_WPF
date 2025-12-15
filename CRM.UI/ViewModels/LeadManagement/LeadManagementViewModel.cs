@@ -215,7 +215,7 @@ namespace CRM.UI.ViewModels.LeadManagement
             var detailViewModel = new LeadDetailViewModel(_leadService, _serviceProvider);
             await detailViewModel.LoadDataAsync(leadItem);
             var detailWindow = new LeadDetailView(detailViewModel);
-            detailWindow.Owner = System.Windows.Application.Current.MainWindow;
+            //detailWindow.Owner = System.Windows.Application.Current.MainWindow;
             detailWindow.ShowDialog();
             await InitializeAsync();
         }

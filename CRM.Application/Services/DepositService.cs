@@ -66,6 +66,8 @@ namespace CRM.Application.Services
                         //depositRepository.Remove(existingDepositByProduct);
                         existingDepositByProduct.IsDeleted = true;
                         depositRepository.Update(existingDepositByProduct);
+                        await unitOfWork.SaveChangesAsync();
+                        Log.Information("Đã xóa đặt cọc cũ và cho phép đặt lại: {@Request}", request);
                     }
                     else
                     {

@@ -15,6 +15,7 @@ namespace CRM.Infrastructure.Database.Repositories
         public async Task<Deposit?> GetDepositByIdAsync(int depositId)
         {
             var deposit = await _context.Deposits
+                .AsNoTracking()
                 .Include(c => c.Opportunity)
                 .Include(c => c.Customer)
                 .Include(c => c.Contact)

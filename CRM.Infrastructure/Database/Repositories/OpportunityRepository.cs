@@ -62,6 +62,7 @@ namespace CRM.Infrastructure.Database.Repositories
         public async Task<Opportunity?> GetOpportunityByIdAsync(int id)
         {
             var opportunity = await _context.Opportunities
+                .AsNoTracking()
                 .Include(o => o.Customer)
                 .Include(o => o.Employee)
                 .Include(o => o.OpportunityStage)

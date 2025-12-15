@@ -49,10 +49,10 @@ namespace CRM.Infrastructure.Database.Repositories
         public async Task<TEntity?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var entity = await _dbSet.FindAsync(new object[] { id }, cancellationToken);
-            // reload entity because trigger may have modified it
             if (entity != null)
             {
-                await _context.Entry(entity).ReloadAsync(cancellationToken);
+                // Detach from tracking to avoid conflicts in later operations
+                _context.Entry(entity).State = EntityState.Detached;
             }
             return entity;
         }

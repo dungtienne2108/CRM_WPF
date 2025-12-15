@@ -207,11 +207,11 @@
 
                         <TextBox Grid.Column="1"
                                     Style="{StaticResource MaterialTextBox}"
-                                    materialDesign:HintAssist.Hint="Tên sản phẩm"
+                                    materialDesign:HintAssist.Hint="Tên dự án"
                                     Margin="8,8,0,8"
                                     Padding="8,4,8,4"
                                      IsReadOnly="True"
-                                    Text="{Binding ProductName}"/>
+                                    Text="{Binding ProjectName}"/>
                     </Grid>
 
                     <Grid>

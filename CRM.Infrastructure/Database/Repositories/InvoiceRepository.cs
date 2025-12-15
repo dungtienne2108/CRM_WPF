@@ -41,7 +41,7 @@ namespace CRM.Infrastructure.Database.Repositories
                     i.InvoiceCode.ToLower().Contains(searchTerm));
             }
 
-            if (filter.IsPaid.HasValue)
+            if (filter.IsPaid.HasValue && filter.IsPaid.Value)
             {
                 query = query.Where(i => i.Status == InvoiceStatus.Paid);
             }

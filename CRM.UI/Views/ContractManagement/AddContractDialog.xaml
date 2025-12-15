@@ -316,7 +316,7 @@
                             Margin="0,8,8,8"
                                  Padding="8,4,8,4"
                              IsReadOnly="True"
-                            Text="{Binding ProductPrice}"/>
+                            Text="{Binding ProductPrice, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StringToDecimalConverter}}"/>
                     </Grid>
 
                 </StackPanel>

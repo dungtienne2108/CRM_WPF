@@ -180,7 +180,7 @@ namespace CRM.UI.ViewModels.CustomerManagement
             var detailViewModel = _serviceProvider.GetRequiredService<CustomerDetailViewModel>();
             await detailViewModel.LoadDataAsync(customerItem);
             var detailWindow = new CustomerDetailView(detailViewModel);
-            detailWindow.Owner = System.Windows.Application.Current.MainWindow;
+            //detailWindow.Owner = System.Windows.Application.Current.MainWindow;
             detailWindow.ShowDialog();
             await InitializeAsync();
         }

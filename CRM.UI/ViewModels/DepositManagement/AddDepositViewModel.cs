@@ -70,6 +70,8 @@ namespace CRM.UI.ViewModels.DepositManagement
         [ObservableProperty]
         private string _productName = string.Empty;
         [ObservableProperty]
+        private string _projectName = string.Empty;
+        [ObservableProperty]
         private decimal _productPrice;
         [ObservableProperty]
         private int _productQuantity;
@@ -153,6 +155,16 @@ namespace CRM.UI.ViewModels.DepositManagement
             {
                 IsBusy = false;
             }
+        }
+
+        [RelayCommand]
+        private void Cancel()
+        {
+            // đóng cửa sổ hiện tại
+            System.Windows.Application.Current.Windows
+                .OfType<Window>()
+                .FirstOrDefault(w => w.DataContext == this)?
+                .Close();
         }
         #endregion
 
@@ -251,6 +263,7 @@ namespace CRM.UI.ViewModels.DepositManagement
             {
                 ProductId = value.ProductId;
                 ProductName = value.ProductName;
+                ProjectName = value.ProjectName;
                 ProductPrice = value.Price;
                 ProductQuantity = value.Quantity;
             }
@@ -258,6 +271,7 @@ namespace CRM.UI.ViewModels.DepositManagement
             {
                 ProductId = 0;
                 ProductName = string.Empty;
+                ProjectName = string.Empty;
                 ProductPrice = 0;
                 ProductQuantity = 0;
             }

@@ -56,6 +56,7 @@ namespace CRM.Infrastructure.Database.Repositories
         public async Task<Employee?> GetEmployeeByIdAsync(int id)
         {
             var entity = await _context.Employees
+                .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.EmployeeId == id);
 
             if (entity != null)

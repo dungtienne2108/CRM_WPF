@@ -41,6 +41,7 @@ namespace CRM.Infrastructure.Database.Repositories
         public async Task<Customer?> GetCustomerByIdAsync(int id)
         {
             var customer = await _context.Customers
+                .AsNoTracking()
                 .Include(c => c.Gender)
                 .Include(c => c.CustomerType)
                 .AsSplitQuery()
