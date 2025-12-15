@@ -45,6 +45,10 @@ namespace CRM.Infrastructure.Database.Repositories
             {
                 query = query.Where(i => i.Status == InvoiceStatus.Paid);
             }
+            else
+            {
+                query = query.Where(i => i.Status != InvoiceStatus.Paid);
+            }
 
             var totalCount = await query.CountAsync();
 

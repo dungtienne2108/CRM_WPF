@@ -66,6 +66,8 @@ namespace CRM.UI.ViewModels.DepositManagement
         [ObservableProperty]
         private string? _contactDescription = string.Empty;
         [ObservableProperty]
+        private string? _contactType = string.Empty;
+        [ObservableProperty]
         private int _productId;
         [ObservableProperty]
         private string _productName = string.Empty;
@@ -247,6 +249,7 @@ namespace CRM.UI.ViewModels.DepositManagement
                 ContactPhone = value.Phone;
                 ContactId = value.Id;
                 ContactDescription = value.Description ?? "";
+                ContactType = value.ContactType ?? "";
             }
             else
             {
@@ -254,6 +257,7 @@ namespace CRM.UI.ViewModels.DepositManagement
                 ContactEmail = string.Empty;
                 ContactPhone = string.Empty;
                 ContactDescription = string.Empty;
+                ContactType = string.Empty;
             }
         }
 
