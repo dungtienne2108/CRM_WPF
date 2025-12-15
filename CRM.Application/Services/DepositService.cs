@@ -6,6 +6,7 @@ using CRM.Domain.Interfaces;
 using CRM.Domain.Models;
 using CRM.Shared.Results;
 using Microsoft.Extensions.Caching.Memory;
+using Serilog;
 
 namespace CRM.Application.Services
 {
@@ -30,23 +31,27 @@ namespace CRM.Application.Services
 
                 if (opportunity == null)
                 {
+                    Log.Error("Cơ hội không tồn tại: {@Request}", request);
                     return Result.Failure<int>(new("OPPORTUNITY_NOT_FOUND", "Cơ hội không tồn tại"));
                 }
 
                 if (opportunity.OpportunityStageId != 4) // phải là thành công
                 {
+                    Log.Error("Cơ hội không ở trạng thái 'Thành công': {@Request}", request);
                     return Result.Failure<int>(new("INVALID_OPPORTUNITY_STAGE", "Chỉ có thể tạo đặt cọc cho cơ hội ở trạng thái 'Thành công'"));
                 }
 
                 var customer = await customerRepository.GetByIdAsync(request.CustomerId);
                 if (customer == null)
                 {
+                    Log.Error("Khách hàng không tồn tại: {@Request}", request);
                     return Result.Failure<int>(new("CUSTOMER_NOT_FOUND", "Khách hàng không tồn tại"));
                 }
 
                 var product = await productRepository.GetProductByIdAsync(request.ProductId);
                 if (product == null)
                 {
+                    Log.Error("Sản phẩm không tồn tại: {@Request}", request);
                     return Result.Failure<int>(new("PRODUCT_NOT_FOUND", "Sản phẩm không tồn tại"));
                 }
 
@@ -56,6 +61,7 @@ namespace CRM.Application.Services
                 {
                     if (existingDepositByProduct.EndDate < DateTime.UtcNow)
                     {
+                        Log.Information("Đặt cọc cho sản phẩm đã hết hạn, cho phép đặt lại: {@Request}", request);
                         // hết hạn xóa và cho đặt lại
                         //depositRepository.Remove(existingDepositByProduct);
                         existingDepositByProduct.IsDeleted = true;
@@ -63,6 +69,7 @@ namespace CRM.Application.Services
                     }
                     else
                     {
+                        Log.Error("Sản phẩm đã được đặt cọc và chưa hết hạn: {@Request}", request);
                         // còn hiệu lực không cho đặt
                         return Result.Failure<int>(new("DUPLICATE_DEPOSIT_PRODUCT", "Sản phẩm đã được người khác đặt cọc."));
                     }
@@ -74,6 +81,7 @@ namespace CRM.Application.Services
                     var contact = await contactRepository.GetByIdAsync(request.ContactId.Value);
                     if (contact == null)
                     {
+                        Log.Error("Liên hệ không tồn tại: {@Request}", request);
                         return Result.Failure<int>(new("CONTACT_NOT_FOUND", "Liên hệ không tồn tại"));
                     }
                 }
@@ -81,16 +89,19 @@ namespace CRM.Application.Services
                 var employee = await employeeRepository.GetByIdAsync(request.EmployeeId);
                 if (employee == null)
                 {
+                    Log.Error("Nhân viên không tồn tại: {@Request}", request);
                     return Result.Failure<int>(new("EMPLOYEE_NOT_FOUND", "Nhân viên không tồn tại"));
                 }
 
                 if (request.EndDate < request.StartDate)
                 {
+                    Log.Error("Ngày kết thúc đặt cọc phải sau ngày bắt đầu: {@Request}", request);
                     return Result.Failure<int>(new("INVALID_DATE_RANGE", "Ngày kết thúc phải sau ngày bắt đầu"));
                 }
 
                 if (request.DepositCosts < 0)
                 {
+                    Log.Error("Chi phí đặt cọc không được âm: {@Request}", request);
                     return Result.Failure<int>(new("INVALID_DEPOSIT_COST", "Chi phí đặt cọc không được âm"));
                 }
 
@@ -119,6 +130,7 @@ namespace CRM.Application.Services
 
                 if (added > 0)
                 {
+                    Log.Information("Tạo đặt cọc thành công: {@Deposit}", deposit);
                     //memoryCache.Remove($"Deposit_{deposit.DepositId}");
                     return Result.Success<int>(deposit.DepositId);
                 }
@@ -127,6 +139,7 @@ namespace CRM.Application.Services
             }
             catch (Exception ex)
             {
+                Log.Error(ex, "Lỗi khi tạo đặt cọc: {@Request}", request);
                 return Result.Failure<int>(new("CREATE_DEPOSIT_FAILED", $"Lỗi khi tạo đặt cọc : {ex.Message}"));
             }
         }

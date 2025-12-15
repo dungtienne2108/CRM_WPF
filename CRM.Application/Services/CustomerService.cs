@@ -8,6 +8,7 @@ using CRM.Domain.Interfaces;
 using CRM.Domain.Models;
 using CRM.Shared.Results;
 using Microsoft.Extensions.Caching.Memory;
+using Serilog;
 
 namespace CRM.Application.Services
 {
@@ -55,17 +56,19 @@ namespace CRM.Application.Services
 
         public async Task AddContactRangeAsync(int customerId, List<AddContactRequest> newContacts)
         {
-            var contacts = newContacts.Select(newContact => new Contact
+            try
             {
-                ContactName = newContact.ContactName,
-                ContactPhone = newContact.ContactPhone,
-                ContactEmail = newContact.ContactEmail,
-                ContactAddress = newContact.ContactAddress,
-                ContactSalutationId = newContact.ContactSalutationId,
-                ContactDescription = newContact.ContactDescription,
-                CreateDate = DateTime.UtcNow,
-                ContactTypeId = newContact.ContactTypeId,
-                CustomerContacts = new List<CustomerContact>
+                var contacts = newContacts.Select(newContact => new Contact
+                {
+                    ContactName = newContact.ContactName,
+                    ContactPhone = newContact.ContactPhone,
+                    ContactEmail = newContact.ContactEmail,
+                    ContactAddress = newContact.ContactAddress,
+                    ContactSalutationId = newContact.ContactSalutationId,
+                    ContactDescription = newContact.ContactDescription,
+                    CreateDate = DateTime.UtcNow,
+                    ContactTypeId = newContact.ContactTypeId,
+                    CustomerContacts = new List<CustomerContact>
                 {
                     new CustomerContact
                     {
@@ -73,13 +76,20 @@ namespace CRM.Application.Services
                         Role = newContact.ContactRole
                     }
                 }
-            }).ToList();
+                }).ToList();
 
-            memoryCache.Remove($"Customer_{customerId}");
-            memoryCache.Remove($"CustomerContacts_{customerId}");
+                memoryCache.Remove($"Customer_{customerId}");
+                memoryCache.Remove($"CustomerContacts_{customerId}");
 
-            await contactRepository.AddRangeAsync(contacts);
-            await unitOfWork.SaveChangesAsync();
+                await contactRepository.AddRangeAsync(contacts);
+                await unitOfWork.SaveChangesAsync();
+                Log.Information("Đã thêm {ContactCount} liên hệ mới cho khách hàng với ID: {CustomerId}", contacts.Count, customerId);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Lỗi xảy ra khi thêm liên hệ cho khách hàng với ID: {CustomerId}. Lỗi: {ErrorMessage}", customerId, ex.Message);
+                throw;
+            }
         }
 
         public async Task<Result<CustomerDto>> AddCustomerAsync(AddCustomerRequest newCustomer)
@@ -89,12 +99,14 @@ namespace CRM.Application.Services
                 var existingCustomerByName = await customerRepository.AnyAsync(c => c.CustomerName == newCustomer.Name);
                 if (existingCustomerByName)
                 {
+                    Log.Warning("Khách hàng tên : {CustomerName} đã tồn tại", newCustomer.Name);
                     return Result.Failure<CustomerDto>(new Error("DUPLICATE_CUSTOMER_NAME", $"Khách hàng tên '{newCustomer.Name}' đã tồn tại."));
                 }
 
                 var existingCustomerByIdentityCard = await customerRepository.AnyAsync(c => c.CustomerIdentityCard == newCustomer.IdentityCard);
                 if (existingCustomerByIdentityCard)
                 {
+                    Log.Warning("Số CMND/CCCD : {IdentityCard} đã tồn tại", newCustomer.IdentityCard);
                     return Result.Failure<CustomerDto>(new Error("DUPLICATE_IDENTITY_CARD", $"Số CMND/CCCD '{newCustomer.IdentityCard}' đã tồn tại."));
                 }
 
@@ -127,17 +139,20 @@ namespace CRM.Application.Services
 
                 if (added > 0)
                 {
+                    Log.Information("Thêm khách hàng mới: {CustomerName} thành công", newCustomer.Name);
                     await unitOfWork.ReloadEntityAsync(customer);
                     var customerDto = mapper.Map<CustomerDto>(customer);
                     return Result.Success(customerDto);
                 }
                 else
                 {
+                    Log.Error("Thêm khách hàng mới: {CustomerName} thất bại", newCustomer.Name);
                     return Result.Failure<CustomerDto>(new Error("ADD_CUSTOMER_FAILED", "Thêm khách hàng thất bại."));
                 }
             }
             catch (Exception ex)
             {
+                Log.Fatal(ex, "Lỗi xảy ra khi thêm khách hàng: {ErrorMessage}", ex.Message);
                 return Result.Failure<CustomerDto>(new Error("ADD_CUSTOMER_ERROR", $"Lỗi xảy ra khi thêm khách hàng: {ex.Message}"));
             }
         }

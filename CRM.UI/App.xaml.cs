@@ -43,6 +43,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using System.IO;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -56,14 +57,18 @@ namespace CRM.UI
         private IHost? _host;
         private IServiceProvider? _serviceProvider;
 
+        public App()
+        {
+            ConfigureLogging();
+            this.DispatcherUnhandledException += OnUnhandledException;
+        }
+
         protected override async void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
             _host = CreateHostBuilder(e.Args).Build();
             _serviceProvider = _host.Services;
-
-            ConfigureLogging();
 
             try
             {
@@ -307,18 +312,46 @@ namespace CRM.UI
             services.AddTransient<ProjectDetailView>();
         }
 
-        private void ConfigureLogging()
+        private static void ConfigureLogging()
         {
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
-                .Enrich.FromLogContext()
-                .WriteTo.File(
-                    path: "logs/crm-.log",
-                    rollingInterval: RollingInterval.Day,
-                    retainedFileCountLimit: 30,
-                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
-                .CreateLogger();
+            try
+            {
+                // Sử dụng Environment.SpecialFolder để đảm bảo path hợp lệ
+                string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                string logsPath = Path.Combine(baseDirectory, "logs");
+
+                // Tạo folder nếu nó không tồn tại
+                if (!Directory.Exists(logsPath))
+                {
+                    Directory.CreateDirectory(logsPath);
+                    System.Diagnostics.Debug.WriteLine($"[DEBUG] Logs folder created at: {logsPath}");
+                }
+
+                string logFilePath = Path.Combine(logsPath, "crm-.log");
+
+                Log.Logger = new LoggerConfiguration()
+                    .MinimumLevel.Debug()
+                    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
+                    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", Serilog.Events.LogEventLevel.Warning)
+                    .Enrich.FromLogContext()
+                    .Enrich.WithProperty("Application", "CRM")
+                    .WriteTo.File(
+                        path: logFilePath,
+                        rollingInterval: RollingInterval.Day,
+                        retainedFileCountLimit: 30,
+                        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}",
+                        shared: true) // Cho phép multiple processes ghi log
+                    .CreateLogger();
+
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] Log file path: {logFilePath}");
+                Log.Information("Logging configured successfully");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ERROR] Failed to configure logging: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"[ERROR] Stack trace: {ex.StackTrace}");
+                throw;
+            }
         }
 
         private void InitializeNavigation()
@@ -334,10 +367,10 @@ namespace CRM.UI
 
         private void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            Log.Error(e.Exception, "Unhandled exception occurred");
+            Log.Error(e.Exception, "Lỗi không xác định");
 
             MessageBox.Show(
-                $"An unexpected error occurred: {e.Exception.Message}",
+                $"Lỗi không xác định: {e.Exception.Message}",
                 "Error",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);

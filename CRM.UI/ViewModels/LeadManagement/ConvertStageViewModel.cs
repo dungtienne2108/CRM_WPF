@@ -12,6 +12,7 @@ using CRM.Application.Interfaces.Employee;
 using CRM.Application.Interfaces.Opportunity;
 using CRM.Application.Interfaces.Project;
 using CRM.UI.ViewModels.Base;
+using Serilog;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Windows;
@@ -288,7 +289,7 @@ namespace CRM.UI.ViewModels.LeadManagement
 
                 IsValid = true;
 
-                MessageBox.Show("Thêm liên hệ thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+                //MessageBox.Show("Thêm liên hệ thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -345,6 +346,7 @@ namespace CRM.UI.ViewModels.LeadManagement
 
             if (SelectedCustomer == null)
             {
+                Log.Warning("[ConvertStageViewModel] AddOpportunityAsync: SelectedCustomer null");
                 return;
             }
 
@@ -376,7 +378,7 @@ namespace CRM.UI.ViewModels.LeadManagement
 
             await _opportunityService.AddOpportunityAsync(newOpportunity);
 
-            MessageBox.Show("Chuyển đổi sang cơ hội thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+            //MessageBox.Show("Chuyển đổi sang cơ hội thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private async Task LoadCustomerTypesAsync()
@@ -477,6 +479,7 @@ namespace CRM.UI.ViewModels.LeadManagement
                     var result = await _customerService.AddCustomerAsync(newCustomer);
                     if (!result.IsSuccess)
                     {
+                        Log.Error("[ConvertStageViewModel]Tạo khách hàng mới thất bại : {message}", result.Error.Message);
                         ValidationMessage = result.Error.Message;
                         IsValid = false;
                         return;
@@ -547,6 +550,7 @@ namespace CRM.UI.ViewModels.LeadManagement
                     var result = await _customerService.AddCustomerAsync(newCustomer);
                     if (!result.IsSuccess)
                     {
+                        Log.Error("[ConvertStageViewModel]Tạo khách hàng mới thất bại : {message}", result.Error.Message);
                         ValidationMessage = result.Error.Message;
                         IsValid = false;
                         return;

@@ -9,6 +9,7 @@ using CRM.Domain.Interfaces;
 using CRM.Domain.Models;
 using CRM.Shared.Results;
 using Microsoft.Extensions.Caching.Memory;
+using Serilog;
 
 namespace CRM.Application.Services
 {
@@ -84,11 +85,13 @@ namespace CRM.Application.Services
             {
                 if (string.IsNullOrWhiteSpace(request.OpportunityName))
                 {
+                    Log.Warning("Tên cơ hội không được để trống");
                     throw new ArgumentException("Tên cơ hội không được để trống");
                 }
 
                 if (request.OpportunityItems == null || !request.OpportunityItems.Any())
                 {
+                    Log.Warning("Cơ hội phải có ít nhất một sản phẩm");
                     throw new ArgumentException("Cơ hội phải có ít nhất một sản phẩm");
                 }
 
@@ -98,12 +101,14 @@ namespace CRM.Application.Services
 
                 if (productsToCheck.Count != productIds.Count)
                 {
+                    Log.Warning("Một hoặc nhiều sản phẩm không tồn tại");
                     throw new ArgumentException("Một hoặc nhiều sản phẩm không tồn tại");
                 }
 
                 // Kiểm tra trạng thái sản phẩm nếu không phải là "Chưa bán" (id = 1)
                 if (productsToCheck.Any(p => p.ProductStatusId != 1))
                 {
+                    Log.Warning("Một hoặc nhiều sản phẩm đã được giữ chỗ");
                     throw new ArgumentException("Một hoặc nhiều sản phẩm đã được giữ chỗ");
                 }
 
@@ -141,6 +146,7 @@ namespace CRM.Application.Services
                 //memoryCache.Remove($"Opportunity_{opportunity.OpportunityId}");
                 await unitOfWork.CommitTransactionAsync();
                 await unitOfWork.ReloadEntityAsync(opportunity);
+                Log.Information("Tạo cơ hội bán hàng thành công với ID: {OpportunityId}", opportunity.OpportunityId);
 
                 return new OpportunityDto
                 {
@@ -159,8 +165,9 @@ namespace CRM.Application.Services
                     } : null!,
                 };
             }
-            catch
+            catch (Exception ex)
             {
+                Log.Error(ex, "Lỗi khi tạo cơ hội bán hàng: {Message}", ex.Message);
                 await unitOfWork.RollbackTransactionAsync();
                 throw;
             }
