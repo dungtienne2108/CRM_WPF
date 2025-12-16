@@ -10,5 +10,6 @@ namespace CRM.Domain.Interfaces
         Task<Contract?> GetContractByDepositIdAsync(int depositId);
         Task<PagedResult<Contract>> GetContractsAsync(ContractFilter filter);
         Task<IEnumerable<Contract>> GetContractsByCustomerIdAsync(int customerId);
+        Task<IEnumerable<InstallmentSchedule>> GetInstallmentSchedulesByContractIdAsync(int contractId);
     }
 }

@@ -179,7 +179,7 @@ namespace CRM.UI.ViewModels.PaymentManagement
                 if (paymentSchedulesResult.IsSuccess)
                 {
                     var paymentSchedules = paymentSchedulesResult.Value;
-                    foreach (var item in paymentSchedules)
+                    foreach (var item in paymentSchedules.Where(ps => string.IsNullOrEmpty(ps.InvoiceNumber)))
                     {
                         PaymentSchedules.Add(item);
                     }

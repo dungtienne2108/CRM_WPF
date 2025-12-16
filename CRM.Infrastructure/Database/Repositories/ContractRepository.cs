@@ -77,5 +77,13 @@ namespace CRM.Infrastructure.Database.Repositories
                 .Where(c => c.CustomerId == customerId)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<InstallmentSchedule>> GetInstallmentSchedulesByContractIdAsync(int contractId)
+        {
+            return await _context.InstallmentSchedules
+                .AsNoTracking()
+                .Where(i => i.ContractId == contractId)
+                .ToListAsync();
+        }
     }
 }

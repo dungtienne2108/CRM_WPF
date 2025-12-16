@@ -357,7 +357,14 @@ namespace CRM.Application.Services
                     return Result.Success(cachedSchedules);
                 }
 
-                var paymentSchedules = await paymentScheduleRepository.FindAsync(ps => ps.ContractId == contractId);
+                //var paymentSchedules = await paymentScheduleRepository.FindAsync(ps => ps.ContractId == contractId);
+
+                var paymentSchedules = await contractRepository.GetInstallmentSchedulesByContractIdAsync(contractId);
+
+                if (!paymentSchedules.Any())
+                {
+                    return Result.Failure<IEnumerable<PaymentScheduleDto>>(new("PAYMENT_SCHEDULES_NOT_FOUND", "Không tìm thấy kế hoạch thanh toán cho hợp đồng này"));
+                }
 
                 var paymentScheduleDtos = paymentSchedules.Select(ps => new PaymentScheduleDto
                 {
