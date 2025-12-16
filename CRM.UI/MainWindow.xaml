@@ -191,7 +191,7 @@
                               HorizontalScrollBarVisibility="Hidden">
                     <StackPanel>
                         <TextBlock x:Name="MainSectionHeader" 
-                                 Text="Main"
+                                 Text=""
                                  Style="{StaticResource MenuSectionHeader}"/>
 
                         <RadioButton Name="DashboardMenu"

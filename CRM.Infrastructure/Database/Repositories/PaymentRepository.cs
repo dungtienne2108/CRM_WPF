@@ -12,6 +12,15 @@ namespace CRM.Infrastructure.Database.Repositories
         {
         }
 
+        public async Task AssignInvoiceCodeToInstallmentScheduleAsync(int installmentScheduleId, string invoiceCode)
+        {
+            await _context.InstallmentSchedules
+                .Where(i => i.InstallmentId == installmentScheduleId)
+                .ExecuteUpdateAsync(i => i.SetProperty(
+                    s => s.InvoiceNumber,
+                    s => invoiceCode));
+        }
+
         public async Task<Payment?> GetPaymentByIdAsync(int id)
         {
             return await _context.Payments

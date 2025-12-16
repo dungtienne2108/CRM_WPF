@@ -54,8 +54,21 @@ namespace CRM.Application.Services
                 await invoiceRepository.AddAsync(invoice);
                 var added = await unitOfWork.SaveChangesAsync();
 
+                await unitOfWork.ReloadEntityAsync(installmentSchedule);
+
+                //installmentSchedule.InvoiceNumber = invoice.InvoiceCode;
+
+                if (string.IsNullOrEmpty(invoice.InvoiceCode))
+                {
+                    invoice.InvoiceCode = $"INV{invoice.InvoiceId:D4}";
+                    invoiceRepository.Update(invoice);
+                    await unitOfWork.SaveChangesAsync();
+                }
+                await paymentRepository.AssignInvoiceCodeToInstallmentScheduleAsync(installmentSchedule.InstallmentId, invoice.InvoiceCode);
+
                 if (added > 0)
                 {
+                    memoryCache.Remove($"PaymentSchedules_Contract_{request.ContractId}");
                     memoryCache.Remove($"Invoice_{invoice.InvoiceId}");
                     return Result.Success(invoice.InvoiceId);
                 }
@@ -354,7 +367,8 @@ namespace CRM.Application.Services
                     Amount = ps.Amount,
                     ContractValuePercentage = ps.ContractValuePercentage,
                     DueDate = ps.DueDate.Value.ToDateTime(TimeOnly.MinValue),
-                    Status = ps.Status
+                    Status = ps.Status,
+                    InvoiceNumber = ps.InvoiceNumber ?? string.Empty
                 });
 
                 memoryCache.Set($"PaymentSchedules_Contract_{contractId}", paymentScheduleDtos, TimeSpan.FromMinutes(1));

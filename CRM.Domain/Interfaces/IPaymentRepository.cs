@@ -8,5 +8,6 @@ namespace CRM.Domain.Interfaces
     {
         Task<PagedResult<Payment>> GetPaymentsAsync(PaymentFilter filter);
         Task<Payment?> GetPaymentByIdAsync(int id);
+        Task AssignInvoiceCodeToInstallmentScheduleAsync(int installmentScheduleId, string invoiceCode);
     }
 }

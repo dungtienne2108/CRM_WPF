@@ -56,6 +56,9 @@ namespace CRM.Application.Dtos.Contract
 
         [DisplayName("Sản phẩm")]
         public string ProductName { get; set; } = string.Empty;
+        public int ProjectId { get; set; }
+        [DisplayName("Dự án")]
+        public string ProjectName { get; set; } = string.Empty;
 
         public int EmployeeId { get; set; }
 

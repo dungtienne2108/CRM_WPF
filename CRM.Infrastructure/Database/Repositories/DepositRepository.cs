@@ -72,7 +72,11 @@ namespace CRM.Infrastructure.Database.Repositories
                 );
             }
 
-            if (filter.IsCreatedContract.HasValue)
+            if (filter.IsCreatedContract.HasValue && filter.IsCreatedContract.Value)
+            {
+                query = query.Where(d => d.IsCreatedContract == filter.IsCreatedContract.Value);
+            }
+            else if (filter.IsCreatedContract.HasValue && !filter.IsCreatedContract.Value)
             {
                 query = query.Where(d => d.IsCreatedContract == filter.IsCreatedContract.Value);
             }
@@ -101,6 +105,13 @@ namespace CRM.Infrastructure.Database.Repositories
                 .Where(d => d.CustomerId == customerId)
                 .OrderByDescending(d => d.CreateDate)
                 .ToListAsync();
+        }
+
+        public async Task MarkDepositAsCreatedContractAsync(int depositId)
+        {
+            await _context.Deposits
+                .Where(d => d.DepositId == depositId)
+                .ExecuteUpdateAsync(d => d.SetProperty(deposit => deposit.IsCreatedContract, true));
         }
     }
 }

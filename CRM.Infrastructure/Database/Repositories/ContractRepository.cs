@@ -71,6 +71,8 @@ namespace CRM.Infrastructure.Database.Repositories
                 .Include(c => c.Customer)
                 .Include(c => c.Employee)
                 .Include(c => c.Deposit)
+                    .ThenInclude(d => d.Product)
+                        .ThenInclude(p => p.Project)
                 .AsSplitQuery()
                 .Where(c => c.CustomerId == customerId)
                 .ToListAsync();

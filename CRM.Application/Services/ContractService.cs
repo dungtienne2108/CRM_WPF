@@ -40,7 +40,7 @@ namespace CRM.Application.Services
                     return Result.Failure<int>(new("Contract_stage_not_found.", "Không tìm thấy giai đoạn hợp đồng"));
                 }
 
-                var deposit = await depositRepository.GetByIdAsync(request.DepositId);
+                var deposit = await depositRepository.GetDepositByIdAsync(request.DepositId);
                 if (deposit == null || deposit.IsDeleted)
                 {
                     Log.Error("Deposit ID {DepositId} không tồn tại.", request.DepositId);
@@ -72,8 +72,7 @@ namespace CRM.Application.Services
                     return Result.Failure<int>(new("Invalid_amount_vs_deposit.", "Tổng số tiền phải lớn hơn hoặc bằng số tiền đặt cọc"));
                 }
 
-                var product = await productRepository.GetByIdAsync(request.ProductId);
-
+                var product = await productRepository.GetProductByIdAsync(request.ProductId);
                 if (product == null)
                 {
                     Log.Error("Product ID {ProductId} không tồn tại.", request.ProductId);
@@ -105,7 +104,10 @@ namespace CRM.Application.Services
                     ProductId = request.ProductId,
                 };
 
-                deposit.IsCreatedContract = true;
+                //deposit.IsCreatedContract = true;
+                // đánh dấu đặt cọc đã tạo hợp đồng
+                await depositRepository.MarkDepositAsCreatedContractAsync(deposit.DepositId);
+
                 await contractRepository.AddAsync(contract);
 
                 var installmentSchedule = new InstallmentSchedule
@@ -116,7 +118,7 @@ namespace CRM.Application.Services
                     Status = "Chờ thanh toán",
                     InstallmentName = "Đặt cọc",
                     ContractValuePercentage = deposit.DepositCost.HasValue ?
-                        deposit.DepositCost.Value / request.Amount
+                        deposit.DepositCost.Value * 100 / request.Amount
                         : 0,
                     IsDeposited = true,
                 };
@@ -125,7 +127,8 @@ namespace CRM.Application.Services
                 Log.Information("Tạo lịch thanh toán cho hợp đồng ID {ContractId}.", contract.ContractId);
 
                 // chuyển sản phẩm sang đã bán
-                product.ProductStatusId = 3; // Đã bán
+                //product.ProductStatusId = 3; // Đã bán
+                await productRepository.UpdateProductStatusByIdAsync(product.ProductId, 3); // đã bán
 
                 var added = await unitOfWork.SaveChangesAsync();
                 if (added <= 0)

@@ -10,5 +10,6 @@ namespace CRM.Domain.Interfaces
         Task<Deposit?> GetDepositByIdAsync(int depositId);
         Task<IEnumerable<Deposit>> GetDepositsByCustomerIdAsync(int customerId);
         Task<Deposit?> GetDepositByProductIdAsync(int productId);
+        Task MarkDepositAsCreatedContractAsync(int depositId);
     }
 }
