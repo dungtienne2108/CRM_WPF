@@ -16,7 +16,7 @@ namespace CRM.Application.Services
             ISessionService sessionService,
             ICustomerRepository customerRepository,
             IRepository<ContactSalutation> salutationRepository,
-            IRepository<Contact> contactRepository,
+            IContactRepository contactRepository,
             IRepository<CustomerType> customerTypeRepository,
             IRepository<CustomerContact> customerContactRepository,
             IMapper mapper,
@@ -231,7 +231,8 @@ namespace CRM.Application.Services
 
         public async Task<List<SalutationOption>> GetAllSalutationsAsync()
         {
-            var salutations = await salutationRepository.GetAllAsync();
+            //var salutations = await salutationRepository.GetAllAsync();
+            var salutations = await contactRepository.GetContactSalutationsAsync();
             var salutationOptions = salutations
                 .Select(s => new SalutationOption
                 {

@@ -19,7 +19,7 @@ namespace CRM.Infrastructure
 
                 options.EnableSensitiveDataLogging();
                 options.EnableDetailedErrors();
-                options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+                //options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             });
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
