@@ -36,7 +36,8 @@ namespace CRM.Application.Mappings
                 .ForMember(dest => dest.OpportunityItems, opt => opt.MapFrom(src => src.OpportunityItems))
                 .ForMember(dest => dest.Customer, opt => opt.MapFrom(src => src.Customer))
                 .ForMember(dest => dest.OpportunityStatus, opt => opt.MapFrom(src => src.OpportunityStage))
-                .ForMember(dest => dest.Employee, opt => opt.MapFrom(src => src.Employee));
+                .ForMember(dest => dest.Employee, opt => opt.MapFrom(src => src.Employee))
+                .ForMember(dest => dest.IsDeposited, opt => opt.MapFrom(src => src.IsDeposited));
         }
     }
 }

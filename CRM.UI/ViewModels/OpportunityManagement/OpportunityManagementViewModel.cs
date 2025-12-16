@@ -21,7 +21,7 @@ namespace CRM.UI.ViewModels.OpportunityManagement
         {
             _opportunityService = opportunityService;
             CurrentPage = 1;
-            RecordsPerPage = RecordsPerPageOptions.First();
+            RecordsPerPage = 25;
             TotalRecords = 0;
             _serviceProvider = serviceProvider;
         }

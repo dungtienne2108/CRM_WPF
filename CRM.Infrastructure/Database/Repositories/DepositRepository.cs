@@ -25,10 +25,10 @@ namespace CRM.Infrastructure.Database.Repositories
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(d => d.DepositId == depositId);
 
-            if (deposit != null)
-            {
-                await _context.Entry(deposit).ReloadAsync();
-            }
+            //if (deposit != null)
+            //{
+            //    await _context.Entry(deposit).ReloadAsync();
+            //}
 
             return deposit;
         }

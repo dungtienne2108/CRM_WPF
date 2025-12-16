@@ -36,7 +36,7 @@ namespace CRM.UI.ViewModels.OpportunityManagement
         [ObservableProperty]
         private OpportunityItemViewModel _opportunity;
 
-        public bool CanDeposit => CurrentStatusIndex == 3;
+        public bool CanDeposit => CurrentStatusIndex == 3 && !IsDeposited;
 
         [ObservableProperty]
         private int _opportunityId;
@@ -63,6 +63,8 @@ namespace CRM.UI.ViewModels.OpportunityManagement
         private string _description;
         [ObservableProperty]
         private string _employeeName;
+        [ObservableProperty]
+        private bool _isDeposited;
         [ObservableProperty]
         private ObservableCollection<ProductDto> _products;
         [ObservableProperty]
@@ -139,6 +141,7 @@ namespace CRM.UI.ViewModels.OpportunityManagement
                 EmployeeName = Opportunity.Employee.Name;
                 Status = Opportunity.OpportunityStatus.Name;
                 Products = new ObservableCollection<ProductDto>(Opportunity.Products);
+                IsDeposited = Opportunity.IsDeposited;
                 UpdateStatusSteps();
             }
         }

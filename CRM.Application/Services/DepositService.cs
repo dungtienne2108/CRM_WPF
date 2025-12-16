@@ -35,6 +35,12 @@ namespace CRM.Application.Services
                     return Result.Failure<int>(new("OPPORTUNITY_NOT_FOUND", "Cơ hội không tồn tại"));
                 }
 
+                if (opportunity.IsDeposited)
+                {
+                    Log.Error("Cơ hội đã được tạo đặt cọc: {@Request}", request);
+                    return Result.Failure<int>(new("OPPORTUNITY_ALREADY_DEPOSITED", "Cơ hội đã được tạo đặt cọc"));
+                }
+
                 if (opportunity.OpportunityStageId != 4) // phải là thành công
                 {
                     Log.Error("Cơ hội không ở trạng thái 'Thành công': {@Request}", request);
@@ -66,6 +72,13 @@ namespace CRM.Application.Services
                         //depositRepository.Remove(existingDepositByProduct);
                         existingDepositByProduct.IsDeleted = true;
                         depositRepository.Update(existingDepositByProduct);
+                        // cập nhật trạng thái sản phẩm về chưa bán
+                        if (product.ProductStatusId != 1)
+                        {
+                            //product.ProductStatusId = 1;
+                            //productRepository.Update(product);
+                            await productRepository.UpdateProductStatusByIdAsync(product.ProductId, 1);
+                        }
                         await unitOfWork.SaveChangesAsync();
                         Log.Information("Đã xóa đặt cọc cũ và cho phép đặt lại: {@Request}", request);
                     }
@@ -122,6 +135,10 @@ namespace CRM.Application.Services
                 };
 
                 await depositRepository.AddAsync(deposit);
+
+                // đánh dấu cơ hội là đã đặt cọc
+                await opportunityRepository.MarkOpportunityAsDepositedAsync(opportunity.OpportunityId);
+                memoryCache.Remove($"Opportunity_{opportunity.OpportunityId}");
 
                 // cập nhật trạng thái sản phẩm để tránh đặt cọc trùng
                 //product.ProductStatusId = 4;

@@ -22,6 +22,7 @@ namespace CRM.Infrastructure.Database.Repositories
         public async Task<Contract?> GetContractByIdAsync(int contractId)
         {
             return await _context.Contracts
+                .AsNoTracking()
                 .Include(c => c.Customer)
                 .Include(c => c.Employee)
                 .Include(c => c.Deposit)

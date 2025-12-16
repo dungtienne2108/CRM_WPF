@@ -10,5 +10,6 @@ namespace CRM.Domain.Interfaces
         Task<IEnumerable<Opportunity>> GetOpportunitiesByCustomerIdAsync(int customerId);
         Task<PagedResult<Opportunity>> GetAllOpportunitiesAsync(OpportunityFilter filter);
         Task UpdateOpportunityStageAsync(int opportunityId, int newStage);
+        Task MarkOpportunityAsDepositedAsync(int opportunityId);
     }
 }

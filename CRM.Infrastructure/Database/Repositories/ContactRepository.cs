@@ -76,6 +76,7 @@ namespace CRM.Infrastructure.Database.Repositories
         {
             // contact và customer nhiều nhiều
             return await _context.Contacts
+                .AsNoTracking()
                 .Include(c => c.ContactType)
                 .Where(c => c.CustomerContacts.Any(cc => cc.CustomerId == customerId))
                 .ToListAsync();

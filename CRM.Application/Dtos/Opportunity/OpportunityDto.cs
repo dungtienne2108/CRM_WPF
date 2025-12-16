@@ -53,6 +53,8 @@ namespace CRM.Application.Dtos.Opportunity
 
         [DisplayName("Số lượng sản phẩm")]
         public int ItemCount => OpportunityItems.Count;
+
+        public bool IsDeposited { get; set; }
     }
 
     public class OpportunityItemDto

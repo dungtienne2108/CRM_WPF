@@ -88,6 +88,13 @@ namespace CRM.Infrastructure.Database.Repositories
             return opportunity;
         }
 
+        public async Task MarkOpportunityAsDepositedAsync(int opportunityId)
+        {
+            await _context.Opportunities
+                 .Where(o => o.OpportunityId == opportunityId)
+                 .ExecuteUpdateAsync(o => o.SetProperty(op => op.IsDeposited, true));
+        }
+
         public async Task UpdateOpportunityStageAsync(int opportunityId, int newStage)
         {
             await _context.Opportunities

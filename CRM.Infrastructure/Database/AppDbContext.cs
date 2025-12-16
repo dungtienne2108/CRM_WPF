@@ -850,6 +850,9 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("opportunity_name");
             entity.Property(e => e.OpportunityStageId).HasColumnName("opportunity_stage_id");
+            entity.Property(e => e.IsDeposited)
+                .HasColumnName("is_deposited")
+                .HasDefaultValue(false);
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Opportunities)
                 .HasForeignKey(d => d.CustomerId)

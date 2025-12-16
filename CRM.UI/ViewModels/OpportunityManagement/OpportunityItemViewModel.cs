@@ -40,6 +40,8 @@ namespace CRM.UI.ViewModels.OpportunityManagement
         public decimal ExpectedPrice => OpportunityDto.ExpectedPrice;
         [DisplayName("Giá thực tế")]
         public decimal RealPrice => OpportunityDto.RealPrice;
+        public bool IsDeposited => OpportunityDto.IsDeposited;
+
         public List<ProductDto> Products => OpportunityDto.Products;
         public CustomerDto Customer => OpportunityDto.Customer;
         public OpportunityStatusOption OpportunityStatus => OpportunityDto.OpportunityStatus;

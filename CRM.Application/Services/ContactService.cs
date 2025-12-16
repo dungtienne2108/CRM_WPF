@@ -181,7 +181,12 @@ namespace CRM.Application.Services
         {
             try
             {
-                //memoryCache.Remove($"Contact_{request.Id}");
+                // Clear cache để tránh entity tracking conflict
+                memoryCache.Remove($"Contact_{request.Id}");
+                if (request.CustomerId.HasValue)
+                {
+                    memoryCache.Remove($"CustomerContacts_{request.CustomerId.Value}");
+                }
 
                 var contact = await contactRepository.GetContactByIdAsync(request.Id);
                 if (contact == null)

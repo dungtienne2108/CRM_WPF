@@ -24,6 +24,8 @@ public partial class Opportunity
 
     public int EmployeeId { get; set; }
 
+    public bool IsDeposited { get; set; }
+
     public virtual Customer Customer { get; set; } = null!;
 
     public virtual Employee Employee { get; set; } = null!;
