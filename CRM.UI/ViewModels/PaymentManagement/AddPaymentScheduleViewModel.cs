@@ -56,6 +56,9 @@ namespace CRM.UI.ViewModels.PaymentManagement
         [Required(ErrorMessage = "Vui lòng chọn ngày đến hạn")]
         private DateTime _dueDate = DateTime.UtcNow;
 
+        [ObservableProperty]
+        private bool _isLastSchedule;
+
         public AddPaymentScheduleViewModel(IContractService contractService, IPaymentService paymentService)
         {
             _contractService = contractService;
@@ -204,6 +207,24 @@ namespace CRM.UI.ViewModels.PaymentManagement
             }
 
 
+        }
+
+        partial void OnIsLastScheduleChanged(bool value)
+        {
+            if (value)
+            {
+                Amount = ContractRemainingValue;
+                ValuePercentage = ContractRemainingValue > 0
+                                ? Math.Round((Amount / ContractValue) * 100, 2)
+                                : 0;
+            }
+            else
+            {
+                Amount = 0;
+                ValuePercentage = ContractRemainingValue > 0
+                                ? Math.Round((Amount / ContractValue) * 100, 2)
+                                : 0;
+            }
         }
         #endregion
     }

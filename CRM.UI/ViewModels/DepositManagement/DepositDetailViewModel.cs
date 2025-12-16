@@ -60,6 +60,8 @@ namespace CRM.UI.ViewModels.DepositManagement
         private string _contactEmail = string.Empty;
         [ObservableProperty]
         private string? _contactDescription = string.Empty;
+        [ObservableProperty]
+        private string? _contactType = string.Empty;
 
         [ObservableProperty]
         private ObservableCollection<ContactDto> _contactOptions = new();
@@ -230,17 +232,20 @@ namespace CRM.UI.ViewModels.DepositManagement
                 return;
             }
 
-            var productsResult = await _projectService.GetProductByOpportunityIdAsync(deposit.OpportunityId);
-            if (productsResult.IsSuccess)
-            {
-                var product = productsResult.Value.FirstOrDefault();
-                if (product != null)
-                {
-                    ProjectName = product.ProjectName;
-                    ProductName = product.ProductName;
-                    ProductPrice = product.ProductPrice.HasValue ? product.ProductPrice.Value : 0;
-                }
-            }
+            //var productsResult = await _projectService.GetProductByOpportunityIdAsync(deposit.OpportunityId);
+            //if (productsResult.IsSuccess)
+            //{
+            //    var product = productsResult.Value.FirstOrDefault();
+            //    if (product != null)
+            //    {
+            //        ProjectName = product.ProjectName;
+            //        ProductName = product.ProductName;
+            //        ProductPrice = product.ProductPrice.HasValue ? product.ProductPrice.Value : 0;
+            //    }
+            //}
+            ProductName = deposit.ProductName;
+            ProductPrice = deposit.ProductPrice;
+            ProjectName = deposit.ProjectName;
 
             if (deposit.ContactId != null)
             {
@@ -253,6 +258,7 @@ namespace CRM.UI.ViewModels.DepositManagement
                     ContactPhone = contact.Phone ?? string.Empty;
                     ContactEmail = contact.Email ?? string.Empty;
                     ContactDescription = contact.Description ?? string.Empty;
+                    ContactType = contact.ContactType;
                 }
                 else
                 {
@@ -260,6 +266,7 @@ namespace CRM.UI.ViewModels.DepositManagement
                     ContactPhone = string.Empty;
                     ContactEmail = string.Empty;
                     ContactDescription = string.Empty;
+                    ContactType = string.Empty;
                 }
             }
 

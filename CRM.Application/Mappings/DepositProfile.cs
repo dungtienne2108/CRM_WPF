@@ -11,7 +11,7 @@ namespace CRM.Application.Mappings
             CreateMap<Deposit, DepositDto>()
                 .ForMember(d => d.Id, s => s.MapFrom(d => d.DepositId))
                 .ForMember(d => d.Code, s => s.MapFrom(d => d.DepositCode))
-                .ForMember(d => d.Name, s => s.MapFrom(d => d.DepositCode))
+                .ForMember(d => d.Name, s => s.MapFrom(d => d.DepositName))
                 .ForMember(d => d.Amount, s => s.MapFrom(d => d.DepositCost))
                 .ForMember(d => d.CustomerId, s => s.MapFrom(d => d.CustomerId.HasValue ? d.CustomerId.Value : 0))
                 .ForMember(d => d.CustomerName, s => s.MapFrom(d => d.Customer != null ? d.Customer.CustomerName : string.Empty))

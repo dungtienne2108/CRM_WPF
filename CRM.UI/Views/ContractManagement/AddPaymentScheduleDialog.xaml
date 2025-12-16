@@ -198,6 +198,13 @@
 
                     <TextBlock Text="THÔNG TIN LỊCH TRÌNH" Style="{StaticResource SectionHeader}"/>
 
+                    <CheckBox Content="Đây là lịch trình thanh toán cuối cùng"
+                              IsChecked="{Binding IsLastSchedule, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              VerticalAlignment="Center"
+                              Margin="0,8,0,16"
+                              FontSize="14"
+                              Foreground="#333333"/>
+
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>

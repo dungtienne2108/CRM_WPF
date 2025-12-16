@@ -136,7 +136,7 @@ namespace CRM.Application.Services
                 var existingSchedules = await paymentScheduleRepository.FindAsync(ps => ps.ContractId == request.ContractId);
                 var totalAmount = existingSchedules.Sum(ps => ps.Amount);
 
-                if (totalAmount + request.Amount > contract.Amount)
+                if (totalAmount + request.Amount > contract.AmountAfterTax)
                 {
                     return Result.Failure<int>(new("AMOUNT_EXCEEDS_CONTRACT_VALUE", "Tổng số tiền kế hoạch thanh toán vượt quá giá trị hợp đồng"));
                 }

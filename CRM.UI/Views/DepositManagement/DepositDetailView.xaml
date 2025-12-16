@@ -25,6 +25,7 @@
         <converters:InverseBooleanToVisibleConverter x:Key="InverseBoolToVisConverter"/>
         <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
         <converters:CurrencyFormatConverter x:Key="CurrencyFormatConverter"/>
+        <converters:StringToDecimalConveter x:Key="StringToDecimalConverter"/>
 
         <Style x:Key="GroupBoxStyle" TargetType="GroupBox">
             <Setter Property="Margin" Value="0,0,0,15"/>
@@ -333,7 +334,7 @@
                                                FontSize="16"
                                                Margin="0,0,15,0"/>
                                             <TextBox Grid.Column="1" Grid.Row="4" 
-                                                 Text="{Binding ProductPrice, UpdateSourceTrigger=PropertyChanged}"
+                                                 Text="{Binding ProductPrice, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StringToDecimalConverter}}"
                                                  Style="{StaticResource EditTextBoxStyle}" 
                                                  FontSize="16"
                                                  Margin="0,10,20,10"
@@ -416,7 +417,7 @@
                                    FontSize="16"
                                    Margin="0,0,15,0"/>
                                             <TextBox Grid.Column="3" Grid.Row="1" 
-                                 Text="{Binding ContactDescription, UpdateSourceTrigger=PropertyChanged}"
+                                 Text="{Binding ContactType, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource EditTextBoxStyle}" 
                                  FontSize="16"
                                  Margin="0,10,20,10"
