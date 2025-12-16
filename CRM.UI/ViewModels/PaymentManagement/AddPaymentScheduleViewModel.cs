@@ -184,7 +184,7 @@ namespace CRM.UI.ViewModels.PaymentManagement
             {
                 Amount = 0;
                 ValuePercentage = 0;
-                MessageBox.Show("Giá tiền không được quá giá trị hợp đồng", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Giá tiền không được quá số tiền còn lại", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             ValuePercentage = ContractValue > 0

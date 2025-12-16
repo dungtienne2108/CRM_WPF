@@ -24,7 +24,7 @@ namespace CRM.Application.Services
         {
             try
             {
-                var contract = await contractRepository.GetByIdAsync(request.ContractId);
+                var contract = await contractRepository.GetContractByIdAsync(request.ContractId);
                 if (contract == null)
                 {
                     return Result.Failure<int>(new("CONTRACT_NOT_FOUND", "Hợp đồng không tồn tại"));
@@ -74,7 +74,7 @@ namespace CRM.Application.Services
         {
             try
             {
-                var invoice = await invoiceRepository.GetByIdAsync(request.InvoiceId);
+                var invoice = await invoiceRepository.GetInvoiceByIdAsync(request.InvoiceId);
                 if (invoice == null)
                 {
                     return Result.Failure<int>(new("INVOICE_NOT_FOUND", "Hóa đơn không tồn tại"));
@@ -102,6 +102,7 @@ namespace CRM.Application.Services
                 };
 
                 await paymentRepository.AddAsync(payment);
+                await invoiceRepository.UpdateStatusAsync(invoice.InvoiceId, InvoiceStatus.Paid);
 
                 var added = await unitOfWork.SaveChangesAsync();
                 if (added > 0)

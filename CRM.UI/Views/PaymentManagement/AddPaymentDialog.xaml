@@ -165,6 +165,7 @@
                             Padding="8,4,8,4"
                             Margin="0,8,8,8"
                             VerticalContentAlignment="Center"
+                                 IsReadOnly="True"
                             Text="{Binding Amount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StringToDecimalConverter}}"                                     
                              />
 
@@ -183,6 +184,7 @@
                             Margin="8,8,0,8"
                             VerticalContentAlignment="Center"
                                  IsReadOnly="True"
+                                 Visibility="Hidden"
                             Text="{Binding RemainAmount, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StringToDecimalConverter}}"                                     
                              />
 

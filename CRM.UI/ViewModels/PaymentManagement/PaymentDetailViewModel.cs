@@ -59,6 +59,7 @@ namespace CRM.UI.ViewModels.PaymentManagement
             }
             PaymentId = paymentItem.Id;
             await GetPaymentAsync(paymentItem.Id);
+            await GetPaymentMethodsAsync();
         }
         #endregion
 
@@ -129,13 +130,13 @@ namespace CRM.UI.ViewModels.PaymentManagement
         #endregion
 
         #region Property Changed
-        partial void OnIsEditModeChanged(bool value)
-        {
-            if (value)
-            {
-                _ = GetPaymentMethodsAsync();
-            }
-        }
+        //partial void OnIsEditModeChanged(bool value)
+        //{
+        //    if (value)
+        //    {
+        //        _ = GetPaymentMethodsAsync();
+        //    }
+        //}
         #endregion
     }
 }

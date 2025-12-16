@@ -199,6 +199,7 @@ namespace CRM.UI.ViewModels.PaymentManagement
                     CustomerId = value.CustomerId;
                     CustomerName = value.CustomerName;
                     IsInvoiceDropdownOpen = false;
+                    Amount = value.Amount;
                 }));
             }
         }

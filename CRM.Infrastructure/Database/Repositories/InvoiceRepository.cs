@@ -15,13 +15,14 @@ namespace CRM.Infrastructure.Database.Repositories
         public async Task<Invoice?> GetInvoiceByIdAsync(int id)
         {
             var invoice = await _context.Invoices
+                .AsNoTracking()
                 .Include(i => i.Contract)
                 .Include(i => i.InstallmentSchedule)
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(i => i.InvoiceId == id);
 
-            if (invoice != null)
-                await _context.Entry(invoice).ReloadAsync();
+            //if (invoice != null)
+            //    await _context.Entry(invoice).ReloadAsync();
 
             return invoice;
         }
@@ -59,6 +60,13 @@ namespace CRM.Infrastructure.Database.Repositories
                 .ToListAsync();
 
             return new PagedResult<Invoice>(items, totalCount, filter.PageNumber, filter.PageSize);
+        }
+
+        public async Task UpdateStatusAsync(int id, InvoiceStatus status)
+        {
+            await _context.Invoices
+                .Where(i => i.InvoiceId == id)
+                .ExecuteUpdateAsync(i => i.SetProperty(inv => inv.Status, status));
         }
     }
 }

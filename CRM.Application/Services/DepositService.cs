@@ -146,6 +146,7 @@ namespace CRM.Application.Services
                 await productRepository.UpdateProductStatusByIdAsync(product.ProductId, 4);
 
                 var added = await unitOfWork.SaveChangesAsync();
+                await unitOfWork.ReloadEntityAsync(deposit);
 
                 if (added > 0)
                 {
