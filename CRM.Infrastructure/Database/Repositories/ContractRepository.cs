@@ -29,6 +29,7 @@ namespace CRM.Infrastructure.Database.Repositories
                 .Include(c => c.ContractStage)
                 .Include(c => c.ContractType)
                 .Include(c => c.ContractDocuments)
+                .Include(c => c.InstallmentSchedules)
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(c => c.ContractId == contractId);
         }

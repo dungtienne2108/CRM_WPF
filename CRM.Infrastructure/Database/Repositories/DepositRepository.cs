@@ -44,6 +44,7 @@ namespace CRM.Infrastructure.Database.Repositories
                 //    .ThenInclude(p => p.Project)
                 .AsNoTracking()
                 .AsSplitQuery()
+                .OrderByDescending(d => d.CreateDate)
                 .FirstOrDefaultAsync(d => d.ProductId == productId);
 
             return deposit;
@@ -79,6 +80,7 @@ namespace CRM.Infrastructure.Database.Repositories
             var totalCount = await query.CountAsync();
 
             var deposits = await query
+                .OrderByDescending(d => d.CreateDate)
                 .Skip((filter.PageNumber - 1) * filter.PageSize)
                 .Take(filter.PageSize)
                 .ToListAsync();
@@ -97,6 +99,7 @@ namespace CRM.Infrastructure.Database.Repositories
                 .Include(c => c.Product)
                 .AsSplitQuery()
                 .Where(d => d.CustomerId == customerId)
+                .OrderByDescending(d => d.CreateDate)
                 .ToListAsync();
         }
     }

@@ -167,12 +167,12 @@
                                         IsReadOnly="True"
                                         ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
 
-                        <!-- Số điện thoại -->
+                        <!-- Pthuc thanh toan
                         <DataGridTextColumn Header="Phương thức thanh toán" 
                                         Binding="{Binding PaymentMethod}"
                                         Width="220"
                                         IsReadOnly="True"
-                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>-->
 
                         <!-- Email -->
                         <DataGridTextColumn Header="Tồng tiền (VNĐ)" 

@@ -325,6 +325,7 @@ namespace CRM.UI.ViewModels.LeadManagement
         private async Task ConvertStageAsync()
         {
             var convertLeadViewModel = _serviceProvider.GetRequiredService<ConvertStageViewModel>();
+            convertLeadViewModel.SetLeadId(LeadId);
             var window = Window.GetWindow(System.Windows.Application.Current.MainWindow);
             var convertedLead = await ConvertDialog.ShowConvertDialog(Window.GetWindow(window), convertLeadViewModel);
 

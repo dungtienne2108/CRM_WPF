@@ -41,6 +41,7 @@ namespace CRM.Infrastructure.Database.Repositories
             var totalCount = await query.CountAsync();
 
             var items = await query
+                .OrderByDescending(p => p.PaymentDate)
                 .Skip((filter.PageNumber - 1) * filter.PageSize)
                 .Take(filter.PageSize)
                 .ToListAsync();

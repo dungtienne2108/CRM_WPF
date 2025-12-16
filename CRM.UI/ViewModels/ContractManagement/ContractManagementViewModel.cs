@@ -37,7 +37,7 @@ namespace CRM.UI.ViewModels.ContractManagement
         public ContractManagementViewModel(IServiceProvider serviceProvider, IContractService contractService)
         {
             CurrentPage = 1;
-            RecordsPerPage = 10;
+            RecordsPerPage = 25;
             TotalRecords = 0;
             TotalRecordsText = "Tổng số bản ghi: 0";
             IsLoading = false;

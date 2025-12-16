@@ -88,5 +88,11 @@ namespace CRM.Infrastructure.Database.Repositories
             return opportunity;
         }
 
+        public async Task UpdateOpportunityStageAsync(int opportunityId, int newStage)
+        {
+            await _context.Opportunities
+                 .Where(o => o.OpportunityId == opportunityId)
+                 .ExecuteUpdateAsync(o => o.SetProperty(op => op.OpportunityStageId, newStage));
+        }
     }
 }

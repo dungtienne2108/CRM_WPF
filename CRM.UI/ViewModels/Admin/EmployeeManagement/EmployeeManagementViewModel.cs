@@ -41,7 +41,7 @@ namespace CRM.UI.ViewModels.Admin.EmployeeManagement
             _employeeService = employeeService;
 
             CurrentPage = 1;
-            RecordsPerPage = 10;
+            RecordsPerPage = 25;
             TotalRecords = 0;
             _serviceProvider = serviceProvider;
         }

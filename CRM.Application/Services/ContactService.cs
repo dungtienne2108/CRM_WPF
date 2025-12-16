@@ -183,7 +183,7 @@ namespace CRM.Application.Services
             {
                 //memoryCache.Remove($"Contact_{request.Id}");
 
-                var contact = await contactRepository.GetByIdAsync(request.Id);
+                var contact = await contactRepository.GetContactByIdAsync(request.Id);
                 if (contact == null)
                 {
                     return Result.Failure<ContactDto>(new("CONTACT_NOT_FOUND", $"Không tìm thấy liên hệ với Id: {request.Id}"));

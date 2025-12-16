@@ -16,6 +16,10 @@ namespace CRM.Infrastructure
                 options.UseSqlServer(
                     configuration.GetConnectionString("DefaultConnection"),
                     b => b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName));
+
+                options.EnableSensitiveDataLogging();
+                options.EnableDetailedErrors();
+                options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             });
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();

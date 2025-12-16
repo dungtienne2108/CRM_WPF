@@ -31,6 +31,8 @@ namespace CRM.Application.Mappings
                 .ForMember(d => d.EmployeeId, s => s.MapFrom(c => c.EmployeeId))
                 .ForMember(d => d.EmployeeName, s => s.MapFrom(c => c.Employee != null ? c.Employee.EmployeeName : null))
                 .ForMember(d => d.Documents, s => s.MapFrom(c => c.ContractDocuments))
+                .ForMember(d => d.PaidAmount, s => s.MapFrom(c => c.InstallmentSchedules != null ? c.InstallmentSchedules.Sum(i => i.Amount) : 0))
+                .ForMember(d => d.RemainingAmount, s => s.MapFrom(c => c.AmountAfterTax - (c.InstallmentSchedules != null ? c.InstallmentSchedules.Sum(i => i.Amount) : 0)))
                 ;
 
             CreateMap<ContractDocument, ContractDocumentDto>()

@@ -67,7 +67,8 @@
                          materialDesign:TextFieldAssist.HasLeadingIcon="True"
                          materialDesign:TextFieldAssist.LeadingIcon="Search"
                          Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                         Width="350"
+                         MaxWidth="420"
+                         MinWidth="280"
                          VerticalAlignment="Center"
                          Margin="0,0,8,0">
                     <TextBox.InputBindings>

@@ -130,7 +130,7 @@ namespace CRM.UI.ViewModels.PaymentManagement
 
                 if (result.IsSuccess)
                 {
-                    MessageBox.Show("Tạo hóa đơn thành công!");
+                    MessageBox.Show("Tạo hóa đơn thành công", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {

@@ -41,7 +41,7 @@ namespace CRM.UI.ViewModels.Admin.ProjectManagement
             _projectService = projectService;
 
             CurrentPage = 1;
-            RecordsPerPage = 10;
+            RecordsPerPage = 25;
             TotalRecords = 0;
             TotalRecordsText = "Tổng số bản ghi: 0";
             IsLoading = false;

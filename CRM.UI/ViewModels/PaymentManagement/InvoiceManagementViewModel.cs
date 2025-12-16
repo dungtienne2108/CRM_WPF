@@ -39,7 +39,7 @@ namespace CRM.UI.ViewModels.PaymentManagement
         public InvoiceManagementViewModel(IServiceProvider serviceProvider, IPaymentService paymentService)
         {
             CurrentPage = 1;
-            RecordsPerPage = 10;
+            RecordsPerPage = 25;
             TotalRecords = 0;
             _serviceProvider = serviceProvider;
             _paymentService = paymentService;

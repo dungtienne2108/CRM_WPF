@@ -23,6 +23,10 @@ namespace CRM.UI.ViewModels.PaymentManagement
         [ObservableProperty]
         private decimal _contractValue;
         [ObservableProperty]
+        private decimal _contractPaidAmount;
+        [ObservableProperty]
+        private decimal _contractRemainingValue;
+        [ObservableProperty]
         private int _employeeId;
         [ObservableProperty]
         private string _employeeName = string.Empty;
@@ -125,9 +129,11 @@ namespace CRM.UI.ViewModels.PaymentManagement
 
                 ContractNumber = contract.Number;
                 ContractName = contract.Name;
-                ContractValue = contract.Amount;
+                ContractValue = contract.AmountAfterTax;
                 EmployeeId = contract.EmployeeId;
                 EmployeeName = contract.EmployeeName;
+                ContractRemainingValue = contract.RemainingAmount;
+                ContractPaidAmount = contract.PaidAmount;
             }
         }
 
@@ -171,7 +177,7 @@ namespace CRM.UI.ViewModels.PaymentManagement
         #region Property changed
         partial void OnAmountChanged(decimal value)
         {
-            if (value > ContractValue)
+            if (value > ContractRemainingValue)
             {
                 Amount = 0;
                 ValuePercentage = 0;
@@ -186,7 +192,10 @@ namespace CRM.UI.ViewModels.PaymentManagement
 
         partial void OnValuePercentageChanged(decimal value)
         {
-            if (value < 0 || value > 100)
+            var remainingContractValuePercentage = ContractValue > 0
+                                                ? Math.Round((ContractRemainingValue / ContractValue) * 100, 2)
+                                                : 0;
+            if (value < 0 || value > remainingContractValuePercentage)
             {
                 Amount = 0;
                 ValuePercentage = 0;

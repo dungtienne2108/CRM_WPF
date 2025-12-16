@@ -385,23 +385,30 @@ namespace CRM.Application.Services
                     return Result.Failure<LeadDto>(new Error("LEAD_NOT_FOUND", $"Không tìm thấy lead với Id: {leadId}"));
                 }
 
-                lead.LeadStageId = stageId;
+                //lead.LeadStageId = stageId;
 
-                leadRepository.Update(lead);
+                //leadRepository.Update(lead);
+
+                await leadRepository.UpdateLeadStageAsync(leadId, stageId);
 
                 var changed = await unitOfWork.SaveChangesAsync();
 
-                var leadDto = mapper.Map<LeadDto>(lead);
+                var newLead = await leadRepository.GetLeadByIdAsync(leadId);
 
-                if (changed > 0)
-                {
-                    memoryCache.Remove($"Lead_{lead.LeadId}");
-                    return Result.Success<LeadDto>(leadDto);
-                }
-                else
-                {
-                    return Result.Failure<LeadDto>(new Error("UPDATE_LEAD_STAGE_FAILED", $"Lỗi xảy ra khi cập nhật giai đoạn lead"));
-                }
+                var leadDto = mapper.Map<LeadDto>(newLead);
+
+                memoryCache.Remove($"Lead_{lead.LeadId}");
+                return Result.Success<LeadDto>(leadDto);
+
+                //if (changed > 0)
+                //{
+                //    memoryCache.Remove($"Lead_{lead.LeadId}");
+                //    return Result.Success<LeadDto>(leadDto);
+                //}
+                //else
+                //{
+                //    return Result.Failure<LeadDto>(new Error("UPDATE_LEAD_STAGE_FAILED", $"Lỗi xảy ra khi cập nhật giai đoạn lead"));
+                //}
             }
             catch (Exception ex)
             {

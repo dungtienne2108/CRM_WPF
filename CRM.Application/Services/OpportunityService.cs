@@ -370,9 +370,11 @@ namespace CRM.Application.Services
                     return Result.Failure<OpportunityDto>(new Error("OPPORTUNITY_NOT_FOUND", "Cơ hội không tồn tại"));
                 }
 
-                opportunity.OpportunityStageId = newStageId;
+                //opportunity.OpportunityStageId = newStageId;
 
-                opportunityRepository.Update(opportunity);
+                //opportunityRepository.Update(opportunity);
+
+                await opportunityRepository.UpdateOpportunityStageAsync(opportunityId, newStageId);
 
 
                 if (opportunity.OpportunityStageId == 1 || opportunity.OpportunityStageId == 4)
@@ -383,18 +385,29 @@ namespace CRM.Application.Services
                         .Distinct()
                         .ToList();
 
-                    var products = await productRepository.GetProductsByIdsAsync(productIds);
+                    //var products = await productRepository.GetProductsByIdsAsync(productIds);
 
-                    // chuyển thành đã giữ chỗ (id = 2)
-                    foreach (var product in products)
-                    {
-                        product.ProductStatusId = 2;
-                    }
+                    //// chuyển thành đã giữ chỗ (id = 2)
+                    //foreach (var product in products)
+                    //{
+                    //    product.ProductStatusId = 2;
+                    //}
+
+                    await productRepository.UpdateProductStatusByIdsAsync(productIds, 2);
                 }
 
-                await unitOfWork.SaveChangesAsync();
+                var updated = await unitOfWork.SaveChangesAsync();
 
-                var updatedOpportunity = mapper.Map<OpportunityDto>(opportunity);
+                //await unitOfWork.ReloadEntityAsync(opportunity);
+
+                //if (updated == 0)
+                //{
+                //    return Result.Failure<OpportunityDto>(new Error("UPDATE_FAILED", "Cập nhật trạng thái cơ hội thất bại"));
+                //}
+
+                var newOpportunity = await opportunityRepository.GetOpportunityByIdAsync(opportunityId);
+
+                var updatedOpportunity = mapper.Map<OpportunityDto>(newOpportunity);
 
                 memoryCache.Remove($"Opportunity_{opportunityId}");
 

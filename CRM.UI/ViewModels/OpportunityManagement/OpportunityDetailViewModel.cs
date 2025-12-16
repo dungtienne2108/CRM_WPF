@@ -112,6 +112,7 @@ namespace CRM.UI.ViewModels.OpportunityManagement
             }
 
             Opportunity = opportunity;
+
             await LoadOpportunityAsync();
             await LoadOpportunityStatusAsync();
             await LoadProductStatusesAsync();

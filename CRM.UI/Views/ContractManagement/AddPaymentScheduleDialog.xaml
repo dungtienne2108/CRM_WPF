@@ -165,6 +165,27 @@
                             />
 
                         <TextBox Grid.Row="1" Grid.Column="1"
+                               Style="{StaticResource MaterialTextBox}"
+                               materialDesign:HintAssist.Hint="Số tiền đã thanh toán (VNĐ)"
+                               Padding="8,4,8,4"
+                               Margin="8,8,0,8"
+                                     IsReadOnly="True"
+                               VerticalContentAlignment="Center"
+                           Text="{Binding ContractPaidAmount, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StringToDecimalConverter}}"                                     
+                               />
+
+                        <TextBox Grid.Row="2" Grid.Column="0"
+                               Style="{StaticResource MaterialTextBox}"
+                               materialDesign:HintAssist.Hint="Số tiền còn lại (VNĐ)"
+                               Padding="8,4,8,4"
+                               Margin="0,8,8,8"
+                                     IsReadOnly="True"
+                               VerticalContentAlignment="Center"
+                               Text="{Binding ContractRemainingValue, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StringToDecimalConverter}}"                                     
+                                />
+
+
+                        <TextBox Grid.Row="2" Grid.Column="1"
                            Style="{StaticResource MaterialTextBox}"
                            materialDesign:HintAssist.Hint="Nhân sự phụ trách"
                            Padding="8,4,8,4"

@@ -15,6 +15,7 @@ namespace CRM.Infrastructure.Database.Repositories
         public async Task<Lead?> GetLeadByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var lead = await _context.Leads
+                .AsNoTracking()
                 .Include(l => l.Employee)
                 .Include(l => l.LeadPotentialLevel)
                 .Include(l => l.LeadStage)
@@ -31,15 +32,16 @@ namespace CRM.Infrastructure.Database.Repositories
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(l => l.LeadId == id, cancellationToken);
 
-            if (lead != null)
-                await _context.Entry(lead).ReloadAsync(cancellationToken);
+            //if (lead != null)
+            //    await _context.Entry(lead).ReloadAsync(cancellationToken);
 
             return lead;
         }
 
         public async Task<PagedResult<Lead>> GetLeadsAsync(LeadFilter filter, CancellationToken cancellationToken = default)
         {
-            var query = _context.Leads.AsNoTracking()
+            var query = _context.Leads
+                .AsNoTracking()
                 .Include(l => l.Employee)
                 .Include(l => l.LeadPotentialLevel)
                 .Include(l => l.LeadStage)
@@ -62,6 +64,14 @@ namespace CRM.Infrastructure.Database.Repositories
                 .ToListAsync();
 
             return new PagedResult<Lead>(items, totalCount, filter.PageNumber, filter.PageSize);
+        }
+
+        public async Task UpdateLeadStageAsync(int leadId, int newStageId, CancellationToken cancellationToken = default)
+        {
+            await _context.Leads
+                .Where(l => l.LeadId == leadId)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(l => l.LeadStageId, newStageId), cancellationToken);
         }
     }
 }

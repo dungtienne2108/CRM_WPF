@@ -42,7 +42,7 @@ namespace CRM.UI.ViewModels.PaymentManagement
             _serviceProvider = serviceProvider;
 
             CurrentPage = 1;
-            RecordsPerPage = 10;
+            RecordsPerPage = 25;
             TotalRecords = 0;
         }
 

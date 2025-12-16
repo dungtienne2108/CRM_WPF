@@ -15,6 +15,7 @@ namespace CRM.Infrastructure.Database.Repositories
         public async Task<PagedResult<Customer>> GetAllCustomersAsync(CustomerFilter filter)
         {
             var query = _context.Customers
+                .AsNoTracking()
                 .Include(c => c.Gender)
                 .Include(c => c.CustomerType)
                 .AsSplitQuery()
@@ -47,8 +48,8 @@ namespace CRM.Infrastructure.Database.Repositories
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(c => c.CustomerId == id);
 
-            if (customer != null)
-                await _context.Entry(customer).ReloadAsync();
+            //if (customer != null)
+            //    await _context.Entry(customer).ReloadAsync();
 
             return customer;
         }

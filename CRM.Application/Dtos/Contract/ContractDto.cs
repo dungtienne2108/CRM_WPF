@@ -67,6 +67,12 @@ namespace CRM.Application.Dtos.Contract
         [DisplayName("Mô tả")]
         public string? Description { get; set; }
 
+        [DisplayName("Số tiền đã thanh toán")]
+        public decimal PaidAmount { get; set; }
+
+        [DisplayName("Số tiền còn lại")]
+        public decimal RemainingAmount { get; set; }
+
         public List<ContractDocumentDto> Documents { get; set; } = new List<ContractDocumentDto>();
     }
 }

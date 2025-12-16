@@ -42,7 +42,7 @@ namespace CRM.UI.ViewModels.DepositManagement
             _serviceProvider = serviceProvider;
 
             CurrentPage = 1;
-            RecordsPerPage = 10;
+            RecordsPerPage = 25;
             TotalRecords = 0;
         }
 

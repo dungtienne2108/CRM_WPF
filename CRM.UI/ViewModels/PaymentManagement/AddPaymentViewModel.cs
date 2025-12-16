@@ -132,7 +132,7 @@ namespace CRM.UI.ViewModels.PaymentManagement
         {
             try
             {
-                IsInvoiceDropdownOpen = true;
+                //IsInvoiceDropdownOpen = true;
                 var request = new GetInvoiceRequest
                 {
                     Keyword = InvoiceSearchKeyword,

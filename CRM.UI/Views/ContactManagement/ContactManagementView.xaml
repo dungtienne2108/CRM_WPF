@@ -73,8 +73,8 @@
                      materialDesign:TextFieldAssist.HasLeadingIcon="True"
                      materialDesign:TextFieldAssist.LeadingIcon="Search"
                      Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                     MaxWidth="400"
-                     HorizontalAlignment="Center"
+                     MaxWidth="480"
+                     MinWidth="320"
                      VerticalAlignment="Center"
                      Margin="16,0"
                      >
