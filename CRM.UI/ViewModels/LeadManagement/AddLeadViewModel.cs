@@ -297,7 +297,7 @@ namespace CRM.UI.ViewModels.LeadManagement
             try
             {
                 ProductOptions.Clear();
-                var result = await _projectService.GetProductsByProjectIdAsync(projectId);
+                var result = await _projectService.GetUnsoldProductsByProjectIdAsync(projectId);
 
                 if (!result.Any())
                 {

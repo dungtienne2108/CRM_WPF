@@ -116,7 +116,7 @@ namespace CRM.UI.ViewModels.LeadManagement
 
         private async Task LoadProductsAsync(int projectId)
         {
-            var products = await _projectService.GetProductsByProjectIdAsync(projectId);
+            var products = await _projectService.GetUnsoldProductsByProjectIdAsync(projectId);
 
             if (!products.Any())
             {

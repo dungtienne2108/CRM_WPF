@@ -16,6 +16,7 @@ namespace CRM.Application.Interfaces.Project
         Task<PagedResult<ProjectDto>> GetProjectsAsync(GetProjectRequest request);
         Task<IEnumerable<ProjectDto>> GetAllProjectsAsync();
         Task<IEnumerable<ProductDto>> GetAllProductsAsync();
+        Task<IEnumerable<ProductDto>> GetUnsoldProductsByProjectIdAsync(int projectId);
         Task<IEnumerable<ProductDto>> GetProductsByProjectIdAsync(int projectId);
         Task<Result<IEnumerable<ProductTypeOption>>> GetProductTypesAsync();
         Task<Result<IEnumerable<ProductStatusOption>>> GetProductStatusesAsync();

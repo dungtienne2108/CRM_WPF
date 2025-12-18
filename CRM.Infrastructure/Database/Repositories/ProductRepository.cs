@@ -31,7 +31,7 @@ namespace CRM.Infrastructure.Database.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Product>> GetProductsByProjectIdAsync(int projectId)
+        public async Task<IEnumerable<Product>> GetUnsoldProductsByProjectIdAsync(int projectId)
         {
             var products = await _context.Products
                 .Include(p => p.ProductType)
@@ -56,6 +56,19 @@ namespace CRM.Infrastructure.Database.Repositories
             await _context.Products
                 .Where(p => p.ProductId == productId)
                 .ExecuteUpdateAsync(s => s.SetProperty(p => p.ProductStatusId, newStatus));
+        }
+
+        public async Task<IEnumerable<Product>> GetProductsByProjectIdAsync(int projectId)
+        {
+            var products = await _context.Products
+                .Include(p => p.ProductType)
+                .Include(p => p.ProductStatus)
+                .Where(p => p.ProjectId == projectId)
+                .AsSplitQuery()
+                .AsNoTracking()
+                .ToListAsync();
+
+            return products;
         }
     }
 }

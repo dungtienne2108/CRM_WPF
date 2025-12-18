@@ -24,6 +24,7 @@
         <converters:BoolToFontWeightConverter x:Key="BoolToFontWeightConverter"/>
         <converters:InverseBooleanToVisibleConverter x:Key="InverseBoolToVisConverter"/>
         <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        <converters:StringToDecimalConveter x:Key="StringToDecimalConverter"/>
 
         <Style x:Key="GroupBoxStyle" TargetType="GroupBox">
             <Setter Property="Margin" Value="0,0,0,15"/>
@@ -206,28 +207,32 @@
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Mã căn" 
                                 Binding="{Binding Code}" 
-                                Width="*"
-                                MinWidth="100"/>
+                                Width="0.6*"
+                                MinWidth="80"/>
+                                                <DataGridTextColumn Header="Tên sản phẩm" 
+                                Binding="{Binding Name}" 
+                                Width="1.5*"
+                                MinWidth="120"/>
                                                 <DataGridTextColumn Header="Số tầng" 
                                 Binding="{Binding Floors}" 
-                                Width="*"
-                                MinWidth="80"/>
+                                Width="0.6*"
+                                MinWidth="70"/>
                                                 <DataGridTextColumn Header="Diện tích" 
                                 Binding="{Binding Area}" 
-                                Width="*"
-                                MinWidth="100"/>
+                                Width="0.8*"
+                                MinWidth="90"/>
                                                 <DataGridTextColumn Header="Giá gốc" 
-                                Binding="{Binding Price}" 
-                                Width="*"
-                                MinWidth="120"/>
+                                Binding="{Binding Price, Converter={StaticResource StringToDecimalConverter}}" 
+                                Width="1*"
+                                MinWidth="110"/>
                                                 <DataGridTextColumn Header="Trạng thái" 
                                 Binding="{Binding ProductStatusName}" 
-                                Width="*"
-                                MinWidth="120"/>
+                                Width="0.9*"
+                                MinWidth="100"/>
                                                 <DataGridTextColumn Header="Loại sản phẩm" 
                                 Binding="{Binding ProductTypeName}" 
-                                Width="*"
-                                MinWidth="120"/>
+                                Width="0.9*"
+                                MinWidth="100"/>
                                             </DataGrid.Columns>
                                             <i:Interaction.Triggers>
                                                 <i:EventTrigger EventName="MouseDoubleClick">

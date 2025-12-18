@@ -272,7 +272,7 @@ namespace CRM.UI.ViewModels.OpportunityManagement
             try
             {
                 ProductOptions.Clear();
-                var result = await _projectService.GetProductsByProjectIdAsync(projectId);
+                var result = await _projectService.GetUnsoldProductsByProjectIdAsync(projectId);
                 if (!result.Any())
                 {
                     ProductOptions.Clear();
