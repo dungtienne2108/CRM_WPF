@@ -27,7 +27,7 @@ namespace CRM.Application.Services
         {
             try
             {
-                var opportunity = await opportunityRepository.GetByIdAsync(request.OpportunityId);
+                var opportunity = await opportunityRepository.GetOpportunityByIdAsync(request.OpportunityId);
 
                 if (opportunity == null)
                 {
