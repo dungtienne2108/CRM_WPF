@@ -369,7 +369,8 @@
 
                             <RadioButton Name="HelpMenu"
                                    Style="{StaticResource SidebarMenuButton}"
-                                   Click="MenuItem_Click">
+                                   Click="MenuItem_Click"
+                                         Visibility="Hidden">
                             <StackPanel Orientation="Horizontal" Margin="16,0">
                                 <materialDesign:PackIcon Kind="HelpCircleOutline" 
                                                        Width="24" Height="24"
