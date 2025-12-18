@@ -101,5 +101,25 @@ namespace CRM.Infrastructure.Database.Repositories
                  .Where(o => o.OpportunityId == opportunityId)
                  .ExecuteUpdateAsync(o => o.SetProperty(op => op.OpportunityStageId, newStage));
         }
+
+        public async Task AddOpportunityItemAsync(int opportunityId, int productId, decimal price)
+        {
+            var opportunityItem = new OpportunityItem
+            {
+                OpportunityId = opportunityId,
+                ProductId = productId,
+                SalePrice = price,
+                Quantity = 1
+            };
+
+            await _context.OpportunityItems.AddAsync(opportunityItem);
+        }
+
+        public async Task<bool> OpportunityItemExistsAsync(int opportunityId, int productId)
+        {
+            return await _context.OpportunityItems
+                .AsNoTracking()
+                .AnyAsync(oi => oi.OpportunityId == opportunityId && oi.ProductId == productId);
+        }
     }
 }

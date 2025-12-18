@@ -11,5 +11,7 @@ namespace CRM.Domain.Interfaces
         Task<PagedResult<Opportunity>> GetAllOpportunitiesAsync(OpportunityFilter filter);
         Task UpdateOpportunityStageAsync(int opportunityId, int newStage);
         Task MarkOpportunityAsDepositedAsync(int opportunityId);
+        Task AddOpportunityItemAsync(int opportunityId, int productId, decimal price);
+        Task<bool> OpportunityItemExistsAsync(int opportunityId, int productId);
     }
 }

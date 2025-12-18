@@ -70,5 +70,14 @@ namespace CRM.Infrastructure.Database.Repositories
 
             return products;
         }
+
+        public async Task<int> GetProductStatusByProductIdAsync(int productId)
+        {
+            return await _context.Products
+                .AsNoTracking()
+                .Where(p => p.ProductId == productId)
+                .Select(p => p.ProductStatusId)
+                .FirstAsync();
+        }
     }
 }

@@ -25,43 +25,32 @@ namespace CRM.Application.Services
         {
             try
             {
-                var opportunity = await opportunityRepository.GetOpportunityByIdAsync(request.OpportunityId);
-                if (opportunity == null)
+                var opportunityExists = await opportunityRepository.AnyAsync(o => o.OpportunityId == request.OpportunityId);
+                if (!opportunityExists)
                 {
                     return Result.Failure(new("opportunity_not_found", "Không tìm thấy cơ hội"));
                 }
 
-                var existingProductInItems = opportunity.OpportunityItems.FirstOrDefault(i => i.ProductId == request.ProductId);
-                if (existingProductInItems != null)
+                var existingProductInOpportunity = await opportunityRepository.OpportunityItemExistsAsync(request.OpportunityId, request.ProductId);
+                if (existingProductInOpportunity)
                 {
                     return Result.Failure(new("", "Sản phẩm đã tồn tại trong cơ hội"));
                 }
 
-                var product = await productRepository.GetByIdAsync(request.ProductId);
-                if (product == null)
-                {
-                    return Result.Failure(new("", "Không tìm thấy sản phẩm"));
-                }
+                var productStatus = await productRepository.GetProductStatusByProductIdAsync(request.ProductId);
 
-                if (product.ProductStatusId == 2)
+                if (productStatus == 2)
                 {
                     return Result.Failure(new("", "Sản phẩm đã được giữ chỗ"));
                 }
-                else if (product.ProductStatusId == 3)
+                else if (productStatus == 3)
                 {
                     return Result.Failure(new("", "Sản phẩm đã được bán"));
                 }
 
-                opportunity.OpportunityItems.Add(
-                    new OpportunityItem
-                    {
-                        Opportunity = opportunity,
-                        ProductId = request.ProductId,
-                        SalePrice = request.Price,
-                        Quantity = 1
-                    });
+                await opportunityRepository.AddOpportunityItemAsync(request.OpportunityId, request.ProductId, request.Price);
 
-                //product.ProductStatusId = 2; // chuyển sản phẩm thành đã giữ chỗ (id = 2)
+                await productRepository.UpdateProductStatusByIdAsync(request.ProductId, 2);
 
                 var added = await unitOfWork.SaveChangesAsync();
                 if (added > 0)

@@ -10,5 +10,6 @@ namespace CRM.Domain.Interfaces
         Task<IEnumerable<Product>> GetProductsByIdsAsync(IEnumerable<int> productIds);
         Task UpdateProductStatusByIdsAsync(IEnumerable<int> productIds, int newStatus);
         Task UpdateProductStatusByIdAsync(int productId, int newStatus);
+        Task<int> GetProductStatusByProductIdAsync(int productId);
     }
 }
